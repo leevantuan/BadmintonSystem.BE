@@ -4,8 +4,10 @@ using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.Gender;
 using BadmintonSystem.Domain.Abstractions.Repositories;
 using BadmintonSystem.Domain.Entities;
+using BadmintonSystem.Domain.Exceptions;
 
 namespace BadmintonSystem.Application.UseCases.V1.Queries;
+
 public class GetByIdGenderQueryHandler : IQueryHandler<Query.GetGenderByIdQuery, Response.GenderResponse>
 {
     private readonly IMapper _mapper;
@@ -19,7 +21,9 @@ public class GetByIdGenderQueryHandler : IQueryHandler<Query.GetGenderByIdQuery,
 
     public async Task<Result<Response.GenderResponse>> Handle(Query.GetGenderByIdQuery request, CancellationToken cancellationToken)
     {
-        var gender = await _genderRepository.FindByIdAsync(request.Id);
-        return _mapper.Map<Response.GenderResponse>(gender);
+        var gender = await _genderRepository.FindByIdAsync(request.Id) ??
+            throw new GenderException.GenderNotFoundException(request.Id);
+
+        return Result<Response.GenderResponse>.Success(_mapper.Map<Response.GenderResponse>(gender));
     }
 }

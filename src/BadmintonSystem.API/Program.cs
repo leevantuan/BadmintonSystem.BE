@@ -55,8 +55,9 @@ app.UseAuthorization();
 app.MapControllers();
 
 //app.Run();
-if (builder.Environment.IsDevelopment() || builder.Environment.IsStaging())
-    app.ConfigureSwagger();
+// Run Version
+//if (builder.Environment.IsDevelopment() || builder.Environment.IsStaging())
+//    app.ConfigureSwagger();
 
 // Using Log of Serilog
 try

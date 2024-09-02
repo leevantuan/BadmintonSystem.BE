@@ -8,9 +8,9 @@ using Microsoft.AspNetCore.Mvc;
 namespace BadmintonSystem.Presentation.Controllers.V1;
 
 //[ApiVersion(1)]
-public class GenderController : ApiController
+public class GendersController : ApiController
 {
-    public GenderController(ISender sender)
+    public GendersController(ISender sender)
         : base(sender)
     {
     }
