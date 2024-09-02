@@ -1,4 +1,5 @@
-﻿using BadmintonSystem.Domain.Entities.Identity;
+﻿using BadmintonSystem.Domain.Abstractions.Entities;
+using BadmintonSystem.Domain.Entities.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Action = BadmintonSystem.Domain.Entities.Identity.Action;
@@ -19,6 +20,24 @@ public sealed class ApplicationDbContext : IdentityDbContext<AppUser, AppRole, G
     // Configuration here ... ==>
     protected override void OnModelCreating(ModelBuilder builder) =>
         builder.ApplyConfigurationsFromAssembly(AssemblyReference.Assembly);
+
+    // Phím tắt override Save ... cái cuối
+    // Save change and auto generate date
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        foreach (var entry in base.ChangeTracker.Entries<AuditableEntity<Guid>>()
+            .Where(q => q.State == EntityState.Added || q.State == EntityState.Modified))
+        {
+            entry.Entity.DateModified = DateTime.Now;
+
+            if (entry.State == EntityState.Added)
+            {
+                entry.Entity.DateCreated = DateTime.Now;
+            }
+        }
+
+        return base.SaveChangesAsync(cancellationToken);
+    }
 
     // Generate Database => SQL Server
     // Authorization => Xác thực quyền người dùng có quyền truy cập vào hay không
