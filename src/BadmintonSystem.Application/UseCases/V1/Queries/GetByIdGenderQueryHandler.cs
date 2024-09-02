@@ -1,0 +1,25 @@
+﻿using AutoMapper;
+using BadmintonSystem.Contract.Abstractions.Messages;
+using BadmintonSystem.Contract.Abstractions.Shared;
+using BadmintonSystem.Contract.Services.Gender;
+using BadmintonSystem.Domain.Abstractions.Repositories;
+using BadmintonSystem.Domain.Entities;
+
+namespace BadmintonSystem.Application.UseCases.V1.Queries;
+public class GetByIdGenderQueryHandler : IQueryHandler<Query.GetGenderByIdQuery, Response.GenderResponse>
+{
+    private readonly IMapper _mapper;
+    private readonly IRepositoryBase<Gender, Guid> _genderRepository;
+
+    public GetByIdGenderQueryHandler(IMapper mapper, IRepositoryBase<Gender, Guid> genderRepository)
+    {
+        _mapper = mapper;
+        _genderRepository = genderRepository;
+    }
+
+    public async Task<Result<Response.GenderResponse>> Handle(Query.GetGenderByIdQuery request, CancellationToken cancellationToken)
+    {
+        var gender = await _genderRepository.FindByIdAsync(request.Id);
+        return _mapper.Map<Response.GenderResponse>(gender);
+    }
+}
