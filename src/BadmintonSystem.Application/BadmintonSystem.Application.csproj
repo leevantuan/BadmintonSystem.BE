@@ -9,8 +9,8 @@
   <ItemGroup>
     <Folder Include="Abstractions\" />
     <Folder Include="DependencyInjection\Options\" />
+    <Folder Include="UseCases\V1\Queries\" />
     <Folder Include="UseCases\V2\" />
-    <Folder Include="UseCases\V1\" />
   </ItemGroup>
 
   <ItemGroup>

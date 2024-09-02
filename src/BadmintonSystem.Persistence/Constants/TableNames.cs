@@ -17,5 +17,5 @@ internal static class TableNames
     internal const string AppUserTokens = nameof(AppUserTokens); // IdentityUserToken
 
     // *********** Singular Nouns ***********
-    //internal const string Product = nameof(Product);
+    internal const string Gender = nameof(Gender);
 }
