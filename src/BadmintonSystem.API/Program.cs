@@ -1,4 +1,5 @@
-﻿using BadmintonSystem.Persistence.DependencyInjection.Extensions;
+﻿using BadmintonSystem.Application.DependencyInjection.Extensions;
+using BadmintonSystem.Persistence.DependencyInjection.Extensions;
 using BadmintonSystem.Persistence.DependencyInjection.Options;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +14,7 @@ builder.Services.AddSwaggerGen();
 // Add Configuration DependencyInjection
 // Configurations để trước builder.Build()
 // Add Config DATABASE SQLSERVER ==>
+builder.Services.AddConfigureMediatR();
 builder.Services.ConfigureSqlServerRetryOptions(builder.Configuration.GetSection(nameof(SqlServerRetryOptions)));
 builder.Services.AddSqlConfiguration();
 
