@@ -54,4 +54,26 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.Run();
+//app.Run();
+if (builder.Environment.IsDevelopment() || builder.Environment.IsStaging())
+    app.ConfigureSwagger();
+
+// Using Log of Serilog
+try
+{
+    await app.RunAsync();
+    Log.Information("Stopped cleanly");
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "An unhandled exception occured during bootstrapping");
+    await app.StopAsync();
+}
+finally
+{
+    Log.CloseAndFlush();
+    await app.DisposeAsync();
+}
+
+public partial class Program { }
+
