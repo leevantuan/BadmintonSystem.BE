@@ -17,6 +17,9 @@ builder.Logging
 
 builder.Host.UseSerilog();
 
+// Add MediatR
+builder.Services.AddConfigureMediatR();
+
 // Add Config API
 builder
     .Services
@@ -31,11 +34,10 @@ builder.Services.AddSwaggerGen();
 // Add Configuration DependencyInjection
 // Configurations để trước builder.Build()
 // Add Config DATABASE SQLSERVER ==>
-builder.Services.AddConfigurationAutoMapper();
-builder.Services.AddConfigureMediatR();
+builder.Services.AddRepositoryBaseConfiguration();
 builder.Services.ConfigureSqlServerRetryOptions(builder.Configuration.GetSection(nameof(SqlServerRetryOptions)));
 builder.Services.AddSqlConfiguration();
-builder.Services.AddRepositoryBaseConfiguration();
+builder.Services.AddConfigurationAutoMapper();
 
 var app = builder.Build();
 

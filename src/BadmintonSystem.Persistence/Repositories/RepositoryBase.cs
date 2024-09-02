@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BadmintonSystem.Persistence.Repositories;
 public class RepositoryBase<TEntity, TKey> : IRepositoryBase<TEntity, TKey>, IDisposable
-        where TEntity : DomainEntity<TKey>
+        where TEntity : AuditableEntity<TKey>
 {
 
     private readonly ApplicationDbContext _context;
