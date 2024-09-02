@@ -14,6 +14,7 @@ builder.Services.AddSwaggerGen();
 // Add Configuration DependencyInjection
 // Configurations để trước builder.Build()
 // Add Config DATABASE SQLSERVER ==>
+builder.Services.AddConfigurationAutoMapper();
 builder.Services.AddConfigureMediatR();
 builder.Services.ConfigureSqlServerRetryOptions(builder.Configuration.GetSection(nameof(SqlServerRetryOptions)));
 builder.Services.AddSqlConfiguration();
