@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using BadmintonSystem.Contract.Abstractions.Messages;
+using FluentAssertions;
 using NetArchTest.Rules;
 
 namespace BadmintonSystem.Architecture.Tests;
@@ -142,5 +143,107 @@ public class ArchitectureTests
     }
 
     #endregion ================================ Architecture ===============================
+
+    #region ================================= Test Naming Command ===================================
+
+    [Fact]
+    public void Command_Should_Have_NamingConventionEndingCommandHandler()
+    {
+        // Arrange
+        // Takes all reference assembly of Application
+        var assembly = Application.AssemblyReference.Assembly;
+
+        // Act
+        var testResult = Types.InAssembly(assembly) // Check all in assembly
+                            .That() // Confirm type check
+                            .ImplementInterface(typeof(ICommandHandler<>)) // This is filter, If it using Generic Interface "ICommandHandler"
+                            .Should()
+                            .HaveNameEndingWith("CommandHandler") // Name End must have "CommandHandler"
+                            .GetResult();
+
+        // Assert
+        testResult.IsSuccessful.Should().BeTrue();
+    }
+
+    [Fact]
+    public void CommandT_Should_Have_NamingConventionEndingCommandHandler()
+    {
+        var assembly = Application.AssemblyReference.Assembly;
+
+        var testResult = Types
+                        .InAssembly(assembly)
+                        .That() // Lấy các cái có trong nó ra 
+                        .ImplementInterface(typeof(ICommandHandler<,>)) // Lấy những cái Implement được kế thừa từ ICommandHandler
+                        .Should().NotHaveNameEndingWith("CommandHandler") // Check string cuối phải là CommandHandler
+                        .GetResult();
+
+        testResult.IsSuccessful.Should().BeTrue();
+    }
+
+    // Có Sealed để tăng Performance
+    [Fact]
+    public void CommandHandler_Should_Have_BeSealed()
+    {
+        var assembly = Application.AssemblyReference.Assembly;
+
+        var testResult = Types
+                        .InAssembly(assembly)
+                        .That() // Lấy các cái có trong nó ra
+                        .ImplementInterface(typeof(ICommandHandler<>)) // Lấy những cái Implement được kế thừa từ ICommandHandler
+                        .Should().BeSealed() // Check có Sealed không
+                        .GetResult();
+
+        testResult.IsSuccessful.Should().BeTrue();
+    }
+
+    [Fact]
+    public void CommandHandlerT_Should_Have_BeSealed()
+    {
+        var assembly = Application.AssemblyReference.Assembly;
+
+        var testResult = Types
+                        .InAssembly(assembly)
+                        .That() // Lấy các cái có trong nó ra 
+                        .ImplementInterface(typeof(ICommandHandler<,>)) // Lấy những cái Implement được kế thừa từ ICommandHandler
+                        .Should().BeSealed() // Check có Sealed không
+                        .GetResult();
+
+        testResult.IsSuccessful.Should().BeTrue();
+    }
+
+    #endregion ================================= Test Naming Command ===================================
+
+    #region ================================= Test Naming Query ===================================
+
+    [Fact]
+    public void QueryT_Should_Have_NamingConventionEndingQueryHandler()
+    {
+        var assembly = Application.AssemblyReference.Assembly;
+
+        var testResult = Types.InAssembly(assembly)
+                        .That() // Lấy các cái có trong nó ra
+                        .ImplementInterface(typeof(IQueryHandler<,>)) // Lấy những cái Implement được kế thừa từ ICommandHandler
+                        .Should().NotHaveNameEndingWith("QueryHandler") // Check string cuối phải là CommandHandler
+                        .GetResult();
+
+        testResult.IsSuccessful.Should().BeTrue();
+    }
+
+    // Có Sealed để tăng Performance
+    [Fact]
+    public void QueryHandlerT_Should_Have_BeSealed()
+    {
+        var assembly = Application.AssemblyReference.Assembly;
+
+        var testResult = Types.InAssembly(assembly)
+                        .That() // Lấy các cái có trong nó ra
+                        .ImplementInterface(typeof(IQueryHandler<,>)) // Lấy những cái Implement được kế thừa từ IQueryHandler
+                        .Should().BeSealed() // Check có Sealed không
+                        .GetResult();
+
+        testResult.IsSuccessful.Should().BeTrue();
+    }
+
+    #endregion ================================= Test Naming Command ===================================
 
 }
