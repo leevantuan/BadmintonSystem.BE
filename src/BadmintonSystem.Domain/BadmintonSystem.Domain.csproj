@@ -10,7 +10,6 @@
     <Folder Include="DependencyInjection\Extensions\" />
     <Folder Include="DependencyInjection\Options\" />
     <Folder Include="Abstractions\" />
-    <Folder Include="Exceptions\" />
   </ItemGroup>
 
   <ItemGroup>
