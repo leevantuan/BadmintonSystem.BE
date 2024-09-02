@@ -18,6 +18,7 @@ builder.Services.AddConfigurationAutoMapper();
 builder.Services.AddConfigureMediatR();
 builder.Services.ConfigureSqlServerRetryOptions(builder.Configuration.GetSection(nameof(SqlServerRetryOptions)));
 builder.Services.AddSqlConfiguration();
+builder.Services.AddRepositoryBaseConfiguration();
 
 var app = builder.Build();
 

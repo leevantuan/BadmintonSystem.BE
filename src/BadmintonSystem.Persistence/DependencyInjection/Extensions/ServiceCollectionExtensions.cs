@@ -1,5 +1,8 @@
-﻿using BadmintonSystem.Domain.Entities.Identity;
+﻿using BadmintonSystem.Domain.Abstractions;
+using BadmintonSystem.Domain.Abstractions.Repositories;
+using BadmintonSystem.Domain.Entities.Identity;
 using BadmintonSystem.Persistence.DependencyInjection.Options;
+using BadmintonSystem.Persistence.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -80,6 +83,14 @@ public static class ServiceCollectionExtensions
             options.Password.RequiredUniqueChars = 1; // Có 1 kí tự đạc biệt
             options.Lockout.AllowedForNewUsers = true;
         });
+    }
+
+    // DI for UnitOfWork and Repository
+    public static void AddRepositoryBaseConfiguration(this IServiceCollection services)
+    {
+        services.AddTransient(typeof(IUnitOfWork), typeof(EFUnitOfWork));
+        services.AddTransient(typeof(IRepositoryBase<,>), typeof(RepositoryBase<,>));
+
     }
 
     public static OptionsBuilder<SqlServerRetryOptions> ConfigureSqlServerRetryOptions(this IServiceCollection services, IConfigurationSection section)
