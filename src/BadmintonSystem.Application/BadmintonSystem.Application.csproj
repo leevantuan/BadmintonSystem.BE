@@ -20,6 +20,7 @@
   <ItemGroup>
     <ProjectReference Include="..\BadmintonSystem.Contract\BadmintonSystem.Contract.csproj" />
     <ProjectReference Include="..\BadmintonSystem.Domain\BadmintonSystem.Domain.csproj" />
+    <ProjectReference Include="..\BadmintonSystem.Persistence\BadmintonSystem.Persistence.csproj" />
   </ItemGroup>
 
 </Project>

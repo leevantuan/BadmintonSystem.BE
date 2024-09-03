@@ -1,4 +1,5 @@
 ﻿using BadmintonSystem.Contract.Abstractions.Shared;
+using BadmintonSystem.Contract.Extensions;
 using BadmintonSystem.Contract.Services.Gender;
 using BadmintonSystem.Presentation.Abstractions;
 using MediatR;
@@ -28,12 +29,25 @@ public class GendersController : ApiController
         return Ok(result);
     }
 
+    //[HttpGet(Name = "GetGenders")]
+    //[ProducesResponseType(typeof(Result<IEnumerable<Response.GenderResponse>>), StatusCodes.Status200OK)]
+    //[ProducesResponseType(StatusCodes.Status404NotFound)]
+    //public async Task<IActionResult> GetAllGender()
+    //{
+    //    return Ok(await Sender.Send(new Query.GetAllGender()));
+    //}
+
     [HttpGet(Name = "GetGenders")]
     [ProducesResponseType(typeof(Result<IEnumerable<Response.GenderResponse>>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetAllGender()
+    public async Task<IActionResult> GetAllGender(string? searchTerm = null,
+                                                  string? sortColumn = null,
+                                                  string? sortOrder = null,
+                                                  string? sortColumnAndOrder = null,
+                                                  int pageIndex = 1,
+                                                  int pageSize = 10)
     {
-        return Ok(await Sender.Send(new Query.GetAllGender()));
+        return Ok(await Sender.Send(new Query.GetAllGender(searchTerm, sortColumn, SortOrderExtension.ConvertStringToSortOrder(sortOrder), SortOrderExtension.ConvertStringToSortOrderV2(sortColumnAndOrder), pageIndex, pageSize)));
     }
 
     [HttpGet("{genderId}")]

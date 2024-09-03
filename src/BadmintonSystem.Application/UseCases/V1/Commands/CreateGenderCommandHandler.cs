@@ -9,7 +9,7 @@ using BadmintonSystem.Domain.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
 namespace BadmintonSystem.Application.UseCases.V1.Commands;
-public class CreateGenderCommandHandler : ICommandHandler<Command.CreateGenderCommand>
+public sealed class CreateGenderCommandHandler : ICommandHandler<Command.CreateGenderCommand>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;

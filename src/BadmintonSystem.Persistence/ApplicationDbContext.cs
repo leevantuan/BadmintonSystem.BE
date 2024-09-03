@@ -1,4 +1,5 @@
-﻿using BadmintonSystem.Domain.Entities.Identity;
+﻿using BadmintonSystem.Domain.Entities;
+using BadmintonSystem.Domain.Entities.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Action = BadmintonSystem.Domain.Entities.Identity.Action;
@@ -28,4 +29,6 @@ public sealed class ApplicationDbContext : IdentityDbContext<AppUser, AppRole, G
     public DbSet<Function> Functions { get; set; }
     public DbSet<ActionInFunction> ActionInFunctions { get; set; }
     public DbSet<Permission> Permissions { get; set; }
+
+    public DbSet<Gender> Genders { get; set; }
 }

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.Gender;
 using BadmintonSystem.Domain.Entities;
 
@@ -9,5 +10,6 @@ public class ServiceProfile : Profile
     {
         CreateMap<Gender, Response.GenderResponse>().ReverseMap();
         CreateMap<Gender, Request>().ReverseMap();
+        CreateMap<PagedResult<Gender>, PagedResult<Response.GenderResponse>>().ReverseMap();
     }
 }

@@ -7,7 +7,7 @@ using BadmintonSystem.Domain.Entities;
 using BadmintonSystem.Domain.Exceptions;
 
 namespace BadmintonSystem.Application.UseCases.V1.Commands;
-public class DeleteGenderCommandHandler : ICommandHandler<Command.DeleteGenderCommand>
+public sealed class DeleteGenderCommandHandler : ICommandHandler<Command.DeleteGenderCommand>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IRepositoryBase<Gender, Guid> _genderRepository;

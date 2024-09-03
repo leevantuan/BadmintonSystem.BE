@@ -8,7 +8,7 @@ using BadmintonSystem.Domain.Exceptions;
 
 namespace BadmintonSystem.Application.UseCases.V1.Queries;
 
-public class GetByIdGenderQueryHandler : IQueryHandler<Query.GetGenderByIdQuery, Response.GenderResponse>
+public sealed class GetByIdGenderQueryHandler : IQueryHandler<Query.GetGenderByIdQuery, Response.GenderResponse>
 {
     private readonly IMapper _mapper;
     private readonly IRepositoryBase<Gender, Guid> _genderRepository;
