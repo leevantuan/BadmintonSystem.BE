@@ -8,8 +8,6 @@
 
   <ItemGroup>
     <Folder Include="Controllers\V2\" />
-    <Folder Include="DependencyInjection\Extensions\" />
-    <Folder Include="DependencyInjection\Options\" />
   </ItemGroup>
 
   <ItemGroup>
