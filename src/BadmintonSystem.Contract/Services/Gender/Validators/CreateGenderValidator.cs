@@ -7,7 +7,8 @@ public class CreateGenderValidator : AbstractValidator<Command.CreateGenderComma
     {
         // Rule của nghiệp vụ
         // Check validator cho create
-        RuleFor(x => x.request.Data["Name"]).NotEmpty(); // không null
+        RuleFor(x => x.Data.Name).NotEmpty().WithMessage("Name not null")
+                                 .Length(2, 20).WithMessage("Valid name must be bettwen 2 to 20 charaters."); // không null
         //RuleFor(x => x.Price).GreaterThan(0); // phải lớn hơn 0
         //RuleFor(x => x.Description).NotEmpty(); // không null
     }

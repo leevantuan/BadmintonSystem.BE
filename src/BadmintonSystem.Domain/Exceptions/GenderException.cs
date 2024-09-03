@@ -5,6 +5,15 @@ public class GenderException
     public class GenderNotFoundException : NotFoundException
     {
         public GenderNotFoundException(Guid genderId)
-            : base($"The product with the id {genderId} was not found.") { }
+            : base($"===========> The gender with the id {genderId} was not found.") { }
+    }
+
+    // If can't find genderId then call it
+    public class GenderBadRequestException : BadRequestException
+    {
+        public GenderBadRequestException(string message)
+            : base($"===========> Bad Request: {message}.")
+        {
+        }
     }
 }

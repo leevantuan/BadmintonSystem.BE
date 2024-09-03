@@ -16,7 +16,7 @@ public class GendersController : ApiController
     }
 
     [HttpPost(Name = "Create")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Result), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Create([FromBody] Command.CreateGenderCommand CreateGender)
     {
@@ -58,7 +58,7 @@ public class GendersController : ApiController
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Update(Guid genderId, [FromBody] Command.UpdateGenderCommand updateProduct)
     {
-        var updateProductCommand = new Command.UpdateGenderCommand(genderId, updateProduct.request);
+        var updateProductCommand = new Command.UpdateGenderCommand(genderId, updateProduct.Name);
         return Ok(await Sender.Send(updateProductCommand));
     }
 }
