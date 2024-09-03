@@ -20,24 +20,6 @@ public sealed class ApplicationDbContext : IdentityDbContext<AppUser, AppRole, G
     protected override void OnModelCreating(ModelBuilder builder) =>
         builder.ApplyConfigurationsFromAssembly(AssemblyReference.Assembly);
 
-    // Phím tắt override Save ... cái cuối
-    // Save change and auto generate date
-    //public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
-    //{
-    //    foreach (var entry in base.ChangeTracker.Entries<AuditableEntity<Guid>>()
-    //        .Where(q => q.State == EntityState.Added || q.State == EntityState.Modified))
-    //    {
-    //        entry.Entity.DateModified = DateTime.Now;
-
-    //        if (entry.State == EntityState.Added)
-    //        {
-    //            entry.Entity.DateCreated = DateTime.Now;
-    //        }
-    //    }
-
-    //    return base.SaveChangesAsync(cancellationToken);
-    //}
-
     // Generate Database => SQL Server
     // Authorization => Xác thực quyền người dùng có quyền truy cập vào hay không
     public DbSet<AppUser> AppUsers { get; set; }

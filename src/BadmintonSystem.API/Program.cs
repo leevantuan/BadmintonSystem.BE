@@ -1,4 +1,6 @@
-﻿using BadmintonSystem.Application.DependencyInjection.Extensions;
+﻿using BadmintonSystem.API.DependencyInjection.Extensions;
+using BadmintonSystem.API.Middleware;
+using BadmintonSystem.Application.DependencyInjection.Extensions;
 using BadmintonSystem.Persistence.DependencyInjection.Extensions;
 using BadmintonSystem.Persistence.DependencyInjection.Options;
 using Serilog;
@@ -19,6 +21,7 @@ builder.Host.UseSerilog();
 
 // Add MediatR
 builder.Services.AddConfigureMediatR();
+builder.Services.AddConfigureMiddleware();
 
 // Add Config API
 builder
@@ -53,6 +56,9 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+// Middleware
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 //app.Run();
 // Run Version

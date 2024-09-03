@@ -28,7 +28,7 @@ public class CreateGenderCommandHandler : ICommandHandler<Command.CreateGenderCo
     {
         // Is Name Exists
         var isNameExists = await _genderRepository.FindAll(x => x.Name.ToLower().Trim().Equals(request.Data.Name.ToLower().Trim())).ToListAsync();
-
+        //var isNameExists = await _genderRepository.FindSingleAsync(x => x.Name.ToLower().Trim().Equals(request.Data.Name.ToLower().Trim()));
         if (isNameExists != null)
             throw new GenderException.GenderBadRequestException("Name Exists!");
 
