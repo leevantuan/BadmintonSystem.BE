@@ -3,6 +3,7 @@ using BadmintonSystem.Contract.Extensions;
 using BadmintonSystem.Contract.Services.Gender;
 using BadmintonSystem.Presentation.Abstractions;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -38,6 +39,7 @@ public class GendersController : ApiController
     //}
 
     [HttpGet(Name = "GetGenders")]
+    [Authorize] // Xác thực
     [ProducesResponseType(typeof(Result<IEnumerable<Response.GenderResponse>>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetAllGender(string? searchTerm = null,

@@ -32,7 +32,7 @@ builder
 //builder.Services.AddControllers();
 //// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 //builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwagger();
 
 // Add Configuration DependencyInjection
 // Configurations để trước builder.Build()
@@ -42,16 +42,23 @@ builder.Services.ConfigureSqlServerRetryOptions(builder.Configuration.GetSection
 builder.Services.AddSqlConfiguration();
 builder.Services.AddConfigurationAutoMapper();
 
+// Add Authentication
+builder.Services.AddAuthentication();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    //app.ConfigureSwagger();
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
+
+// Authentication ==> Authorization
+app.UseAuthentication();
 
 app.UseAuthorization();
 
