@@ -1,4 +1,5 @@
-﻿using BadmintonSystem.Contract.Abstractions.Shared;
+﻿using Asp.Versioning;
+using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Extensions;
 using BadmintonSystem.Contract.Services.Gender;
 using BadmintonSystem.Presentation.Abstractions;
@@ -9,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BadmintonSystem.Presentation.Controllers.V1;
 
-//[ApiVersion(1)]
+[ApiVersion(1)]
 public class GendersController : ApiController
 {
     public GendersController(ISender sender)
@@ -29,14 +30,6 @@ public class GendersController : ApiController
 
         return Ok(result);
     }
-
-    //[HttpGet(Name = "GetGenders")]
-    //[ProducesResponseType(typeof(Result<IEnumerable<Response.GenderResponse>>), StatusCodes.Status200OK)]
-    //[ProducesResponseType(StatusCodes.Status404NotFound)]
-    //public async Task<IActionResult> GetAllGender()
-    //{
-    //    return Ok(await Sender.Send(new Query.GetAllGender()));
-    //}
 
     [HttpGet(Name = "GetGenders")]
     [Authorize] // Xác thực

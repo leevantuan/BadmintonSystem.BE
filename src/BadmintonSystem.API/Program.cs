@@ -3,6 +3,8 @@ using BadmintonSystem.API.Middleware;
 using BadmintonSystem.Application.DependencyInjection.Extensions;
 using BadmintonSystem.Persistence.DependencyInjection.Extensions;
 using BadmintonSystem.Persistence.DependencyInjection.Options;
+using MicroElements.Swashbuckle.FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,41 +21,60 @@ builder.Logging
 
 builder.Host.UseSerilog();
 
-// Add MediatR
+// Add Configure MediatR
 builder.Services.AddConfigureMediatR();
-builder.Services.AddConfigureMiddleware();
 
 // Add Config API
-builder
-    .Services
-    .AddControllers()
-    .AddApplicationPart(BadmintonSystem.Presentation.AssemblyReference.Assembly);
+builder.Services
+        .AddControllers()
+        .AddApplicationPart(BadmintonSystem.Presentation.AssemblyReference.Assembly);
 
-//builder.Services.AddControllers();
-//// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-//builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwagger();
+// Add Configure MiddleWare
+builder.Services.AddConfigureMiddleware();
 
-// Add Configuration DependencyInjection
 // Configurations để trước builder.Build()
 // Add Config DATABASE SQLSERVER ==>
-builder.Services.AddRepositoryBaseConfiguration();
 builder.Services.ConfigureSqlServerRetryOptions(builder.Configuration.GetSection(nameof(SqlServerRetryOptions)));
 builder.Services.AddSqlConfiguration();
+
+// Add Configure RepositoryBase
+builder.Services.AddRepositoryBaseConfiguration();
+
+// Add Configure AutoMapper
 builder.Services.AddConfigurationAutoMapper();
 
+// Add SWagger
+builder.Services
+        .AddSwaggerGenNewtonsoftSupport()
+        .AddFluentValidationRulesToSwagger()
+        .AddEndpointsApiExplorer()
+        .AddSwagger();
+
+builder.Services.AddControllers();
+
+// Add config Swagger API Versioning
+builder.Services
+    .AddApiVersioning(options => options.ReportApiVersions = true)
+    .AddApiExplorer(options =>
+    {
+        options.GroupNameFormat = "'v'VVV";
+        options.SubstituteApiVersionInUrl = true;
+    });
+
 // Add Authentication
-builder.Services.AddAuthentication();
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme; // Default = " Cookies
+    options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme; // Default = " Cookies
+}).AddCookie(options =>
+{
+    options.LoginPath = "/api/authen/unauthorized"; // If not has cookies then navigate to Link
+});
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    //app.ConfigureSwagger();
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+// Middleware
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseHttpsRedirection();
 
@@ -64,13 +85,10 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-// Middleware
-app.UseMiddleware<ExceptionHandlingMiddleware>();
-
-//app.Run();
 // Run Version
-//if (builder.Environment.IsDevelopment() || builder.Environment.IsStaging())
-//    app.ConfigureSwagger();
+// Configure the HTTP request pipeline.
+if (builder.Environment.IsDevelopment() || builder.Environment.IsStaging())
+    app.ConfigureSwagger();
 
 // Using Log of Serilog
 try
@@ -89,5 +107,5 @@ finally
     await app.DisposeAsync();
 }
 
-public partial class Program { }
-
+public partial class Program
+{ }
