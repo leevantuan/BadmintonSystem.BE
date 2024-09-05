@@ -9,7 +9,7 @@ public class ServiceProfile : Profile
     public ServiceProfile()
     {
         CreateMap<Gender, Response.GenderResponse>().ReverseMap();
-        CreateMap<Gender, Request>().ReverseMap();
+        CreateMap<Gender, Request.GenderRequest>().ReverseMap();
         CreateMap<PagedResult<Gender>, PagedResult<Response.GenderResponse>>().ReverseMap();
     }
 }
