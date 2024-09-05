@@ -1,5 +1,6 @@
 ﻿using BadmintonSystem.API.DependencyInjection.Options;
 using Microsoft.Extensions.Options;
+using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using Swashbuckle.AspNetCore.SwaggerUI;
 
@@ -10,32 +11,35 @@ public static class SwaggerExtensions
     public static void AddSwagger(this IServiceCollection services)
     {
         // Add Sawagger Gen in Program to here
-        services.AddSwaggerGen();
-        //services.AddSwaggerGen(c =>
-        //{
-        //    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Badminton", Version = "v1" });
-        //    c.AddSecurityDefinition("ApiKey", new OpenApiSecurityScheme
-        //    {
-        //        Description = "Input your API key",
-        //        In = ParameterLocation.Header,
-        //        Name = "Authorization",
-        //        Type = SecuritySchemeType.ApiKey
-        //    });
-        //    c.AddSecurityRequirement(new OpenApiSecurityRequirement
-        //    {
-        //        {
-        //            new OpenApiSecurityScheme
-        //            {
-        //                Reference = new OpenApiReference
-        //                {
-        //                    Type = ReferenceType.SecurityScheme,
-        //                    Id = "ApiKey"
-        //                }
-        //            },
-        //            new List<string>()
-        //        }
-        //    });
-        //});
+        //services.AddSwaggerGen();
+        services.AddSwaggerGen(c =>
+        {
+            // Loop qua tất cả các version
+            // this here takes version
+            c.SwaggerDoc($"Swagger", new OpenApiInfo { Title = "Badminton System Manger" });
+
+            c.AddSecurityDefinition("ApiKey", new OpenApiSecurityScheme
+            {
+                Description = "Input your API key",
+                In = ParameterLocation.Header,
+                Name = "Authorization",
+                Type = SecuritySchemeType.ApiKey
+            });
+            c.AddSecurityRequirement(new OpenApiSecurityRequirement
+            {
+                {
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "ApiKey"
+                        }
+                    },
+                    new List<string>()
+                }
+            });
+        });
 
         #region ========================= SWAGGER GEN "Bearer" ====================
 
@@ -84,6 +88,7 @@ public static class SwaggerExtensions
             // Loop qua tất cả các version
             foreach (var version in app.DescribeApiVersions().Select(version => version.GroupName))
                 options.SwaggerEndpoint($"/swagger/{version}/swagger.json", version); // Tự động Add các version
+
 
             options.DisplayRequestDuration();
             options.EnableTryItOutByDefault();
