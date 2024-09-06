@@ -13,5 +13,6 @@ public class Result<TValue> : Result // Result = Chứa Message Thành Công Hay
         ? _value!
         : throw new InvalidOperationException("The value of a failure result can not be accessed.");
 
+    // Hàm chuyển đổi ngầm định từ T sang Result<T>
     public static implicit operator Result<TValue>(TValue? value) => Create(value);
 }

@@ -5,6 +5,7 @@ using BadmintonSystem.Persistence.DependencyInjection.Extensions;
 using BadmintonSystem.Persistence.DependencyInjection.Options;
 using MicroElements.Swashbuckle.FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -64,11 +65,65 @@ builder.Services
 // Add Authentication
 builder.Services.AddAuthentication(options =>
 {
-    options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme; // Default = " Cookies
-    options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme; // Default = " Cookies
+    // Có hoặc không
+    // AddCookie( "Cookies", options => {})
+    // If has from 2 AddCookies should use it
+    // AddCoookie( "Cookies_2", options => {})
+    // options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme; // Default = " Cookies
+    // options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme; // Default = " Cookies
+
+    // If use 2 AddCoookies
+    // If want use thì bỏ cmt cái đó
+    // options.DefaultAuthenticateScheme = "Cookies_2"; // Default = " Cookies
+    // options.DefaultChallengeScheme = "Cookies_2"; // Default = " Cookies
 }).AddCookie(options =>
 {
+    options.Cookie = new CookieBuilder()
+    {
+        // Setup for cookies Name, Domain,
+        // Domain == muốn lưu cookies ở đâu Ex: Google, ...
+        Name = "TestCookies",
+    };
     options.LoginPath = "/api/authen/unauthorized"; // If not has cookies then navigate to Link
+    options.LogoutPath = "/api/authen/logout"; // If not has cookies then navigate to Link
+    options.AccessDeniedPath = "/api/authen/forbidden"; // If not has cookies then navigate to Link
+
+    // Tạo ra lúc login == Principal
+    // Vào đây kiểm tra xem có những thông tin giống ở Principal lúc login hay không
+    // Có đung là User không
+    // ==> tiếp theo xuống "Cookies_2"
+    options.Events.OnValidatePrincipal = (context) =>
+    {
+        return Task.CompletedTask;
+    };
+}).AddCookie("Cookies_2", options =>
+{
+    options.Cookie = new CookieBuilder()
+    {
+        // Setup for cookies Name, Domain,
+        // Domain == muốn lưu cookies ở đâu Ex: Google, ...
+        Name = "TestCookies_V2",
+    };
+    options.LoginPath = "/api/authen/unauthorizedV2"; // If not has cookies then navigate to Link
+
+    options.Events.OnValidatePrincipal = (context) =>
+    {
+        return Task.CompletedTask;
+    };
+});
+
+// If not use
+// options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme and
+// options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme
+// Use Authorization ==> Auto run 2
+builder.Services.AddAuthorization(options =>
+{
+    var defaultAuthorizationPolicayBuilder = new AuthorizationPolicyBuilder(
+        CookieAuthenticationDefaults.AuthenticationScheme,
+        "Cookies_2");
+
+    defaultAuthorizationPolicayBuilder = defaultAuthorizationPolicayBuilder.RequireAuthenticatedUser();
+    options.DefaultPolicy = defaultAuthorizationPolicayBuilder.Build();
 });
 
 var app = builder.Build();

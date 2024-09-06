@@ -24,6 +24,6 @@ public sealed class GetByIdGenderQueryHandler : IQueryHandler<Query.GetGenderByI
         var gender = await _genderRepository.FindByIdAsync(request.Id) ??
             throw new GenderException.GenderNotFoundException(request.Id);
 
-        return Result<Response.GenderResponse>.Success(_mapper.Map<Response.GenderResponse>(gender));
+        return _mapper.Map<Response.GenderResponse>(gender);
     }
 }
