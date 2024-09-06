@@ -3,8 +3,8 @@ using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Extensions;
 using BadmintonSystem.Contract.Services.Gender;
 using BadmintonSystem.Presentation.Abstractions;
+using BadmintonSystem.Presentation.Attributes;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -31,8 +31,9 @@ public class GendersController : ApiController
         return Ok(result);
     }
 
-    [HttpGet(Name = "GetGenders")]
-    [Authorize] // Xác thực
+    // ================================= Test Authorize =====================================
+    [HttpGet("GetGenders")]
+    [BadmintonSystemAuthorizeAttribute("User", "Allowed")]
     [ProducesResponseType(typeof(Result<IEnumerable<Response.GenderResponse>>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetAllGender(string? searchTerm = null,
@@ -45,7 +46,51 @@ public class GendersController : ApiController
         return Ok(await Sender.Send(new Query.GetAllGender(searchTerm, sortColumn, SortOrderExtension.ConvertStringToSortOrder(sortOrder), SortOrderExtension.ConvertStringToSortOrderV2(sortColumnAndOrder), pageIndex, pageSize)));
     }
 
+    [HttpGet("GetGenders-Admin")]
+    [BadmintonSystemAuthorizeAttribute("Admin", "Allowed")]
+    [ProducesResponseType(typeof(Result<IEnumerable<Response.GenderResponse>>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetAllGenderAdmin(string? searchTerm = null,
+                                                  string? sortColumn = null,
+                                                  string? sortOrder = null,
+                                                  string? sortColumnAndOrder = null,
+                                                  int pageIndex = 1,
+                                                  int pageSize = 10)
+    {
+        return Ok(await Sender.Send(new Query.GetAllGender(searchTerm, sortColumn, SortOrderExtension.ConvertStringToSortOrder(sortOrder), SortOrderExtension.ConvertStringToSortOrderV2(sortColumnAndOrder), pageIndex, pageSize)));
+    }
+
+    [HttpGet("GetGenders-Guest")]
+    [BadmintonSystemAuthorizeAttribute("Guest", "Allowed")]
+    [ProducesResponseType(typeof(Result<IEnumerable<Response.GenderResponse>>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetAllGenderGuest(string? searchTerm = null,
+                                                  string? sortColumn = null,
+                                                  string? sortOrder = null,
+                                                  string? sortColumnAndOrder = null,
+                                                  int pageIndex = 1,
+                                                  int pageSize = 10)
+    {
+        return Ok(await Sender.Send(new Query.GetAllGender(searchTerm, sortColumn, SortOrderExtension.ConvertStringToSortOrder(sortOrder), SortOrderExtension.ConvertStringToSortOrderV2(sortColumnAndOrder), pageIndex, pageSize)));
+    }
+
+    [HttpGet("GetGenders-Manager")]
+    [BadmintonSystemAuthorizeAttribute("Manager", "Allowed")]
+    [ProducesResponseType(typeof(Result<IEnumerable<Response.GenderResponse>>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetAllGenderManager(string? searchTerm = null,
+                                                  string? sortColumn = null,
+                                                  string? sortOrder = null,
+                                                  string? sortColumnAndOrder = null,
+                                                  int pageIndex = 1,
+                                                  int pageSize = 10)
+    {
+        return Ok(await Sender.Send(new Query.GetAllGender(searchTerm, sortColumn, SortOrderExtension.ConvertStringToSortOrder(sortOrder), SortOrderExtension.ConvertStringToSortOrderV2(sortColumnAndOrder), pageIndex, pageSize)));
+    }
+
+    // ================================= Test Authorize =====================================
     [HttpGet("{genderId}")]
+    //[BadmintonSystemAuthorizeAttribute("Admin", "Allowed")]
     [ProducesResponseType(typeof(Result<Response.GenderResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetByIdGender(Guid genderId)

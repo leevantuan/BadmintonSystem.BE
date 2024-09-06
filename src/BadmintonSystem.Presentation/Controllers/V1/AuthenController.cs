@@ -10,9 +10,9 @@ using Microsoft.AspNetCore.Mvc;
 namespace BadmintonSystem.Presentation.Controllers.V1;
 
 [ApiVersion(1)]
-public class AuthenControllers : ApiController
+public class AuthenController : ApiController
 {
-    public AuthenControllers(ISender sender)
+    public AuthenController(ISender sender)
         : base(sender)
     {
     }
@@ -30,9 +30,9 @@ public class AuthenControllers : ApiController
     }
 
     [HttpGet("forbidden")]
-    public IActionResult GetForbidden()
+    public HttpResponseMessage GetForbidden()
     {
-        return Forbid();
+        return new HttpResponseMessage(System.Net.HttpStatusCode.Forbidden);
     }
 
     [HttpPost("login-cookies")]
@@ -41,11 +41,17 @@ public class AuthenControllers : ApiController
         // Handle check user
         // Get Role
         // List Permission
+        // Hash data test Authorize
+        string roleName = string.Empty;
+
+        roleName = request.UserName.EndsWith("Admin") ? "Admin" :
+                   request.UserName.EndsWith("Manager") ? "Manager" :
+                   "Guest";
 
         var claims = new List<Claim>
         {
             new Claim(ClaimTypes.Name, request.UserName),
-            new Claim(ClaimTypes.Role, "Guest"),
+            new Claim(ClaimTypes.Role, roleName), // truyền roleName vào
             new Claim("Fullname", "Le Van Tuan"),
         };
 
