@@ -54,7 +54,7 @@ public class ArchitectureTests
         {
             InfrastructureNamespace,
             PresentationNamespace,
-            PersistenceNamespace,
+            //PersistenceNamespace, // Using RawSQL
             ApiNamespace
         };
 
@@ -220,11 +220,12 @@ public class ArchitectureTests
     {
         var assembly = Application.AssemblyReference.Assembly;
 
-        var testResult = Types.InAssembly(assembly)
-                        .That() // Lấy các cái có trong nó ra
-                        .ImplementInterface(typeof(IQueryHandler<,>)) // Lấy những cái Implement được kế thừa từ ICommandHandler
-                        .Should().NotHaveNameEndingWith("QueryHandler") // Check string cuối phải là CommandHandler
-                        .GetResult();
+        var testResult = Types.InAssembly(assembly) // Check all in assembly
+                            .That() // Confirm type check
+                            .ImplementInterface(typeof(IQueryHandler<,>)) // This is filter, If it using Generic Interface "ICommandHandler"
+                            .Should()
+                            .HaveNameEndingWith("QueryHandler") // Name End must have "CommandHandler"
+                            .GetResult();
 
         testResult.IsSuccessful.Should().BeTrue();
     }

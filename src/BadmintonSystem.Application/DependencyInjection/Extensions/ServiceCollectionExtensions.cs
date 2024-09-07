@@ -11,6 +11,7 @@ public static class ServiceCollectionExtensions
         => services.AddMediatR(cfg => // Add mediatR
         cfg.RegisterServicesFromAssembly(AssemblyReference.Assembly)) // Register Assembly Application => AssemblyReference.Assembly in Application
         .AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehavior<,>))
+        .AddTransient(typeof(IPipelineBehavior<,>), typeof(TransactionPipelineBehavior<,>))
         .AddValidatorsFromAssembly(Contract.AssemblyReference.Assembly, includeInternalTypes: true); // Add Assembly là đã add được rule cho nó , includeInternalTypes == true, Default = false
 
     public static IServiceCollection AddConfigurationAutoMapper(this IServiceCollection services)
