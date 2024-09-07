@@ -25,8 +25,9 @@ public class GendersController : ApiController
     {
         var result = await Sender.Send(CreateGender);
 
-        //if (result.IsFailure)
-        //    return HandlerFailure(result);
+        // Custom Result Failure
+        if (result.IsFailure)
+            return HandlerFailure(result);
 
         return Ok(result);
     }
