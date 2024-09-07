@@ -11,6 +11,15 @@ using Microsoft.EntityFrameworkCore;
 namespace BadmintonSystem.Application.UseCases.V1.Commands;
 public sealed class CreateGenderCommandHandler : ICommandHandler<Command.CreateGenderCommand>
 {
+    // Step 3: Call RepositoryBase in Persistence to get Database
+    // Before handler logic
+    // ==> PipelineBehavior == [Middleware wrap]
+    // Performance == đo request or response mất bao lâu
+    // Tracing ==> log có thành công hay không - mất bao nhiêu lâu
+    // Validation Default && Validation ==>  Check Rule
+    // If validator have error ==> Middleware ==> GetErrors()
+    // Application.Exceptions.ValidationException
+    // If not error ==> Handler
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
     private readonly IRepositoryBase<Gender, Guid> _genderRepository;

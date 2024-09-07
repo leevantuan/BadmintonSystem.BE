@@ -36,6 +36,7 @@ public sealed class TransactionPipelineBehavior<TRequest, TResponse>
     public async Task<TResponse> Handle(TRequest request,
         RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
     {
+        // Check is Command then execute
         if (!IsCommand()) // In case TRequest is QueryRequest just ignore
             return await next();
 
@@ -79,6 +80,7 @@ public sealed class TransactionPipelineBehavior<TRequest, TResponse>
 
     }
 
+    // Check Ending có Command
     private bool IsCommand()
         => typeof(TRequest).Name.EndsWith("Command");
 }
