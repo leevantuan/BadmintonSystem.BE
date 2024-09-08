@@ -1,6 +1,7 @@
 ﻿using BadmintonSystem.API.DependencyInjection.Extensions;
 using BadmintonSystem.API.Middleware;
 using BadmintonSystem.Application.DependencyInjection.Extensions;
+using BadmintonSystem.Infrastructure.Dapper.DependencyInjection.Extensions;
 using BadmintonSystem.Persistence.DependencyInjection.Extensions;
 using BadmintonSystem.Persistence.DependencyInjection.Options;
 using MicroElements.Swashbuckle.FluentValidation.AspNetCore;
@@ -39,6 +40,9 @@ builder.Services.AddSqlConfiguration();
 
 // Add Configure RepositoryBase
 builder.Services.AddRepositoryBaseConfiguration();
+
+// Add Config Dapper
+builder.Services.AddInfrastructureDapper();
 
 // Add Configure AutoMapper
 builder.Services.AddConfigurationAutoMapper();
