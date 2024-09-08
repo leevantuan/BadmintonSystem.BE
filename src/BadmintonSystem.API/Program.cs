@@ -4,7 +4,7 @@ using BadmintonSystem.Application.DependencyInjection.Extensions;
 using BadmintonSystem.Infrastructure.Dapper.DependencyInjection.Extensions;
 using BadmintonSystem.Persistence.DependencyInjection.Extensions;
 using BadmintonSystem.Persistence.DependencyInjection.Options;
-using BadmintonSystem.Presentation.APIs.Genders;
+using Carter;
 using MicroElements.Swashbuckle.FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Serilog;
@@ -44,6 +44,9 @@ builder.Services.AddRepositoryBaseConfiguration();
 
 // Add Config Dapper
 builder.Services.AddInfrastructureDapper();
+
+// Add config Carter
+builder.Services.AddCarter();
 
 // Add Configure AutoMapper
 builder.Services.AddConfigurationAutoMapper();
@@ -142,8 +145,14 @@ var app = builder.Build();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 // Add API Endpoint " Minimal API "
-// V1
-app.NewVersionedApi("Minimal-API-Gender").MapGenderApiV1().MapGenderApiV2();
+// "1"
+// If using Carter then cmt, just using
+//app.NewVersionedApi("Minimal-API-Gender").MapGenderApiV1().MapGenderApiV2();
+
+// Add API With Carter
+// Map all những cái nào kế thừa : ICarterModule
+// Không cần phải use "1" của Minimal API
+app.MapCarter();
 
 app.UseHttpsRedirection();
 

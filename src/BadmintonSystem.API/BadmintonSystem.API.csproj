@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -16,6 +16,13 @@
     <PackageReference Include="Serilog.AspNetCore" Version="8.0.2" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.7.3" />
     <PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="6.7.3" />
+
+     <!-- Chỉ định phiên bản cụ thể cho Microsoft.CodeAnalysis.Common và các package liên quan -->
+     <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="4.11.0" />
+     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.11.0" />
+
+     <PackageReference Include="Carter" Version="8.2.1" />
+       
   </ItemGroup>
 
   <ItemGroup>
