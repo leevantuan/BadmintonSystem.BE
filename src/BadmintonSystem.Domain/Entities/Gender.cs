@@ -10,16 +10,19 @@ public class Gender : AuditableEntity<Guid>
 
     // Tạo ra Entities
     // Command call Gender.CreateGender(request here)
-    public static Gender CreateGender(string name)
+    public static Gender CreateGender(Guid id, string name)
     {
-        return new Gender(name);
+        return new Gender(id, name);
     }
 
     // Can Config format class request
-    private Gender(string name)
+    // Private ==> Public để test
+    // Unprocessed
+    public Gender(Guid id, string name)
     {
         // Handler exception here
         // Example validator
+        Id = id;
         Name = name;
     }
 
