@@ -46,6 +46,8 @@ vì Query chỉ Get data nên các command phải theo rule có name ending 'Com
 
 # Command-Query-Event
 
+Send Mail
+
 ICommand(V+N) : IRequest => CommandBus (ISender) => ICommandHandler : IRequestHandler
 IQuery(V+N) : IRequest   => QueryBus (ISender) => IQueryHandler : IRequestHandler
 

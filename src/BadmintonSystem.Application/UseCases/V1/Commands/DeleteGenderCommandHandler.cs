@@ -5,18 +5,22 @@ using BadmintonSystem.Domain.Abstractions;
 using BadmintonSystem.Domain.Abstractions.Repositories;
 using BadmintonSystem.Domain.Entities;
 using BadmintonSystem.Domain.Exceptions;
+using MediatR;
 
 namespace BadmintonSystem.Application.UseCases.V1.Commands;
 public sealed class DeleteGenderCommandHandler : ICommandHandler<Command.DeleteGenderCommand>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IRepositoryBase<Gender, Guid> _genderRepository;
+    private readonly IPublisher _publisher; // Use Send Email of MediatR and Domain Event
 
     public DeleteGenderCommandHandler(IUnitOfWork unitOfWork,
-                                      IRepositoryBase<Gender, Guid> genderRepository)
+                                      IRepositoryBase<Gender, Guid> genderRepository,
+                                      IPublisher publisher)
     {
         _unitOfWork = unitOfWork;
         _genderRepository = genderRepository;
+        _publisher = publisher;
     }
 
     public async Task<Result> Handle(Command.DeleteGenderCommand request, CancellationToken cancellationToken)
@@ -28,6 +32,10 @@ public sealed class DeleteGenderCommandHandler : ICommandHandler<Command.DeleteG
         _genderRepository.Remove(gender);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        // ==> Notification Send Mail Created
+        // Should asynchronous
+        await _publisher.Publish(new DomainEvent.GenderDeleted(request.Id), cancellationToken);
 
         return Result.Success();
     }
