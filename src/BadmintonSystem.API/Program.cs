@@ -4,6 +4,7 @@ using BadmintonSystem.Application.DependencyInjection.Extensions;
 using BadmintonSystem.Infrastructure.Dapper.DependencyInjection.Extensions;
 using BadmintonSystem.Persistence.DependencyInjection.Extensions;
 using BadmintonSystem.Persistence.DependencyInjection.Options;
+using BadmintonSystem.Presentation.APIs.Genders;
 using MicroElements.Swashbuckle.FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Serilog;
@@ -139,6 +140,10 @@ var app = builder.Build();
 
 // Middleware
 app.UseMiddleware<ExceptionHandlingMiddleware>();
+
+// Add API Endpoint " Minimal API "
+// V1
+app.NewVersionedApi("GendersController-minimal-show-DateOnly-swagger").MapGenderApiV1();
 
 app.UseHttpsRedirection();
 
