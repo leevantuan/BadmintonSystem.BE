@@ -28,6 +28,18 @@ public static class GenderApi
         return builder;
     }
 
+    // Config V2
+    public static IVersionedEndpointRouteBuilder MapGenderApiV2(this IVersionedEndpointRouteBuilder builder)
+    {
+        var group = builder.MapGroup(BaseUrl).HasApiVersion(2);
+
+        // Unprocessed Func V2
+        // Using get V1 to do demo
+        group.MapGet(string.Empty, GetAllGender);
+
+        return builder;
+    }
+
     public static async Task<IResult> CreateGender(ISender sender, [FromBody] Command.CreateGenderCommand CreateGender)
     {
         // Step 2: If Middleware return next() ==>

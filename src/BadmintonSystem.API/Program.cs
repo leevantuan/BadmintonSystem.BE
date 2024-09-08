@@ -143,7 +143,7 @@ app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 // Add API Endpoint " Minimal API "
 // V1
-app.NewVersionedApi("GendersController-minimal-show-DateOnly-swagger").MapGenderApiV1();
+app.NewVersionedApi("Minimal-API-Gender").MapGenderApiV1().MapGenderApiV2();
 
 app.UseHttpsRedirection();
 
