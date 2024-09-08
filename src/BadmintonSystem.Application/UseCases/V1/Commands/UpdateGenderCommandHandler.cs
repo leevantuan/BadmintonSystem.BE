@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using BadmintonSystem.Contract.Abstractions.Messages;
 using BadmintonSystem.Contract.Abstractions.Shared;
-using BadmintonSystem.Contract.Services.Gender;
+using BadmintonSystem.Contract.Services.V1.Gender;
 using BadmintonSystem.Domain.Abstractions;
 using BadmintonSystem.Domain.Abstractions.Repositories;
 using BadmintonSystem.Domain.Entities;
@@ -37,7 +37,9 @@ public sealed class UpdateGenderCommandHandler : ICommandHandler<Command.UpdateG
             throw new GenderException.GenderBadRequestException("Is Name Exists!");
 
         // Map
-        gender.Name = request.Name;
+        // Domain Driven Design
+        // Unprocessed
+        //gender.Name = request.Name;
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 

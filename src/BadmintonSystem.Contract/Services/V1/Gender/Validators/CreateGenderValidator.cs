@@ -1,6 +1,7 @@
-﻿using FluentValidation;
+﻿using BadmintonSystem.Contract.Services.V1.Gender;
+using FluentValidation;
 
-namespace BadmintonSystem.Contract.Services.Gender.Validators;
+namespace BadmintonSystem.Contract.Services.V1.Gender.Validators;
 public class CreateGenderValidator : AbstractValidator<Command.CreateGenderCommand>
 {
     public CreateGenderValidator()

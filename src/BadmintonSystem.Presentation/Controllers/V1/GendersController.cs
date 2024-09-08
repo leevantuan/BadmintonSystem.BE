@@ -1,7 +1,7 @@
 ﻿using Asp.Versioning;
 using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Extensions;
-using BadmintonSystem.Contract.Services.Gender;
+using BadmintonSystem.Contract.Services.V1.Gender;
 using BadmintonSystem.Presentation.Abstractions;
 using BadmintonSystem.Presentation.Attributes;
 using MediatR;

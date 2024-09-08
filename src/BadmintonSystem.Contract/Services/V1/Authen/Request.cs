@@ -1,4 +1,4 @@
-﻿namespace BadmintonSystem.Contract.Services.Authen;
+﻿namespace BadmintonSystem.Contract.Services.V1.Authen;
 public static class Request
 {
     public record LoginUserRequest

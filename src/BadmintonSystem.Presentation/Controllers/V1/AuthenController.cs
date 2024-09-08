@@ -1,6 +1,6 @@
 ﻿using System.Security.Claims;
 using Asp.Versioning;
-using BadmintonSystem.Contract.Services.Authen;
+using BadmintonSystem.Contract.Services.V1.Authen;
 using BadmintonSystem.Presentation.Abstractions;
 using MediatR;
 using Microsoft.AspNetCore.Authentication;

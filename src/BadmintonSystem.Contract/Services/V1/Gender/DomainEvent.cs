@@ -1,6 +1,6 @@
 ﻿using BadmintonSystem.Contract.Abstractions.Messages;
 
-namespace BadmintonSystem.Contract.Services.Gender;
+namespace BadmintonSystem.Contract.Services.V1.Gender;
 public static class DomainEvent
 {
     // Naming = Nouns + V+ed

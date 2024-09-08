@@ -1,5 +1,5 @@
 ﻿using BadmintonSystem.Contract.Abstractions.Messages;
-using BadmintonSystem.Contract.Services.Gender;
+using BadmintonSystem.Contract.Services.V1.Gender;
 
 namespace BadmintonSystem.Application.UseCases.V1.Events;
 public class SendEmailWhenGenderChangedEventHandler

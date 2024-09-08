@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using BadmintonSystem.Contract.Abstractions.Shared;
-using BadmintonSystem.Contract.Services.Gender;
+using BadmintonSystem.Contract.Services.V1.Gender;
 using BadmintonSystem.Domain.Entities;
 
 namespace BadmintonSystem.Application.Mapper;

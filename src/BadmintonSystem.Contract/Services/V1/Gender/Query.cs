@@ -2,7 +2,7 @@
 using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Enumerations;
 
-namespace BadmintonSystem.Contract.Services.Gender;
+namespace BadmintonSystem.Contract.Services.V1.Gender;
 public static class Query
 {
     public record GetGenderByIdQuery(Guid Id) : IQuery<Response.GenderResponse>;
