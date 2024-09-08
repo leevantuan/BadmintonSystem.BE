@@ -1,6 +1,6 @@
-﻿using BadmintonSystem.Contract.Abstractions.Shared;
-using BadmintonSystem.Contract.Extensions;
+﻿using BadmintonSystem.Contract.Extensions;
 using BadmintonSystem.Contract.Services.V1.Gender;
+using BadmintonSystem.Presentation.Abstractions;
 using Carter;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 
 namespace BadmintonSystem.Presentation.APIs.Genders;
-public class GenderCarterApi : ICarterModule
+public class GenderCarterApi : ApiEndpoint, ICarterModule
 {
     // private const string BaseUrl = $"/api/minimal/v{version:apiVersion}/genders"; // This is tess=t minimal
     private const string BaseUrl = "/api/v{version:apiVersion}/genders";
@@ -42,8 +42,8 @@ public class GenderCarterApi : ICarterModule
         var result = await sender.Send(CreateGender);
 
         // Custom Result Failure
-        //if (result.IsFailure)
-        //    return HandlerFailure(result);
+        if (result.IsFailure)
+            return HandlerFailure(result);
 
         return Results.Ok(result);
     }
@@ -74,36 +74,5 @@ public class GenderCarterApi : ICarterModule
         var updateProductCommand = new Command.UpdateGenderCommand(genderId, updateProduct.Name);
         return Results.Ok(await sender.Send(updateProductCommand));
     }
-
-    protected IResult HandlerFailure(Result result) =>
-       result switch
-       {
-           // If Fail == True && IsSuccess == True ==> Throw
-           // Custom Result Failure
-           { IsSuccess: true } => throw new InvalidOperationException(),
-           IValidationResult validationResult =>
-               Results.BadRequest(
-                   CreateProblemDetails(
-                       "Validation Error", StatusCodes.Status400BadRequest,
-                       result.Error,
-                       validationResult.Errors)),
-           _ =>
-               Results.BadRequest(
-                   CreateProblemDetails(
-                       "Bab Request", StatusCodes.Status400BadRequest,
-                       result.Error))
-       };
-
-    private static ProblemDetails CreateProblemDetails(string title, int status,
-        Error error,
-        Error[]? errors = null) =>
-        new ProblemDetails()
-        {
-            Title = title,
-            Type = error.Code,
-            Detail = error.Message,
-            Status = status,
-            Extensions = { { nameof(errors), errors } }
-        };
 }
 
