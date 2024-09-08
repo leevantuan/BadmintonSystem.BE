@@ -37,7 +37,7 @@ public class GendersController : ApiController
 
     // ================================= Test Authorize =====================================
     [HttpGet("GetGenders")]
-    [BadmintonSystemAuthorizeAttribute("User", "Allowed")]
+    //[BadmintonSystemAuthorizeAttribute("User", "Allowed")]
     [ProducesResponseType(typeof(Result<IEnumerable<Response.GenderResponse>>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetAllGender(string? searchTerm = null,

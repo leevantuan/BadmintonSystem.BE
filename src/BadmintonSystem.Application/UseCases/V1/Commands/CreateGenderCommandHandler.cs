@@ -42,7 +42,7 @@ public sealed class CreateGenderCommandHandler : ICommandHandler<Command.CreateG
         // Is Name Exists
         var isNameExists = await _genderRepository.FindAll(x => x.Name.ToLower().Trim().Equals(request.Data.Name.ToLower().Trim())).ToListAsync();
         //var isNameExists = await _genderRepository.FindSingleAsync(x => x.Name.ToLower().Trim().Equals(request.Data.Name.ToLower().Trim()));
-        if (isNameExists != null)
+        if (isNameExists.Any())
             throw new GenderException.GenderBadRequestException("Name Exists!");
 
         // Map data into Entities
