@@ -7,8 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="DependencyInjection\Extensions\" />
-    <Folder Include="DependencyInjection\Options\" />
+    <Folder Include="Caching\" />
   </ItemGroup>
 
   <ItemGroup>

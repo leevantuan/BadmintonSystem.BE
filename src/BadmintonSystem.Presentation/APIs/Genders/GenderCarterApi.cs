@@ -28,7 +28,7 @@ public class GenderCarterApi : ApiEndpoint, ICarterModule
 
         // V2
         var groupV2 = app.NewVersionedApi("CARTER-Gender")
-            .MapGroup(BaseUrl).HasApiVersion(2);
+            .MapGroup(BaseUrl).HasApiVersion(2).RequireAuthorization();
 
         groupV2.MapGet(string.Empty, GetAllGender);
 
