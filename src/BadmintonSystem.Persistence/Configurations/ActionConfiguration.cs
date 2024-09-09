@@ -25,10 +25,10 @@ internal class ActionConfiguration : IEntityTypeConfiguration<Action>
 
         // Each User can have many Permission ==> Relationship
         // One - Many "User - Permission"
-        builder.HasMany(e => e.Permissions)
-            .WithOne()
-            .HasForeignKey(p => p.ActionId)
-            .IsRequired();
+        //builder.HasMany(e => e.Permissions)
+        //    .WithOne()
+        //    .HasForeignKey(p => p.ActionId)
+        //    .IsRequired();
 
         // Each User can have many ActionInFunction ==> Relationship
         // One - Many "User - ActionInFunction"

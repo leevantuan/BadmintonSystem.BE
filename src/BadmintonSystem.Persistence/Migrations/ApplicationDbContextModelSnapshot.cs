@@ -110,6 +110,7 @@ namespace BadmintonSystem.Persistence.Migrations
                         .HasColumnType("nvarchar(250)");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NormalizedName")
@@ -164,7 +165,7 @@ namespace BadmintonSystem.Persistence.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
 
-                    b.Property<int>("IsRecipient")
+                    b.Property<int?>("IsRecipient")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasDefaultValue(-1);
@@ -179,8 +180,8 @@ namespace BadmintonSystem.Persistence.Migrations
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<Guid?>("ManagerId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("ManagerId")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NormalizedEmail")
                         .HasColumnType("nvarchar(max)");
@@ -197,8 +198,8 @@ namespace BadmintonSystem.Persistence.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
-                    b.Property<Guid>("PositionId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("PositionId")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
@@ -236,7 +237,6 @@ namespace BadmintonSystem.Persistence.Migrations
                         .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("ParrentId")
-                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
@@ -253,7 +253,7 @@ namespace BadmintonSystem.Persistence.Migrations
                     b.ToTable("Functions", (string)null);
                 });
 
-            modelBuilder.Entity("BadmintonSystem.Domain.Entities.Identity.Permission", b =>
+            modelBuilder.Entity("BadmintonSystem.Domain.Entities.Identity.PermissionInRole", b =>
                 {
                     b.Property<Guid>("RoleId")
                         .HasColumnType("uniqueidentifier");
@@ -261,16 +261,32 @@ namespace BadmintonSystem.Persistence.Migrations
                     b.Property<string>("FunctionId")
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<string>("ActionId")
-                        .HasColumnType("nvarchar(50)");
+                    b.Property<int>("BinaryValue")
+                        .HasColumnType("int");
 
-                    b.HasKey("RoleId", "FunctionId", "ActionId");
-
-                    b.HasIndex("ActionId");
+                    b.HasKey("RoleId", "FunctionId");
 
                     b.HasIndex("FunctionId");
 
-                    b.ToTable("Permissions", (string)null);
+                    b.ToTable("PermissionInRoles", (string)null);
+                });
+
+            modelBuilder.Entity("BadmintonSystem.Domain.Entities.Identity.PermissionInUser", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("FunctionId")
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("BinaryValue")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserId", "FunctionId");
+
+                    b.HasIndex("FunctionId");
+
+                    b.ToTable("PermissionInUsers", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -383,23 +399,32 @@ namespace BadmintonSystem.Persistence.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("BadmintonSystem.Domain.Entities.Identity.Permission", b =>
+            modelBuilder.Entity("BadmintonSystem.Domain.Entities.Identity.PermissionInRole", b =>
                 {
-                    b.HasOne("BadmintonSystem.Domain.Entities.Identity.Action", null)
-                        .WithMany("Permissions")
-                        .HasForeignKey("ActionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("BadmintonSystem.Domain.Entities.Identity.Function", null)
-                        .WithMany("Permissions")
+                        .WithMany("PermissionInRoles")
                         .HasForeignKey("FunctionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("BadmintonSystem.Domain.Entities.Identity.AppRole", null)
-                        .WithMany("Permissions")
+                        .WithMany("PermissionInRoles")
                         .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("BadmintonSystem.Domain.Entities.Identity.PermissionInUser", b =>
+                {
+                    b.HasOne("BadmintonSystem.Domain.Entities.Identity.Function", null)
+                        .WithMany("PermissionInUsers")
+                        .HasForeignKey("FunctionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BadmintonSystem.Domain.Entities.Identity.AppUser", null)
+                        .WithMany("PermissionInUsers")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -458,15 +483,13 @@ namespace BadmintonSystem.Persistence.Migrations
             modelBuilder.Entity("BadmintonSystem.Domain.Entities.Identity.Action", b =>
                 {
                     b.Navigation("ActionInFunctions");
-
-                    b.Navigation("Permissions");
                 });
 
             modelBuilder.Entity("BadmintonSystem.Domain.Entities.Identity.AppRole", b =>
                 {
                     b.Navigation("Claims");
 
-                    b.Navigation("Permissions");
+                    b.Navigation("PermissionInRoles");
 
                     b.Navigation("UserRoles");
                 });
@@ -477,6 +500,8 @@ namespace BadmintonSystem.Persistence.Migrations
 
                     b.Navigation("Logins");
 
+                    b.Navigation("PermissionInUsers");
+
                     b.Navigation("Tokens");
 
                     b.Navigation("UserRoles");
@@ -486,7 +511,9 @@ namespace BadmintonSystem.Persistence.Migrations
                 {
                     b.Navigation("ActionInFunctions");
 
-                    b.Navigation("Permissions");
+                    b.Navigation("PermissionInRoles");
+
+                    b.Navigation("PermissionInUsers");
                 });
 #pragma warning restore 612, 618
         }

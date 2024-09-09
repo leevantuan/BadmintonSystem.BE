@@ -18,10 +18,10 @@
     <PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="6.7.3" />
 
      <!-- Chỉ định phiên bản cụ thể cho Microsoft.CodeAnalysis.Common và các package liên quan -->
-     <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="4.11.0" />
-     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.11.0" />
+     <!--<PackageReference Include="Microsoft.CodeAnalysis.Common" Version="4.11.0" />
+     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.11.0" />-->
 
-     <PackageReference Include="Carter" Version="8.2.1" />
+     <PackageReference Include="Carter" Version="8.0.0" />
        
   </ItemGroup>
 
@@ -32,6 +32,10 @@
     <ProjectReference Include="..\BadmintonSystem.Infrastructure\BadmintonSystem.Infrastructure.csproj" />
     <ProjectReference Include="..\BadmintonSystem.Persistence\BadmintonSystem.Persistence.csproj" />
     <ProjectReference Include="..\BadmintonSystem.Presentation\BadmintonSystem.Presentation.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="SonarAnalyzer.CSharp" Version="9.32.0.97167" />
   </ItemGroup>
 
 </Project>

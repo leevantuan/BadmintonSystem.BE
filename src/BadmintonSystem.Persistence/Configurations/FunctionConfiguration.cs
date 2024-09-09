@@ -26,13 +26,25 @@ internal class FunctionConfiguration : IEntityTypeConfiguration<Function>
         builder.Property(x => x.SortOrder).HasDefaultValue(null);
 
         // Each User can have many Permission
-        builder.HasMany(e => e.Permissions)
-            .WithOne()
-            .HasForeignKey(p => p.FunctionId)
-            .IsRequired();
+        //builder.HasMany(e => e.Permissions)
+        //    .WithOne()
+        //    .HasForeignKey(p => p.FunctionId)
+        //    .IsRequired();
 
         // Each User can have many ActionInFunction
         builder.HasMany(e => e.ActionInFunctions)
+            .WithOne()
+            .HasForeignKey(aif => aif.FunctionId)
+            .IsRequired();
+
+        // Each User can have many PermissionInRole
+        builder.HasMany(e => e.PermissionInRoles)
+            .WithOne()
+            .HasForeignKey(aif => aif.FunctionId)
+            .IsRequired();
+
+        // Each User can have many PermissionInUser
+        builder.HasMany(e => e.PermissionInUsers)
             .WithOne()
             .HasForeignKey(aif => aif.FunctionId)
             .IsRequired();

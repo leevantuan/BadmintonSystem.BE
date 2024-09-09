@@ -28,10 +28,11 @@ internal class AppRoleConfiguration : IEntityTypeConfiguration<AppRole>
             .HasForeignKey(ur => ur.RoleId)
             .IsRequired();
 
-        // Each User can have many Permission
-        builder.HasMany(e => e.Permissions)
+        // Each User can have many ActionInFunction ==> Relationship
+        // One - Many "User - ActionInFunction"
+        builder.HasMany(e => e.PermissionInRoles)
             .WithOne()
-            .HasForeignKey(p => p.RoleId)
+            .HasForeignKey(aif => aif.RoleId)
             .IsRequired();
     }
 }

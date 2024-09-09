@@ -39,5 +39,12 @@ internal class AppUserConfiguration : IEntityTypeConfiguration<AppUser>
             .WithOne()
             .HasForeignKey(ur => ur.UserId)
             .IsRequired();
+
+        // Each User can have many ActionInFunction ==> Relationship
+        // One - Many "User - ActionInFunction"
+        builder.HasMany(e => e.PermissionInUsers)
+            .WithOne()
+            .HasForeignKey(aif => aif.UserId)
+            .IsRequired();
     }
 }

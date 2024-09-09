@@ -20,4 +20,8 @@
     <ProjectReference Include="..\BadmintonSystem.Contract\BadmintonSystem.Contract.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Update="SonarAnalyzer.CSharp" Version="9.32.0.97167" />
+  </ItemGroup>
+
 </Project>

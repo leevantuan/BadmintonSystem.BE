@@ -6,6 +6,5 @@ public class Action
     public int? SortOrder { get; set; }
     public bool? IsActive { get; set; }
 
-    public virtual ICollection<Permission> Permissions { get; set; }
     public virtual ICollection<ActionInFunction> ActionInFunctions { get; set; }
 }

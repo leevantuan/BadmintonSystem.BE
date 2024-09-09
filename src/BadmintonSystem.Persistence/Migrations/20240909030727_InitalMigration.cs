@@ -5,7 +5,7 @@
 namespace BadmintonSystem.Persistence.Migrations;
 
 /// <inheritdoc />
-public partial class InitialMigration : Migration
+public partial class InitalMigration : Migration
 {
     /// <inheritdoc />
     protected override void Up(MigrationBuilder migrationBuilder)
@@ -29,9 +29,9 @@ public partial class InitialMigration : Migration
             columns: table => new
             {
                 Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                 Description = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: false),
                 RoleCode = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
                 NormalizedName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                 ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true)
             },
@@ -51,9 +51,9 @@ public partial class InitialMigration : Migration
                 DayOfBirth = table.Column<DateTime>(type: "datetime2", nullable: true),
                 IsDirector = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                 IsHeadOfDepartment = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
-                ManagerId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                PositionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                IsRecipient = table.Column<int>(type: "int", nullable: false, defaultValue: -1),
+                ManagerId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                PositionId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                IsRecipient = table.Column<int>(type: "int", nullable: true, defaultValue: -1),
                 UserName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                 NormalizedUserName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                 Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -81,7 +81,7 @@ public partial class InitialMigration : Migration
                 Id = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                 Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                 Url = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                ParrentId = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                ParrentId = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                 SortOrder = table.Column<int>(type: "int", nullable: true),
                 CssClass = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                 IsActive = table.Column<bool>(type: "bit", nullable: true, defaultValue: true)
@@ -89,6 +89,23 @@ public partial class InitialMigration : Migration
             constraints: table =>
             {
                 table.PrimaryKey("PK_Functions", x => x.Id);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "Gender",
+            columns: table => new
+            {
+                Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
+                DateModified = table.Column<DateTime>(type: "datetime2", nullable: false),
+                UserIdCreated = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                UserIdModified = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                DeleteFlag = table.Column<bool>(type: "bit", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_Gender", x => x.Id);
             });
 
         migrationBuilder.CreateTable(
@@ -220,30 +237,49 @@ public partial class InitialMigration : Migration
             });
 
         migrationBuilder.CreateTable(
-            name: "Permissions",
+            name: "PermissionInRoles",
             columns: table => new
             {
                 RoleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                 FunctionId = table.Column<string>(type: "nvarchar(50)", nullable: false),
-                ActionId = table.Column<string>(type: "nvarchar(50)", nullable: false)
+                BinaryValue = table.Column<int>(type: "int", nullable: false)
             },
             constraints: table =>
             {
-                table.PrimaryKey("PK_Permissions", x => new { x.RoleId, x.FunctionId, x.ActionId });
+                table.PrimaryKey("PK_PermissionInRoles", x => new { x.RoleId, x.FunctionId });
                 table.ForeignKey(
-                    name: "FK_Permissions_Actions_ActionId",
-                    column: x => x.ActionId,
-                    principalTable: "Actions",
-                    principalColumn: "Id",
-                    onDelete: ReferentialAction.Cascade);
-                table.ForeignKey(
-                    name: "FK_Permissions_AppRoles_RoleId",
+                    name: "FK_PermissionInRoles_AppRoles_RoleId",
                     column: x => x.RoleId,
                     principalTable: "AppRoles",
                     principalColumn: "Id",
                     onDelete: ReferentialAction.Cascade);
                 table.ForeignKey(
-                    name: "FK_Permissions_Functions_FunctionId",
+                    name: "FK_PermissionInRoles_Functions_FunctionId",
+                    column: x => x.FunctionId,
+                    principalTable: "Functions",
+                    principalColumn: "Id",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "PermissionInUsers",
+            columns: table => new
+            {
+                UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                FunctionId = table.Column<string>(type: "nvarchar(50)", nullable: false),
+                BinaryValue = table.Column<int>(type: "int", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_PermissionInUsers", x => new { x.UserId, x.FunctionId });
+                table.ForeignKey(
+                    name: "FK_PermissionInUsers_AppUsers_UserId",
+                    column: x => x.UserId,
+                    principalTable: "AppUsers",
+                    principalColumn: "Id",
+                    onDelete: ReferentialAction.Cascade);
+                table.ForeignKey(
+                    name: "FK_PermissionInUsers_Functions_FunctionId",
                     column: x => x.FunctionId,
                     principalTable: "Functions",
                     principalColumn: "Id",
@@ -261,13 +297,13 @@ public partial class InitialMigration : Migration
             column: "UserId");
 
         migrationBuilder.CreateIndex(
-            name: "IX_Permissions_ActionId",
-            table: "Permissions",
-            column: "ActionId");
+            name: "IX_PermissionInRoles_FunctionId",
+            table: "PermissionInRoles",
+            column: "FunctionId");
 
         migrationBuilder.CreateIndex(
-            name: "IX_Permissions_FunctionId",
-            table: "Permissions",
+            name: "IX_PermissionInUsers_FunctionId",
+            table: "PermissionInUsers",
             column: "FunctionId");
     }
 
@@ -293,16 +329,22 @@ public partial class InitialMigration : Migration
             name: "AppUserTokens");
 
         migrationBuilder.DropTable(
-            name: "Permissions");
+            name: "Gender");
 
         migrationBuilder.DropTable(
-            name: "AppUsers");
+            name: "PermissionInRoles");
+
+        migrationBuilder.DropTable(
+            name: "PermissionInUsers");
 
         migrationBuilder.DropTable(
             name: "Actions");
 
         migrationBuilder.DropTable(
             name: "AppRoles");
+
+        migrationBuilder.DropTable(
+            name: "AppUsers");
 
         migrationBuilder.DropTable(
             name: "Functions");
