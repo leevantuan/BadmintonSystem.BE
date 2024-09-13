@@ -1,7 +1,7 @@
 ﻿using BadmintonSystem.Contract.Abstractions.Messages;
-using BadmintonSystem.Contract.Services.V2.Gender;
+using BadmintonSystem.Contract.Services.V1.Gender;
 
-namespace BadmintonSystem.Application.UseCases.V2.Events;
+namespace BadmintonSystem.Application.UseCases.V1.Gender.Events;
 public class SendEmailWhenGenderChangedEventHandler
     : IDomainEventHandler<DomainEvent.GenderDeleted>,
     IDomainEventHandler<DomainEvent.GenderCreated>,

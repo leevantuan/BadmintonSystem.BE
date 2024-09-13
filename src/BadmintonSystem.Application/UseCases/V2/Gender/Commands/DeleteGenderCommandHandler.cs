@@ -1,13 +1,13 @@
 ﻿using BadmintonSystem.Contract.Abstractions.Messages;
 using BadmintonSystem.Contract.Abstractions.Shared;
-using BadmintonSystem.Contract.Services.V1.Gender;
+using BadmintonSystem.Contract.Services.V2.Gender;
 using BadmintonSystem.Domain.Abstractions;
 using BadmintonSystem.Domain.Abstractions.Repositories;
 using BadmintonSystem.Domain.Entities;
 using BadmintonSystem.Domain.Exceptions;
 using MediatR;
 
-namespace BadmintonSystem.Application.UseCases.V1.Commands;
+namespace BadmintonSystem.Application.UseCases.V2.Gender.Commands;
 public sealed class DeleteGenderCommandHandler : ICommandHandler<Command.DeleteGenderCommand>
 {
     private readonly IUnitOfWork _unitOfWork;

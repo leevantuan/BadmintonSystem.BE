@@ -4,7 +4,7 @@ using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.V2.Gender;
 using BadmintonSystem.Domain.Abstractions.Dappers;
 
-namespace BadmintonSystem.Application.UseCases.V2.Queries;
+namespace BadmintonSystem.Application.UseCases.V2.Gender.Queries;
 public sealed class GetAllGenderQueryHandler : IQueryHandler<Query.GetAllGender, List<Response.GenderResponse>>
 {
     private readonly IMapper _mapper;

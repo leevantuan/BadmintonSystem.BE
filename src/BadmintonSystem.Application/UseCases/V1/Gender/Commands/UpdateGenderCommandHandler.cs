@@ -1,14 +1,14 @@
 ﻿using AutoMapper;
 using BadmintonSystem.Contract.Abstractions.Messages;
 using BadmintonSystem.Contract.Abstractions.Shared;
-using BadmintonSystem.Contract.Services.V2.Gender;
+using BadmintonSystem.Contract.Services.V1.Gender;
 using BadmintonSystem.Domain.Abstractions;
 using BadmintonSystem.Domain.Abstractions.Repositories;
 using BadmintonSystem.Domain.Entities;
 using BadmintonSystem.Domain.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
-namespace BadmintonSystem.Application.UseCases.V2.Commands;
+namespace BadmintonSystem.Application.UseCases.V1.Gender.Commands;
 public sealed class UpdateGenderCommandHandler : ICommandHandler<Command.UpdateGenderCommand>
 {
     private readonly IMapper _mapper;

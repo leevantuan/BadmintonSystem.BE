@@ -1,31 +1,31 @@
 ﻿using BadmintonSystem.Contract.Abstractions.Messages;
-using BadmintonSystem.Contract.Services.V1.Gender;
+using BadmintonSystem.Contract.Services.V2.Gender;
 
-namespace BadmintonSystem.Application.UseCases.V1.Events;
-public class SendSMSWhenGenderChangedEventHandler
+namespace BadmintonSystem.Application.UseCases.V2.Gender.Events;
+public class SendEmailWhenGenderChangedEventHandler
     : IDomainEventHandler<DomainEvent.GenderDeleted>,
     IDomainEventHandler<DomainEvent.GenderCreated>,
     IDomainEventHandler<DomainEvent.GenderUpdated>
 {
     public async Task Handle(DomainEvent.GenderDeleted notification, CancellationToken cancellationToken)
     {
-        SendSMS();
+        SendEmail();
         await Task.Delay(1000);
     }
 
     public async Task Handle(DomainEvent.GenderUpdated notification, CancellationToken cancellationToken)
     {
-        SendSMS();
+        SendEmail();
         await Task.Delay(1000);
     }
 
     public async Task Handle(DomainEvent.GenderCreated notification, CancellationToken cancellationToken)
     {
-        SendSMS();
+        SendEmail();
         await Task.Delay(1000);
     }
 
-    private void SendSMS()
+    private void SendEmail()
     {
 
     }

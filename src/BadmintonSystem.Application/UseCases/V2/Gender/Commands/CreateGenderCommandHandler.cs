@@ -9,7 +9,7 @@ using BadmintonSystem.Domain.Exceptions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace BadmintonSystem.Application.UseCases.V2.Commands;
+namespace BadmintonSystem.Application.UseCases.V2.Gender.Commands;
 public sealed class CreateGenderCommandHandler : ICommandHandler<Command.CreateGenderCommand>
 {
     // Step 3: Call RepositoryBase in Persistence to get Database

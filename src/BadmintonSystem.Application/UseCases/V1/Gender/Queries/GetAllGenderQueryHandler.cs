@@ -8,7 +8,7 @@ using BadmintonSystem.Domain.Abstractions.Repositories;
 using BadmintonSystem.Persistence;
 using Microsoft.EntityFrameworkCore;
 
-namespace BadmintonSystem.Application.UseCases.V1.Queries;
+namespace BadmintonSystem.Application.UseCases.V1.Gender.Queries;
 public sealed class GetAllGenderQueryHandler : IQueryHandler<Query.GetAllGender, PagedResult<Response.GenderResponse>>
 {
     private readonly IMapper _mapper;
