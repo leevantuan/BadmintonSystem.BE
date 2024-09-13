@@ -3,7 +3,6 @@ using BadmintonSystem.Contract.Abstractions.Messages;
 using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.V2.Gender;
 using BadmintonSystem.Domain.Abstractions.Repositories;
-using BadmintonSystem.Domain.Entities;
 using BadmintonSystem.Domain.Exceptions;
 
 namespace BadmintonSystem.Application.UseCases.V2.Gender.Queries;
@@ -11,9 +10,9 @@ namespace BadmintonSystem.Application.UseCases.V2.Gender.Queries;
 public sealed class GetByIdGenderQueryHandler : IQueryHandler<Query.GetGenderByIdQuery, Response.GenderResponse>
 {
     private readonly IMapper _mapper;
-    private readonly IRepositoryBase<Gender, Guid> _genderRepository;
+    private readonly IRepositoryBase<Domain.Entities.Gender, Guid> _genderRepository;
 
-    public GetByIdGenderQueryHandler(IMapper mapper, IRepositoryBase<Gender, Guid> genderRepository)
+    public GetByIdGenderQueryHandler(IMapper mapper, IRepositoryBase<Domain.Entities.Gender, Guid> genderRepository)
     {
         _mapper = mapper;
         _genderRepository = genderRepository;

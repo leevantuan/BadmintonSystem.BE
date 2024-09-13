@@ -3,7 +3,6 @@ using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.V1.Gender;
 using BadmintonSystem.Domain.Abstractions;
 using BadmintonSystem.Domain.Abstractions.Repositories;
-using BadmintonSystem.Domain.Entities;
 using BadmintonSystem.Domain.Exceptions;
 using MediatR;
 
@@ -11,11 +10,11 @@ namespace BadmintonSystem.Application.UseCases.V1.Gender.Commands;
 public sealed class DeleteGenderCommandHandler : ICommandHandler<Command.DeleteGenderCommand>
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IRepositoryBase<Gender, Guid> _genderRepository;
+    private readonly IRepositoryBase<Domain.Entities.Gender, Guid> _genderRepository;
     private readonly IPublisher _publisher; // Use Send Email of MediatR and Domain Event
 
     public DeleteGenderCommandHandler(IUnitOfWork unitOfWork,
-                                      IRepositoryBase<Gender, Guid> genderRepository,
+                                      IRepositoryBase<Domain.Entities.Gender, Guid> genderRepository,
                                       IPublisher publisher)
     {
         _unitOfWork = unitOfWork;

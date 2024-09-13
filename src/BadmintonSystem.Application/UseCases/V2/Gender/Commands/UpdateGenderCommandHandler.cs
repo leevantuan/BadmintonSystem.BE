@@ -4,7 +4,6 @@ using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.V2.Gender;
 using BadmintonSystem.Domain.Abstractions;
 using BadmintonSystem.Domain.Abstractions.Repositories;
-using BadmintonSystem.Domain.Entities;
 using BadmintonSystem.Domain.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,11 +12,11 @@ public sealed class UpdateGenderCommandHandler : ICommandHandler<Command.UpdateG
 {
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IRepositoryBase<Gender, Guid> _genderRepository;
+    private readonly IRepositoryBase<Domain.Entities.Gender, Guid> _genderRepository;
 
     public UpdateGenderCommandHandler(IMapper mapper,
                                       IUnitOfWork unitOfWork,
-                                      IRepositoryBase<Gender, Guid> genderRepository)
+                                      IRepositoryBase<Domain.Entities.Gender, Guid> genderRepository)
     {
         _mapper = mapper;
         _unitOfWork = unitOfWork;

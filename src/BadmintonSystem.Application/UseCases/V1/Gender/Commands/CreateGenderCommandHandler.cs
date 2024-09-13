@@ -4,7 +4,6 @@ using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.V1.Gender;
 using BadmintonSystem.Domain.Abstractions;
 using BadmintonSystem.Domain.Abstractions.Repositories;
-using BadmintonSystem.Domain.Entities;
 using BadmintonSystem.Domain.Exceptions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -24,12 +23,12 @@ public sealed class CreateGenderCommandHandler : ICommandHandler<Command.CreateG
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
     private readonly IPublisher _publisher;
-    private readonly IRepositoryBase<Gender, Guid> _genderRepository;
+    private readonly IRepositoryBase<Domain.Entities.Gender, Guid> _genderRepository;
 
     public CreateGenderCommandHandler(IUnitOfWork unitOfWork,
                                       IMapper mapper,
                                       IPublisher publisher,
-                                      IRepositoryBase<Gender, Guid> genderRepository)
+                                      IRepositoryBase<Domain.Entities.Gender, Guid> genderRepository)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
@@ -46,7 +45,7 @@ public sealed class CreateGenderCommandHandler : ICommandHandler<Command.CreateG
             throw new GenderException.GenderBadRequestException("Name Exists!");
 
         // Map data into Entities
-        var gender = _mapper.Map<Gender>(request.Data);
+        var gender = _mapper.Map<Domain.Entities.Gender>(request.Data);
 
         _genderRepository.Add(gender);
 
