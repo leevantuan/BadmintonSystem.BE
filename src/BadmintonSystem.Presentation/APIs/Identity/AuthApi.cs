@@ -19,7 +19,7 @@ public class AuthApi : ApiEndpoint, ICarterModule
         group1.MapPost("login", AuthenticationV2);
     }
 
-    public static async Task<IResult> AuthenticationV2(ISender sender, [FromBody] Contract.Services.V2.Authen.Query.Login login)
+    public static async Task<IResult> AuthenticationV2(ISender sender, [FromBody] Contract.Services.V2.Authen.Command.Login login)
     {
         var result = await sender.Send(login);
 

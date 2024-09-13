@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 
 namespace BadmintonSystem.Contract.Services.V2.Authen.Validators;
-public class LoginValidator : AbstractValidator<Query.Login>
+public class LoginValidator : AbstractValidator<Command.Login>
 {
     public LoginValidator()
     {

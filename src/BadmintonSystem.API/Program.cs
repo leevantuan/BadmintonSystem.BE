@@ -148,6 +148,12 @@ builder.Services
 // Add Config Authentication with JWT
 builder.Services.AddJwtAuthentication(builder.Configuration);
 
+// Config http
+builder.Services.AddHttpClient("OurWebApi", client =>
+{
+    client.BaseAddress = new Uri("http://localhost:5104/");
+});
+
 var app = builder.Build();
 
 // Middleware

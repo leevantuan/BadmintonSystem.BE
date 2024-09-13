@@ -3,15 +3,15 @@ using BadmintonSystem.Application.Abstractions;
 using BadmintonSystem.Contract.Abstractions.Messages;
 using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.V2.Authen;
-using static BadmintonSystem.Contract.Services.V2.Authen.Query;
+using static BadmintonSystem.Contract.Services.V2.Authen.Command;
 using static BadmintonSystem.Contract.Services.V2.Authen.Response;
 
 namespace BadmintonSystem.Application.UseCases.V2.Identity;
-public class GetLoginQueryHandler : IQueryHandler<Login, Authenticed>
+public class GetLoginCommandHandler : ICommandHandler<Login, Authenticed>
 {
     private readonly IJwtTokenService _jwtTokenService;
 
-    public GetLoginQueryHandler(IJwtTokenService jwtTokenService)
+    public GetLoginCommandHandler(IJwtTokenService jwtTokenService)
     {
         _jwtTokenService = jwtTokenService;
     }
