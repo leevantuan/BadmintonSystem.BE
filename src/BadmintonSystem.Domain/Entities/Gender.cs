@@ -3,25 +3,15 @@
 namespace BadmintonSystem.Domain.Entities;
 public class Gender : AuditableEntity<Guid>
 {
-    // Ở ngoài không thể gọi lại sử dụng
-    // Can't set field
-    // Tự tạo ra chính nó
     public string Name { get; private set; }
 
-    // Tạo ra Entities
-    // Command call Gender.CreateGender(request here)
     public static Gender CreateGender(Guid id, string name)
     {
         return new Gender(id, name);
     }
 
-    // Can Config format class request
-    // Private ==> Public để test
-    // Unprocessed
     public Gender(Guid id, string name)
     {
-        // Handler exception here
-        // Example validator
         Id = id;
         Name = name;
     }

@@ -21,9 +21,6 @@ public class GendersController : ApiController
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Create([FromBody] Command.CreateGenderCommand CreateGender)
     {
-        // Step 2: If Middleware return next() ==>
-        // Using ISend vận chuyển các Request tới Handler " Root to Hadler "
-        // Application layer ==> UseCase ================> Application.UseCase
         var result = await Sender.Send(CreateGender);
 
         // Custom Result Failure

@@ -26,13 +26,9 @@ public sealed class GetAllGenderQueryHandler : IQueryHandler<Query.GetAllGender,
 
     public async Task<Result<PagedResult<Response.GenderResponse>>> Handle(Query.GetAllGender request, CancellationToken cancellationToken)
     {
-        // Loop, If SortColumnAndOrder have value then start if ==>
-        // Case 1: If SortOrder and SortColumnAndOrder then take SortColumnAndOrder
-        // Case 2: If SortColumnAndOrder not value and SortOrder have value
         if (request.SortColumnAndOrder.Any()) // =>>  Raw Query when order by multi column
         {
             // ======================== HANDLE PAGINATION INCOMING DATA =====================
-            // CASE Handle then incoming data
             var PageIndex = request.PageIndex <= 0 ? PagedResult<Domain.Entities.Gender>.DefaultPageIndex : request.PageIndex;
             var PageSize = request.PageSize <= 0
                 ? PagedResult<Domain.Entities.Gender>.DefaultPageSize
@@ -48,18 +44,12 @@ public sealed class GetAllGenderQueryHandler : IQueryHandler<Query.GetAllGender,
             //            ORDER BY ";
 
             // ================================= SEARCH ================================
-            // If SearchTerm != null
-            // Run command WHERE ... LIKE
-            // Also SELECT * FROM ...
-            // ORDER BY ... ==> Continue
             var gendersQuery = string.IsNullOrWhiteSpace(request.SearchTerm)
                 ? @$"SELECT * FROM {nameof(Domain.Entities.Gender)} ORDER BY "
                 : @$"SELECT * FROM {nameof(Domain.Entities.Gender)}
                         WHERE {nameof(Domain.Entities.Gender.Name)} LIKE '%{request.SearchTerm}%'
                         ORDER BY ";
 
-            // Loop in SortColumnAndOrder
-            // If Value for item == Descending then Descending also Ascending
             foreach (var item in request.SortColumnAndOrder)
                 gendersQuery += item.Value == SortOrder.Descending
                     ? $"{item.Key} DESC, "
@@ -93,7 +83,6 @@ public sealed class GetAllGenderQueryHandler : IQueryHandler<Query.GetAllGender,
             ? _genderRepository.FindAll()
             : _genderRepository.FindAll(x => x.Name.Contains(request.SearchTerm));
 
-            //: _genderRepository.FindAll(x => x.Name.Contains(request.SearchTerm) || x.Description.Contains(request.SearchTerm));
 
             gendersQuery = request.SortOrder == SortOrder.Descending
             ? gendersQuery.OrderByDescending(GetSortProperty(request))
@@ -108,7 +97,6 @@ public sealed class GetAllGenderQueryHandler : IQueryHandler<Query.GetAllGender,
         }
     }
 
-    // Func Sort for Get All Gender
     private static Expression<Func<Domain.Entities.Gender, object>> GetSortProperty(Query.GetAllGender request)
          => request.SortColumn?.ToLower() switch
          {

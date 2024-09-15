@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Routing;
 namespace BadmintonSystem.Presentation.APIs.Genders;
 public class GenderCarterApi : ApiEndpoint, ICarterModule
 {
-    // private const string BaseUrl = $"/api/minimal/v{version:apiVersion}/genders"; // This is tess=t minimal
     private const string BaseUrl = "/api/v{version:apiVersion}/genders";
 
     public void AddRoutes(IEndpointRouteBuilder app)
@@ -36,12 +35,8 @@ public class GenderCarterApi : ApiEndpoint, ICarterModule
 
     public static async Task<IResult> CreateGender(ISender sender, [FromBody] Command.CreateGenderCommand CreateGender)
     {
-        // Step 2: If Middleware return next() ==>
-        // Using ISend vận chuyển các Request tới Handler " Root to Hadler "
-        // Application layer ==> UseCase ================> Application.UseCase
         var result = await sender.Send(CreateGender);
 
-        // Custom Result Failure
         if (result.IsFailure)
             return HandlerFailure(result);
 

@@ -8,8 +8,6 @@ public abstract class ApiEndpoint
     protected static IResult HandlerFailure(Result result) =>
        result switch
        {
-           // If Fail == True && IsSuccess == True ==> Throw
-           // Custom Result Failure
            { IsSuccess: true } => throw new InvalidOperationException(),
            IValidationResult validationResult =>
                Results.BadRequest(

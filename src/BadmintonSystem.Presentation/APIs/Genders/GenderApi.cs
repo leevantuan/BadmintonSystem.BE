@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace BadmintonSystem.Presentation.APIs.Genders;
 public static class GenderApi
 {
-    // private const string BaseUrl = $"/api/minimal/v{version:apiVersion}/genders"; // This is tess=t minimal
     private const string BaseUrl = "/api/v{version:apiVersion}/genders";
 
     // Config V1
