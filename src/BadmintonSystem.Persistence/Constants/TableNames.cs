@@ -20,4 +20,7 @@ internal static class TableNames
 
     // *********** Singular Nouns ***********
     internal const string Gender = nameof(Gender);
+    internal const string Address = nameof(Address);
+    internal const string Category = nameof(Category);
+    internal const string AdditionalService = nameof(AdditionalService);
 }

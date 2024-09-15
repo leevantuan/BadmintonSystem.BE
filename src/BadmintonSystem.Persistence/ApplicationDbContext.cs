@@ -24,4 +24,7 @@ public sealed class ApplicationDbContext : IdentityDbContext<AppUser, AppRole, G
     public DbSet<PermissionInRole> PermissionInRoles { get; set; }
 
     public DbSet<Gender> Genders { get; set; }
+    public DbSet<Address> Address { get; set; }
+    public DbSet<Category> Category { get; set; }
+    public DbSet<AdditionalService> AdditionalService { get; set; }
 }
