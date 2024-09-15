@@ -16,17 +16,17 @@ public class GenderCarterApi : ApiEndpoint, ICarterModule
     public void AddRoutes(IEndpointRouteBuilder app)
     {
         // V1
-        var group = app.NewVersionedApi("CARTER-Gender")
+        var group = app.NewVersionedApi("Gender")
             .MapGroup(BaseUrl).HasApiVersion(1);
 
-        group.MapPost(string.Empty, CreateGender);
         group.MapGet(string.Empty, GetAllGender);
-        group.MapDelete("{genderId}", DeleteGender);
-        group.MapPut("{genderId}", UpdateGender);
         group.MapGet("{genderId}", GetByIdGender);
+        group.MapPost(string.Empty, CreateGender);
+        group.MapPut("{genderId}", UpdateGender);
+        group.MapDelete("{genderId}", DeleteGender);
 
         // V2
-        var groupV2 = app.NewVersionedApi("CARTER-Gender")
+        var groupV2 = app.NewVersionedApi("Gender")
             .MapGroup(BaseUrl).HasApiVersion(2).RequireAuthorization();
 
         groupV2.MapGet(string.Empty, GetAllGender);

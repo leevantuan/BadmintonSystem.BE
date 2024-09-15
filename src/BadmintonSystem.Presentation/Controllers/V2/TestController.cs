@@ -14,13 +14,13 @@ public class TestController : ApiController
     {
     }
 
-    [HttpGet(Name = "SayHi")]
-    [ProducesResponseType(typeof(Result<string>), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> SayHi()
-    {
-        var hi = "Hi Customer!";
+    //[HttpGet(Name = "SayHi")]
+    //[ProducesResponseType(typeof(Result<string>), StatusCodes.Status200OK)]
+    //[ProducesResponseType(StatusCodes.Status404NotFound)]
+    //public async Task<IActionResult> SayHi()
+    //{
+    //    var hi = "Hi Customer!";
 
-        return Ok(Result.Success(hi));
-    }
+    //    return Ok(Result.Success(hi));
+    //}
 }
