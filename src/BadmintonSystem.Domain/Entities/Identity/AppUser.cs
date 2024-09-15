@@ -25,4 +25,5 @@ public class AppUser : IdentityUser<Guid>
     public virtual ICollection<IdentityUserToken<Guid>> Tokens { get; set; }
     public virtual ICollection<IdentityUserRole<Guid>> UserRoles { get; set; }
     public virtual ICollection<PermissionInUser> PermissionInUsers { get; set; }
+    public virtual ICollection<UserAddress> UserAddress { get; set; }
 }

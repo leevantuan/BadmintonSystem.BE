@@ -13,5 +13,11 @@ internal class AddressConfiguration : IEntityTypeConfiguration<Address>
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.City).HasMaxLength(50).IsRequired();
+
+        builder.HasMany(x => x.UserAddresses)
+            .WithOne()
+            .HasForeignKey(x => x.AddressId)
+            .OnDelete(DeleteBehavior.Cascade)
+            .IsRequired();
     }
 }

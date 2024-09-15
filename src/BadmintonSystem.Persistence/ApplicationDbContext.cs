@@ -25,6 +25,8 @@ public sealed class ApplicationDbContext : IdentityDbContext<AppUser, AppRole, G
 
     public DbSet<Gender> Genders { get; set; }
     public DbSet<Address> Address { get; set; }
-    public DbSet<Category> Category { get; set; }
-    public DbSet<AdditionalService> AdditionalService { get; set; }
+    public DbSet<Category> Categories { get; set; }
+    public DbSet<AdditionalService> AdditionalServices { get; set; }
+    public DbSet<Club> Clubs { get; set; }
+    public DbSet<UserAddress> UserAddress { get; set; }
 }
