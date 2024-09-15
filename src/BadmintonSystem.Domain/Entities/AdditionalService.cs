@@ -7,8 +7,7 @@ public class AdditionalService : AuditableEntity<Guid>
     public decimal Price { get; private set; }
     public Guid? ClubId { get; private set; }
     public Guid? CategoryId { get; private set; }
-    public virtual Category? Category { get; private set; }
-    //clubs
+
     public static AdditionalService CreateAdditionalService(string name,
                                                             decimal price,
                                                             Guid clubId,

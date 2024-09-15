@@ -4,6 +4,7 @@ using BadmintonSystem.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BadmintonSystem.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240915162201_Relationship_Club")]
+    partial class Relationship_Club
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -34,8 +37,14 @@ namespace BadmintonSystem.Persistence.Migrations
                     b.Property<Guid?>("CategoryId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("CategoryId1")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid?>("ClubId")
                         .IsRequired()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("ClubId1")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("DateCreated")
@@ -65,7 +74,11 @@ namespace BadmintonSystem.Persistence.Migrations
 
                     b.HasIndex("CategoryId");
 
+                    b.HasIndex("CategoryId1");
+
                     b.HasIndex("ClubId");
+
+                    b.HasIndex("ClubId1");
 
                     b.ToTable("AdditionalService", (string)null);
                 });
@@ -89,6 +102,9 @@ namespace BadmintonSystem.Persistence.Migrations
 
                     b.Property<Guid?>("ClubId")
                         .IsRequired()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("ClubId1")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("DateCreated")
@@ -118,6 +134,8 @@ namespace BadmintonSystem.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ClubId");
+
+                    b.HasIndex("ClubId1");
 
                     b.ToTable("Address", (string)null);
                 });
@@ -610,11 +628,23 @@ namespace BadmintonSystem.Persistence.Migrations
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade);
 
+                    b.HasOne("BadmintonSystem.Domain.Entities.Category", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId1");
+
                     b.HasOne("BadmintonSystem.Domain.Entities.Club", null)
                         .WithMany("AdditionalServices")
                         .HasForeignKey("ClubId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("BadmintonSystem.Domain.Entities.Club", "Club")
+                        .WithMany()
+                        .HasForeignKey("ClubId1");
+
+                    b.Navigation("Category");
+
+                    b.Navigation("Club");
                 });
 
             modelBuilder.Entity("BadmintonSystem.Domain.Entities.Address", b =>
@@ -624,6 +654,12 @@ namespace BadmintonSystem.Persistence.Migrations
                         .HasForeignKey("ClubId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("BadmintonSystem.Domain.Entities.Club", "Club")
+                        .WithMany()
+                        .HasForeignKey("ClubId1");
+
+                    b.Navigation("Club");
                 });
 
             modelBuilder.Entity("BadmintonSystem.Domain.Entities.Identity.ActionInFunction", b =>

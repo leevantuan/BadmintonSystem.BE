@@ -10,7 +10,6 @@ public class Address : AuditableEntity<Guid>
     public string? City { get; private set; }               // Thành Phố / Huyện
     public string? State { get; private set; }              // Huyện
     public Guid? ClubId { get; private set; }
-    public virtual Club? Club { get; private set; }
 
     public virtual ICollection<UserAddress> UserAddresses { get; private set; }
 

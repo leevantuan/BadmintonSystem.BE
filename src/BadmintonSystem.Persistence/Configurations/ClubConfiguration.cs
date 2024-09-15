@@ -20,5 +20,11 @@ public class ClubConfiguration : IEntityTypeConfiguration<Club>
             .HasForeignKey(x => x.ClubId)
             .OnDelete(DeleteBehavior.Restrict)
             .IsRequired();
+
+        builder.HasMany(x => x.AdditionalServices)
+            .WithOne()
+            .HasForeignKey(x => x.ClubId)
+            .OnDelete(DeleteBehavior.Restrict)
+            .IsRequired();
     }
 }

@@ -15,6 +15,7 @@ public class Club : AuditableEntity<Guid>
     public TimeSpan? ClosingTime { get; private set; }
 
     public virtual ICollection<Address> Address { get; private set; }
+    public virtual ICollection<AdditionalService> AdditionalServices { get; private set; }
 
     public static Club CreateClub(string name, string code, string hotLine, string facebookPageLink,
                                   string instagramLink, string mapLink, string imageLink, TimeSpan opening,
@@ -31,7 +32,8 @@ public class Club : AuditableEntity<Guid>
             ImageLink = imageLink,
             OpeningTime = opening,
             ClosingTime = closing,
-            Address = new List<Address>()
+            Address = new List<Address>(),
+            AdditionalServices = new List<AdditionalService>()
         };
 
     public static Club UpdateClub(string name, string code, string hotLine, string facebookPageLink,
@@ -48,6 +50,7 @@ public class Club : AuditableEntity<Guid>
             ImageLink = imageLink,
             OpeningTime = opening,
             ClosingTime = closing,
-            Address = new List<Address>()
+            Address = new List<Address>(),
+            AdditionalServices = new List<AdditionalService>()
         };
 }

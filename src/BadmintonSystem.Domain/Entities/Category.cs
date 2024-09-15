@@ -18,9 +18,4 @@ public class Category : AuditableEntity<Guid>
 
     public static Category UpdateCategory(string name)
         => new Category { Name = name, AdditionalServices = new List<AdditionalService>() };
-
-    //public Category(string name)
-    //{
-    //    Name = name;
-    //}
 }
