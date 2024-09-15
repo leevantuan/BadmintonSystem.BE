@@ -154,7 +154,22 @@ builder.Services.AddHttpClient("OurWebApi", client =>
     client.BaseAddress = new Uri("http://localhost:5104/");
 });
 
+// Add CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: "BadmintonSystem",
+                      policy =>
+                      {
+                          policy.WithOrigins("http://localhost:4200");
+                          policy.WithMethods("GET", "POST");
+                          policy.AllowAnyHeader();
+                      });
+});
+
 var app = builder.Build();
+
+// Use CORS
+app.UseCors("BadmintonSystem");
 
 // Middleware
 app.UseMiddleware<ExceptionHandlingMiddleware>();
