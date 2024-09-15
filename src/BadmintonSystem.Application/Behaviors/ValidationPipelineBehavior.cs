@@ -4,9 +4,6 @@ using MediatR;
 
 namespace BadmintonSystem.Application.Behaviors;
 
-// IPipelineBehavior<TRequest, TResponse> của MediatR
-// Nó đứng ở giữa TRequest và TResponse trước khi đưa vào Handler
-// Trước khi nó đi vào Handler ở trong UseCase nó sẽ đi qua PipelineBehavior
 public class ValidationPipelineBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IRequest<TResponse>
     where TResponse : Result
@@ -16,24 +13,21 @@ public class ValidationPipelineBehavior<TRequest, TResponse> : IPipelineBehavior
     public ValidationPipelineBehavior(IEnumerable<IValidator<TRequest>> validators) =>
         _validators = validators;
 
-    // Handle được override
     public async Task<TResponse> Handle(
         TRequest request,
         RequestHandlerDelegate<TResponse> next,
         CancellationToken cancellationToken)
     {
-        // Nếu không có lỗi => next()
         if (!_validators.Any())
         {
             return await next();
         }
 
-        // Nếu có lỗi
         Error[] errors = _validators
             .Select(validator => validator.Validate(request))
             .SelectMany(validationResult => validationResult.Errors) // Get Error
             .Where(validationFailure => validationFailure is not null)
-            .Select(failure => new Error( // Trả về 1 format chung của Error ==> class đã Define
+            .Select(failure => new Error( 
                 failure.PropertyName,
                 failure.ErrorMessage))
             .Distinct() // Không bị lặp nhau
