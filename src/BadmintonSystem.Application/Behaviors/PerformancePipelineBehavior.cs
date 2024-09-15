@@ -18,15 +18,11 @@ public class PerformancePipelineBehavior<TRequest, TResponse> :
 
     public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
     {
-        // Purpose: Đo thử thực thi trong bao lâu
-        _timer.Start();
         var response = await next();
         _timer.Stop();
 
         var elapsedMilliseconds = _timer.ElapsedMilliseconds;
 
-        // If bé hơn thì pass
-        // Reverse log tên này - bao nhiêu giây - thông tin xử lý là gì
         if (elapsedMilliseconds <= 5000)
             return response;
 

@@ -3,7 +3,6 @@ using MediatR;
 
 namespace BadmintonSystem.Application.Behaviors;
 
-// Kiểm tra đầu vào vào đầu ra TRequest và TResponse
 public sealed class ValidationDefaultBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     where TRequest : notnull
 {
@@ -13,16 +12,13 @@ public sealed class ValidationDefaultBehavior<TRequest, TResponse> : IPipelineBe
 
     public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
     {
-        // Nếu không có lỗi
         if (!_validators.Any())
         {
-            // Next ==> Handler
             return await next();
         }
 
         var context = new ValidationContext<TRequest>(request);
 
-        // Takes infor error
         var errorsDictionary = _validators
         .Select(x => x.Validate(context))
         .SelectMany(x => x.Errors)
@@ -31,7 +27,6 @@ public sealed class ValidationDefaultBehavior<TRequest, TResponse> : IPipelineBe
         .Select(x => x.FirstOrDefault())
         .ToList();
 
-        // Nếu mà có lỗi sẽ đẩy ra ==> Middleware
         if (errorsDictionary.Any())
             throw new ValidationException(errorsDictionary);
 

@@ -3,12 +3,11 @@ using MediatR;
 
 namespace BadmintonSystem.Contract.Abstractions.Messages;
 public interface ICommandHandler<TCommand> : IRequestHandler<TCommand, Result>
-    where TCommand : ICommand // Set <TCommand> truyền vào == ICommand
+    where TCommand : ICommand
 {
 }
 
-// Return ==> Response
 public interface ICommandHandler<TCommand, TResponse> : IRequestHandler<TCommand, Result<TResponse>>
-    where TCommand : ICommand<TResponse> // Set <TCommand> truyền vào == ICommand<TResponse>
+    where TCommand : ICommand<TResponse>
 {
 }

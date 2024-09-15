@@ -10,9 +10,6 @@ public abstract class AuditableEntity<T>
 
     public bool IsTransient()
     {
-        // Check default value of <T>
-        // If id == Default value ==> example: int = 0 or string = null
-        // If right == True or not False
         return Id.Equals(default(T));
     }
 

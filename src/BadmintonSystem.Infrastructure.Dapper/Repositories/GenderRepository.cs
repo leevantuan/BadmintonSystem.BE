@@ -18,8 +18,6 @@ public class GenderRepository : IGenderRepository
 
     public async Task<int> AddAsync(Gender entity)
     {
-        // @ is paramater
-        // Get from entites
         var sql = "Insert Into Gender (Id, Name) VALUES (@Id, @Name)";
         using (var connection = new SqlConnection(_configuration.GetConnectionString("ConnectionStrings")))
         {
@@ -31,8 +29,6 @@ public class GenderRepository : IGenderRepository
 
     public async Task<int> DeleteAsync(Guid id)
     {
-        // @ is paramater
-        // Get from entites
         var sql = "DELETE FROM Gender WHERE Id = @Id";
         using (var connection = new SqlConnection(_configuration.GetConnectionString("ConnectionStrings")))
         {

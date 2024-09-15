@@ -9,11 +9,11 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddConfigureMediatR(this IServiceCollection services)
         => services.AddMediatR(cfg => // Add mediatR
-        cfg.RegisterServicesFromAssembly(AssemblyReference.Assembly)) // Register Assembly Application => AssemblyReference.Assembly in Application
+        cfg.RegisterServicesFromAssembly(AssemblyReference.Assembly)) 
         .AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehavior<,>))
         // .AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationDefaultBehavior<,>)) // Defaul
         .AddTransient(typeof(IPipelineBehavior<,>), typeof(TransactionPipelineBehavior<,>))
-        .AddValidatorsFromAssembly(Contract.AssemblyReference.Assembly, includeInternalTypes: true); // Add Assembly là đã add được rule cho nó , includeInternalTypes == true, Default = false
+        .AddValidatorsFromAssembly(Contract.AssemblyReference.Assembly, includeInternalTypes: true); 
 
     public static IServiceCollection AddConfigurationAutoMapper(this IServiceCollection services)
         => services.AddAutoMapper(typeof(ServiceProfile)); // Add config AutoMapper

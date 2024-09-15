@@ -12,17 +12,9 @@ public sealed class ApplicationDbContext : IdentityDbContext<AppUser, AppRole, G
     {
     }
 
-    // Add Configuration DBSet<> From Assembly
-    // ApplyConfigurationFromAssemby => It Apply for all configurations in Assembly
-    // If AssemblyReference.Assembly == It will take all References project here == Persistence.AssemblyReference.Assembly
-    // Trick sort create Func == override OnModel...
-    // I don't understantd here ... I can use { Return A }, It can also be use by => A
-    // Configuration here ... ==>
     protected override void OnModelCreating(ModelBuilder builder) =>
         builder.ApplyConfigurationsFromAssembly(AssemblyReference.Assembly);
 
-    // Generate Database => SQL Server
-    // Authorization => Xác thực quyền người dùng có quyền truy cập vào hay không
     public DbSet<AppUser> AppUsers { get; set; }
     public DbSet<AppRole> AppRoles { get; set; }
     public DbSet<Action> Actions { get; set; }

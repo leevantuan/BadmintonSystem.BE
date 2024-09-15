@@ -15,14 +15,10 @@ public static class ServiceCollectionExtensions
 {
     public static void AddSqlConfiguration(this IServiceCollection services)
     {
-        // Using DbContextPool
-        // Pool là bể chứa các DbContext, If not using nó sẽ giải phóng và return in DbContextPool
-        // If need then mình vào lấy use, nó luôn luôn có không cần phải Generate lại
-        // Sau 1 time nhất định, If not using then cancel db
         services.AddDbContextPool<DbContext, ApplicationDbContext>((provider, builder) =>
         {
             var configuration = provider.GetRequiredService<IConfiguration>();
-            var options = provider.GetRequiredService<IOptionsMonitor<SqlServerRetryOptions>>(); // Khi khai báo biến Default đặt thành Read-Only
+            var options = provider.GetRequiredService<IOptionsMonitor<SqlServerRetryOptions>>(); 
 
             #region ============== SQL-SERVER-STRATEGY-1 ==============
 

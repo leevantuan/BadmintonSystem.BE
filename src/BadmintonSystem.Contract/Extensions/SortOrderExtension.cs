@@ -3,8 +3,6 @@
 namespace BadmintonSystem.Contract.Extensions;
 public static class SortOrderExtension
 {
-    // Default ==> Descending on CreateDate colunm
-    // If it null or White Space ==> Default == SortOrder.Ascending
     public static SortOrder ConvertStringToSortOrder(string? sortOrder)
         => !string.IsNullOrWhiteSpace(sortOrder)
            ? sortOrder.Trim().ToLower().Equals("asc") // If contain Asc == SortOrder.Ascending
@@ -17,13 +15,10 @@ public static class SortOrderExtension
 
         if (!string.IsNullOrEmpty(sortOrder))
         {
-            // Split, If have > 0 ==>
             if (sortOrder.Trim().Split(",").Length > 0)
             {
-                // Loop sortOrder after split
                 foreach (var item in sortOrder.Split(","))
                 {
-                    // If not contain - between items ==> Exception
                     if (!item.Contains('-'))
                         throw new FormatException("Sort condition should be follow by format: Column1-ASC,Column2-DESC...");
                     var property = item.Trim().Split("-"); // Remove Space and split -
