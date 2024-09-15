@@ -29,18 +29,14 @@ public sealed class CreateGenderCommandHandler : ICommandHandler<Command.CreateG
 
     public async Task<Result> Handle(Command.CreateGenderCommand request, CancellationToken cancellationToken)
     {
-        // Is Name Exists
         var isNameExists = await _genderRepository.FindAll(x => x.Name.ToLower().Trim().Equals(request.Data.Name.ToLower().Trim())).ToListAsync();
-        //var isNameExists = await _genderRepository.FindSingleAsync(x => x.Name.ToLower().Trim().Equals(request.Data.Name.ToLower().Trim()));
-        if (isNameExists.Any())
-            throw new GenderException.GenderBadRequestException("Name Exists!");
 
-        // Map data into Entities
+        if (isNameExists.Any())
+            return Result.Failure(new Error("400", "Name Exists!"));
+
         var gender = _mapper.Map<Domain.Entities.Gender>(request.Data);
 
         _genderRepository.Add(gender);
-
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         await Task.WhenAll(
             _publisher.Publish(new DomainEvent.GenderCreated(gender.Id), cancellationToken),

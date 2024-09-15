@@ -41,9 +41,6 @@ public static class GenderApi
 
     public static async Task<IResult> CreateGender(ISender sender, [FromBody] Command.CreateGenderCommand CreateGender)
     {
-        // Step 2: If Middleware return next() ==>
-        // Using ISend vận chuyển các Request tới Handler " Root to Hadler "
-        // Application layer ==> UseCase ================> Application.UseCase
         var result = await sender.Send(CreateGender);
 
         // Custom Result Failure

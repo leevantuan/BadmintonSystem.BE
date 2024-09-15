@@ -37,8 +37,8 @@ public class GenderCarterApi : ApiEndpoint, ICarterModule
     {
         var result = await sender.Send(CreateGender);
 
-        if (result.IsFailure)
-            return HandlerFailure(result);
+        //if (result.IsFailure)
+        //    return HandlerFailure(result);
 
         return Results.Ok(result);
     }
