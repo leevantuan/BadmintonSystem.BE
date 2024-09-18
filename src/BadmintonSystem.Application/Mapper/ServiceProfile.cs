@@ -16,5 +16,13 @@ public class ServiceProfile : Profile
         CreateMap<Gender, Contract.Services.V2.Gender.Response.GenderResponse>().ReverseMap();
         CreateMap<Gender, Contract.Services.V2.Gender.Request.GenderRequest>().ReverseMap();
         CreateMap<PagedResult<Gender>, PagedResult<Contract.Services.V2.Gender.Response.GenderResponse>>().ReverseMap();
+
+        #region ==================== Category =======================
+
+        CreateMap<Category, Contract.Services.V2.Category.Response.CategoryResponse>().ReverseMap();
+        CreateMap<Category, Contract.Services.V2.Category.Request.CategoryRequest>().ReverseMap();
+        CreateMap<PagedResult<Category>, PagedResult<Contract.Services.V2.Category.Response.CategoryResponse>>().ReverseMap();
+
+        #endregion ==================== Category =======================
     }
 }

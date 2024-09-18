@@ -17,7 +17,7 @@ public class GenderCarterApi : ApiEndpoint, ICarterModule
     {
         // V1
         var group = app.NewVersionedApi("Gender")
-            .MapGroup(BaseUrl).HasApiVersion(1);
+            .MapGroup(BaseUrl).HasApiVersion(2);
 
         group.MapGet(string.Empty, GetAllGender);
         group.MapGet("{genderId}", GetByIdGender);
@@ -25,20 +25,11 @@ public class GenderCarterApi : ApiEndpoint, ICarterModule
         group.MapPut("{genderId}", UpdateGender);
         group.MapDelete("{genderId}", DeleteGender);
 
-        // V2
-        var groupV2 = app.NewVersionedApi("Gender")
-            .MapGroup(BaseUrl).HasApiVersion(2).RequireAuthorization();
-
-        groupV2.MapGet(string.Empty, GetAllGender);
-
     }
 
     public static async Task<IResult> CreateGender(ISender sender, [FromBody] Command.CreateGenderCommand CreateGender)
     {
         var result = await sender.Send(CreateGender);
-
-        //if (result.IsFailure)
-        //    return HandlerFailure(result);
 
         return Results.Ok(result);
     }

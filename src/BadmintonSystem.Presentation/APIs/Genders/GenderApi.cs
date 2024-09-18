@@ -32,8 +32,6 @@ public static class GenderApi
     {
         var group = builder.MapGroup(BaseUrl).HasApiVersion(2);
 
-        // Unprocessed Func V2
-        // Using get V1 to do demo
         group.MapGet(string.Empty, GetAllGender);
 
         return builder;

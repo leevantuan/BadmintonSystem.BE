@@ -16,6 +16,8 @@ public class Category : AuditableEntity<Guid>
         };
     }
 
-    public static Category UpdateCategory(string name)
-        => new Category { Name = name, AdditionalServices = new List<AdditionalService>() };
+    public void UpdateCategory(string name)
+    {
+        Name = name;
+    }
 }
