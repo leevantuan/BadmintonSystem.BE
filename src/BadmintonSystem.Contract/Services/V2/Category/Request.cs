@@ -6,4 +6,8 @@ public static class Request
     public class CategoryRequest : BaseEntityDto<Guid>
     {
     }
+
+    public class CategoryPaginationRequest : PaginationRequest
+    {
+    }
 }

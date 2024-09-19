@@ -1,4 +1,5 @@
-﻿using BadmintonSystem.Presentation.Abstractions;
+﻿using BadmintonSystem.Contract.Extensions;
+using BadmintonSystem.Presentation.Abstractions;
 using Carter;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -23,6 +24,12 @@ public class CategoryApi : ApiEndpoint, ICarterModule
         group.MapPut("{categoryId}", UpdateCategory);
         group.MapDelete("{categoryId}", DeleteCategory);
 
+        // V2
+        var group2 = app.NewVersionedApi("Category")
+            .MapGroup(BaseUrl).HasApiVersion(1);
+
+        group2.MapGet("{categoryId}", GetByIdCategory);
+        //group2.MapGet(string.Empty, GetAllCategory);
     }
 
     public static async Task<IResult> CreateCategory(ISender sender, [FromBody] Contract.Services.V2.Category.Command.CreateCategoryCommand CreateCategory)
@@ -38,9 +45,18 @@ public class CategoryApi : ApiEndpoint, ICarterModule
         return Results.Ok(result);
     }
 
-    public static async Task<IResult> GetAllCategory(ISender sender)
+    public static async Task<IResult> GetAllCategory(ISender sender, string? searchTerm = null,
+        string? sortColumn = null,
+        string? sortOrder = null,
+        string? sortColumnAndOrder = null,
+        int pageIndex = 1,
+        int pageSize = 10)
     {
-        var result = await sender.Send(new Contract.Services.V2.Category.Query.GetAllCategory());
+        var result = await sender.Send(new Contract.Services.V2.Category.Query.GetAllCategory(searchTerm, sortColumn,
+            SortOrderExtension.ConvertStringToSortOrder(sortOrder),
+            SortOrderExtension.ConvertStringToSortOrderV2(sortColumnAndOrder),
+            pageIndex,
+            pageSize));
         return Results.Ok(result);
     }
 
