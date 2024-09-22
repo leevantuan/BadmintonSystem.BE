@@ -6,9 +6,6 @@ public static class Response
         public Guid Id { get; set; }
         public string Name { get; set; }
         public decimal Price { get; set; }
-        public Category.Response.CategoryResponse? Category { get; set; }
-
-        // Clubs
     }
 
     public record AdditionalServiceInnerJoinResponse

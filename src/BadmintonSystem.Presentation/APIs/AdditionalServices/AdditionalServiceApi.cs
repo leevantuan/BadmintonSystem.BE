@@ -14,12 +14,12 @@ public class AdditionalServiceApi : ApiEndpoint, ICarterModule
 
     public void AddRoutes(IEndpointRouteBuilder app)
     {
-        // V1
         var group = app.NewVersionedApi("AdditionalService")
             .MapGroup(BaseUrl).HasApiVersion(2);
 
         group.MapGet(string.Empty, GetAllAdditionalService);
         group.MapGet("{additionalServiceId}", GetByIdAdditionalService);
+        group.MapGet("get-list-by-categoryId/{categoryId}", GetByCategoryIdIdAdditionalService);
         group.MapPost(string.Empty, CreateAdditionalService);
         group.MapPut("{additionalServiceId}", UpdateAdditionalService);
         group.MapDelete("{additionalServiceId}", DeleteAdditionalService);
@@ -56,6 +56,12 @@ public class AdditionalServiceApi : ApiEndpoint, ICarterModule
     public static async Task<IResult> GetByIdAdditionalService(ISender sender, Guid additionalServiceId)
     {
         var result = await sender.Send(new Contract.Services.V2.AdditionalService.Query.GetAdditionalServiceByIdQuery(additionalServiceId));
+        return Results.Ok(result);
+    }
+
+    public static async Task<IResult> GetByCategoryIdIdAdditionalService(ISender sender, Guid categoryId)
+    {
+        var result = await sender.Send(new Contract.Services.V2.AdditionalService.Query.GetAdditionalServiceByCategoryIdQuery(categoryId));
         return Results.Ok(result);
     }
 
