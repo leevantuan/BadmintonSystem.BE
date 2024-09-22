@@ -36,14 +36,22 @@ public sealed class GetAllAdditionalServiceQueryHandler : IQueryHandler<Query.Ge
                 : request.PageSize;
 
             var additionalServicesQuery = string.IsNullOrWhiteSpace(request.SearchTerm)
-                ? @$"SELECT * FROM {nameof(Domain.Entities.AdditionalService)} ORDER BY "
-                : $@"SELECT * FROM {nameof(Domain.Entities.AdditionalService)}
-                              WHERE {nameof(Domain.Entities.AdditionalService.Name)} LIKE '%{request.SearchTerm}%' ORDER BY ";
+                ? @$"SELECT a.*, c.Name AS CategoryName, cl.Name AS ClubName
+                     FROM {nameof(Domain.Entities.AdditionalService)} a 
+                     INNER JOIN {nameof(Domain.Entities.Category)} c ON a.CategoryId = c.Id 
+                     INNER JOIN {nameof(Domain.Entities.Club)} cl ON a.ClubId = cl.Id 
+                     ORDER BY "
+                : $@"SELECT a.*, c.Name, cl.Name 
+                     FROM {nameof(Domain.Entities.AdditionalService)} a 
+                     INNER JOIN {nameof(Domain.Entities.Category)} c ON a.CategoryId = c.Id 
+                     INNER JOIN {nameof(Domain.Entities.Club)} cl ON a.ClubId = cl.Id 
+                     WHERE a.{nameof(Domain.Entities.AdditionalService.Name)} LIKE '%{request.SearchTerm}%' 
+                     ORDER BY ";
 
             foreach (var item in request.SortColumnAndOrder)
                 additionalServicesQuery += item.Value == SortOrder.Descending
-                    ? $"{item.Key} DESC, "
-                    : $"{item.Key} ASC, ";
+                    ? $"a.{item.Key} DESC, "
+                    : $"a.{item.Key} ASC, ";
 
             additionalServicesQuery = additionalServicesQuery.Remove(additionalServicesQuery.Length - 2);
 
