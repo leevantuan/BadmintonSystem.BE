@@ -37,6 +37,7 @@ public sealed class UpdateGenderCommandHandler : ICommandHandler<Command.UpdateG
 
         // Map
         // Domain Driven Design
+        gender.UpdateGender(request.Name);
         // Unprocessed
         //gender.Name = request.Name;
 

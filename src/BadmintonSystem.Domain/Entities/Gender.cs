@@ -10,6 +10,11 @@ public class Gender : AuditableEntity<Guid>
         return new Gender(id, name);
     }
 
+    public void UpdateGender(string name)
+    {
+        Name = name;
+    }
+
     public Gender(Guid id, string name)
     {
         Id = id;
