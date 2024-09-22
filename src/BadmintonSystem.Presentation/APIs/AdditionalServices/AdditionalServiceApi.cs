@@ -20,6 +20,7 @@ public class AdditionalServiceApi : ApiEndpoint, ICarterModule
         group.MapGet(string.Empty, GetAllAdditionalService);
         group.MapGet("{additionalServiceId}", GetByIdAdditionalService);
         group.MapGet("get-list-by-categoryId/{categoryId}", GetByCategoryIdIdAdditionalService);
+        group.MapGet("get-list-by-clubId/{clubId}", GetByClubIdIdAdditionalService);
         group.MapPost(string.Empty, CreateAdditionalService);
         group.MapPut("{additionalServiceId}", UpdateAdditionalService);
         group.MapDelete("{additionalServiceId}", DeleteAdditionalService);
@@ -62,6 +63,12 @@ public class AdditionalServiceApi : ApiEndpoint, ICarterModule
     public static async Task<IResult> GetByCategoryIdIdAdditionalService(ISender sender, Guid categoryId)
     {
         var result = await sender.Send(new Contract.Services.V2.AdditionalService.Query.GetAdditionalServiceByCategoryIdQuery(categoryId));
+        return Results.Ok(result);
+    }
+
+    public static async Task<IResult> GetByClubIdIdAdditionalService(ISender sender, Guid clubId)
+    {
+        var result = await sender.Send(new Contract.Services.V2.AdditionalService.Query.GetAdditionalServiceByClubIdQuery(clubId));
         return Results.Ok(result);
     }
 

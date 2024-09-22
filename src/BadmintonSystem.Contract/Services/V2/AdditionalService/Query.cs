@@ -10,5 +10,7 @@ public static class Query
     public record GetAllAdditionalService(string? SearchTerm, string? SortColumn, SortOrder? SortOrder, IDictionary<string, SortOrder>? SortColumnAndOrder, int PageIndex, int PageSize) : IQuery<PagedResult<Response.AdditionalServiceResponse>>;
 
     public record GetAdditionalServiceByCategoryIdQuery(Guid Id) : IQuery<List<Response.AdditionalServiceResponse>>;
+
+    public record GetAdditionalServiceByClubIdQuery(Guid Id) : IQuery<List<Response.AdditionalServiceResponse>>;
 }
 
