@@ -18,8 +18,8 @@ public class Club : AuditableEntity<Guid>
     public virtual ICollection<AdditionalService>? AdditionalServices { get; private set; }
 
     public static Club CreateClub(string name, string code, string hotLine, string facebookPageLink,
-                                  string instagramLink, string mapLink, string imageLink, TimeSpan opening,
-                                  TimeSpan closing)
+                                  string instagramLink, string? mapLink, string imageLink, TimeSpan openingTime,
+                                  TimeSpan closingTime)
         => new Club
         {
             Id = Guid.NewGuid(),
@@ -30,13 +30,13 @@ public class Club : AuditableEntity<Guid>
             InstagramPageLink = instagramLink,
             MapLink = mapLink,
             ImageLink = imageLink,
-            OpeningTime = opening,
-            ClosingTime = closing,
+            OpeningTime = openingTime,
+            ClosingTime = closingTime,
         };
 
-    public void UpdateClub(string name, string code, string hotLine, string facebookPageLink,
-                                  string instagramLink, string mapLink, string imageLink, TimeSpan opening,
-                                  TimeSpan closing)
+    public void UpdateClub(string? name, string? code, string? hotLine, string? facebookPageLink,
+                                  string? instagramLink, string? mapLink, string? imageLink, TimeSpan? openingTime,
+                                  TimeSpan? closingTime)
     {
         Name = name;
         Code = code;
@@ -45,7 +45,7 @@ public class Club : AuditableEntity<Guid>
         InstagramPageLink = instagramLink;
         MapLink = mapLink;
         ImageLink = imageLink;
-        OpeningTime = opening;
-        ClosingTime = closing;
+        OpeningTime = openingTime;
+        ClosingTime = closingTime;
     }
 }

@@ -32,5 +32,14 @@ public class ServiceProfile : Profile
         CreateMap<PagedResult<AdditionalService>, PagedResult<Contract.Services.V2.AdditionalService.Response.AdditionalServiceResponse>>().ReverseMap();
 
         #endregion ==================== Additional Service =======================
+
+        #region ==================== Club =======================
+
+        CreateMap<Club, Contract.Services.V2.Club.Response.ClubResponse>().ReverseMap();
+        CreateMap<Club, Contract.Services.V2.Club.Request.ClubRequest>().ReverseMap();
+        CreateMap<PagedResult<Club>, PagedResult<Contract.Services.V2.Club.Response.ClubResponse>>().ReverseMap();
+
+        #endregion ==================== Club =======================
+
     }
 }
