@@ -33,7 +33,7 @@ public sealed class UpdateAdditionalServiceCommandHandler : ICommandHandler<Comm
         if (isNameExists.Any())
             return Result.Failure(new Error("200", "Is Name Exists!"));
 
-        additionalService.UpdateAdditionalService(request.Data.Name, request.Data.Price, request.Data.ClubsId, request.Data.CategoryId);
+        additionalService.UpdateAdditionalService(request.Data.Name, request.Data.Price, request.Data.ClubId, request.Data.CategoryId);
 
         //await _unitOfWork.SaveChangesAsync(cancellationToken);
 

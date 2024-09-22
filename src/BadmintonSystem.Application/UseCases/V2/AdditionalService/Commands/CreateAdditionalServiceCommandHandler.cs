@@ -32,7 +32,7 @@ public sealed class CreateAdditionalServiceCommandHandler : ICommandHandler<Comm
         if (isNameExists.Any())
             return Result.Failure(new Error("200", "Name Exists"));
 
-        var additionalService = Domain.Entities.AdditionalService.CreateAdditionalService(request.Data.Name, request.Data.Price, request.Data.ClubsId, request.Data.CategoryId);
+        var additionalService = Domain.Entities.AdditionalService.CreateAdditionalService(request.Data.Name, request.Data.Price, request.Data.ClubId, request.Data.CategoryId);
 
         _additionalServiceRepository.Add(additionalService);
 

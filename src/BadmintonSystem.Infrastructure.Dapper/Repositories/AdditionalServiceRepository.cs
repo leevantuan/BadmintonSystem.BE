@@ -27,7 +27,7 @@ public class AdditionalServiceRepository : IAdditionalServiceRepository
 
     public async Task<IReadOnlyList<AdditionalService>> GetAllAsync()
     {
-        var sql = "SELECT Id, Name, Price, ClubsId, CategoryId FROM AdditionalService";
+        var sql = "SELECT Id, Name, Price, ClubId, CategoryId FROM AdditionalService";
         using (var connection = new SqlConnection(_configuration.GetConnectionString("ConnectionStrings")))
         {
             await connection.OpenAsync();
@@ -38,7 +38,7 @@ public class AdditionalServiceRepository : IAdditionalServiceRepository
 
     public async Task<AdditionalService?> GetByIdAsync(Guid id)
     {
-        var sql = "SELECT Id, Name, Price, ClubsId, CategoryId FROM AdditionalService WHERE Id = @Id";
+        var sql = "SELECT * FROM AdditionalService WHERE Id = @Id";
         using (var connection = new SqlConnection(_configuration.GetConnectionString("ConnectionStrings")))
         {
             await connection.OpenAsync();

@@ -6,7 +6,7 @@ public static class Request
     public class AdditionalServiceRequest : BaseEntityDto<Guid>
     {
         public decimal Price { get; set; }
-        public Guid? ClubsId { get; set; }
+        public Guid? ClubId { get; set; }
         public Guid? CategoryId { get; set; }
     }
 
