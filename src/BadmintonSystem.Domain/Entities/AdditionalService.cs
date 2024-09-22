@@ -10,13 +10,15 @@ public class AdditionalService : AuditableEntity<Guid>
 
     public static AdditionalService CreateAdditionalService(string name,
                                                             decimal price,
-                                                            Guid clubId,
-                                                            Guid categoryId)
+                                                            Guid? clubId,
+                                                            Guid? categoryId)
         => new AdditionalService { Id = Guid.NewGuid(), Name = name, Price = price, ClubId = clubId, CategoryId = categoryId };
 
-    public static AdditionalService UpdateAdditionalService(string name,
-                                                            decimal price,
-                                                            Guid clubId,
-                                                            Guid categoryId)
-        => new AdditionalService { Name = name, Price = price, ClubId = clubId, CategoryId = categoryId };
+    public void UpdateAdditionalService(string name, decimal price, Guid? clubId, Guid? categoryId)
+    {
+        Name = name;
+        Price = price;
+        ClubId = clubId;
+        CategoryId = categoryId;
+    }
 }
