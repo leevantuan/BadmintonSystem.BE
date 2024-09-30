@@ -24,5 +24,6 @@ internal static class TableNames
     internal const string Category = nameof(Category);
     internal const string AdditionalService = nameof(AdditionalService);
     internal const string Club = nameof(Club);
+    internal const string Sale = nameof(Sale);
     internal const string UserAddress = nameof(UserAddress);
 }

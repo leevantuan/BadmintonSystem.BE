@@ -29,4 +29,5 @@ public sealed class ApplicationDbContext : IdentityDbContext<AppUser, AppRole, G
     public DbSet<AdditionalService> AdditionalServices { get; set; }
     public DbSet<Club> Clubs { get; set; }
     public DbSet<UserAddress> UserAddress { get; set; }
+    public DbSet<Sale> Sales { get; set; }
 }
