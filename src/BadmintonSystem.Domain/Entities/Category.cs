@@ -1,23 +1,9 @@
-﻿using BadmintonSystem.Domain.Abstractions.Entities;
+﻿using BadmintonSystem.Contract.Abstractions.Entities;
 
 namespace BadmintonSystem.Domain.Entities;
-public class Category : AuditableEntity<Guid>
+public class Category : EntityAuditBase<Guid>
 {
-    public string Name { get; private set; }
-    public virtual ICollection<AdditionalService> AdditionalServices { get; private set; }
+    public string Name { get; set; }
 
-    public static Category CreateCategory(string name)
-    {
-        return new Category
-        {
-            Id = Guid.NewGuid(),
-            Name = name,
-            AdditionalServices = new List<AdditionalService>()
-        };
-    }
-
-    public void UpdateCategory(string name)
-    {
-        Name = name;
-    }
+    public virtual ICollection<Service>? Services { get; set; }
 }

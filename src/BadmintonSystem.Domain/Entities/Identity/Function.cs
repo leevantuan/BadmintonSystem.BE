@@ -1,15 +1,22 @@
-﻿namespace BadmintonSystem.Domain.Entities.Identity;
-public class Function
-{
-    public string Id { get; set; }
-    public string Name { get; set; }
-    public string Url { get; set; }
-    public string? ParrentId { get; set; }
-    public int? SortOrder { get; set; }
-    public string CssClass { get; set; }
-    public bool? IsActive { get; set; }
+﻿using BadmintonSystem.Contract.Abstractions.Entities;
+using BadmintonSystem.Domain.Enumerations;
 
-    public virtual ICollection<ActionInFunction> ActionInFunctions { get; set; }
-    public virtual ICollection<PermissionInRole> PermissionInRoles { get; set; }
-    public virtual ICollection<PermissionInUser> PermissionInUsers { get; set; }
+namespace BadmintonSystem.Domain.Entities.Identity;
+public class Function : EntityAuditBase<int>
+{
+    public string Name { get; set; }
+
+    public string Url { get; set; }
+
+    public int? ParentId { get; set; }
+
+    public int? SortOrder { get; set; }
+
+    public string? CssClass { get; set; } // icon in menu
+
+    public FunctionStatus Status { get; set; }
+
+    public string Key { get; set; }
+
+    public int ActionValue { get; set; }
 }

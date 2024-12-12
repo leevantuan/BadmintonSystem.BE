@@ -1,7 +1,6 @@
 ﻿using BadmintonSystem.API.DependencyInjection.Extensions;
 using BadmintonSystem.API.Middleware;
 using BadmintonSystem.Application.DependencyInjection.Extensions;
-using BadmintonSystem.Infrastructure.Dapper.DependencyInjection.Extensions;
 using BadmintonSystem.Infrastructure.DependencyInjection.Extensions;
 using BadmintonSystem.Persistence.DependencyInjection.Extensions;
 using BadmintonSystem.Persistence.DependencyInjection.Options;
@@ -11,59 +10,66 @@ using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Configure Serilog.AspNet
+// Add CORS policy to allow any origin
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAllOrigins",
+                        builder =>
+                        {
+                            builder.AllowAnyOrigin()
+                                   .AllowAnyHeader()
+                                   .AllowAnyMethod();
+                        });
+});
+
+// Add Serilog
 Log.Logger = new LoggerConfiguration().ReadFrom
-    .Configuration(builder.Configuration)
-    .CreateLogger();
+                                      .Configuration(builder.Configuration)
+                                      .CreateLogger();
 
 builder.Logging
-    .ClearProviders()
-    .AddSerilog();
+       .ClearProviders()
+       .AddSerilog();
 
 builder.Host.UseSerilog();
 
-// Add Configure MediatR
-builder.Services.AddConfigureMediatR();
+// Add Authentication
+builder.Services.AddJwtAuthenticationConfigurationAPI(builder.Configuration);
 
-// Add Config API
-builder.Services
-        .AddControllers()
-        .AddApplicationPart(BadmintonSystem.Presentation.AssemblyReference.Assembly);
+// Add Infrastructure Layer
+builder.Services.AddServicesInfrastructure();
 
-// Add Configure MiddleWare
-builder.Services.AddConfigureMiddleware();
+// Add Middleware
+builder.Services.AddMiddlewareConfigurationAPI();
 
-// Configurations để trước builder.Build()
-// Add Config DATABASE SQLSERVER ==>
-builder.Services.ConfigureSqlServerRetryOptions(builder.Configuration.GetSection(nameof(SqlServerRetryOptions)));
-builder.Services.AddSqlConfiguration();
+// Add MediatR
+builder.Services.AddMediatRConfigurationApplication();
 
-// Add Configure RepositoryBase
-builder.Services.AddRepositoryBaseConfiguration();
+// Add Interceptor Persistence
+builder.Services.AddInterceptorConfigurationPersistence();
 
-// Add Config Dapper
-builder.Services.AddInfrastructureDapper();
+// Add Connection SQL
+//builder.Services.AddSqlServerRetryOptionsConfigurationPersistence(builder.Configuration.GetSection(nameof(SqlServerRetryOptions)));
+//builder.Services.AddSqlConfigurationPersistence();
 
-// Add config Carter
-builder.Services.AddCarter();
+// Add Connection POSTGRES
+builder.Services.AddPostgresServerRetryOptionsConfigurationPersistence(builder.Configuration.GetSection(nameof(SqlServerRetryOptions)));
+builder.Services.AddPostgresConfigurationPersistence();
 
-// Add config DI
-builder.Services.AddInfrastructureServices();
+// Add Repository Base
+builder.Services.AddRepositoryBaseConfigurationPersistence();
 
-// Add Configure AutoMapper
-builder.Services.AddConfigurationAutoMapper();
+// Add Dapper
+//builder.Services.AddInfrastructureDapper();
 
-// Add SWagger
+// Add Swagger and Validation
 builder.Services
         .AddSwaggerGenNewtonsoftSupport()
         .AddFluentValidationRulesToSwagger()
         .AddEndpointsApiExplorer()
-        .AddSwagger();
+        .AddSwaggerAPI();
 
-builder.Services.AddControllers();
-
-// Add config Swagger API Versioning
+// Add Swagger Api Versioning
 builder.Services
     .AddApiVersioning(options => options.ReportApiVersions = true)
     .AddApiExplorer(options =>
@@ -72,133 +78,43 @@ builder.Services
         options.SubstituteApiVersionInUrl = true;
     });
 
-#region ==================================== AddAuthentication with Cookies ================================
-//// Add Authentication
-//builder.Services.AddAuthentication(options =>
-//{
-//    // Có hoặc không
-//    // AddCookie( "Cookies", options => {})
-//    // If has from 2 AddCookies should use it
-//    // AddCoookie( "Cookies_2", options => {})
-//    options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme; // Default = " Cookies
-//    options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme; // Default = " Cookies
+// Add Carter - Versioning Minimal API
+builder.Services.AddCarter();
 
-//    // If use 2 AddCoookies
-//    // If want use thì bỏ cmt cái đó
-//    // options.DefaultAuthenticateScheme = "Cookies_2"; // Default = " Cookies
-//    // options.DefaultChallengeScheme = "Cookies_2"; // Default = " Cookies
-//}).AddCookie(options =>
-//{
-//    options.Cookie = new CookieBuilder()
-//    {
-//        // Setup for cookies Name, Domain,
-//        // Domain == muốn lưu cookies ở đâu Ex: Google, ...
-//        Name = "TestCookies",
-//    };
-//    options.LoginPath = "/api/v1/authen/unauthorized"; // If not has cookies then navigate to Link
-//    options.LogoutPath = "/api/v1/authen/logout"; // If not has cookies then navigate to Link
-//    options.AccessDeniedPath = "/api/v1/authen/forbidden"; // If not has cookies then navigate to Link
+// Add Auto Mapper
+builder.Services.AddAutoMapperConfigurationApplication();
 
-//    // Tạo ra lúc login == Principal
-//    // Vào đây kiểm tra xem có những thông tin giống ở Principal lúc login hay không
-//    // Có đung là User không
-//    // ==> tiếp theo xuống "Cookies_2"
-//    // ==================== Author thì sẽ khôgn sử dụng ở đây tạo ra class kế thừa
-//    // Custom lại
-//    // options.Events.OnValidatePrincipal = (context) =>
-//    // {
-//    //    return Task.CompletedTask;
-//    // };
-//})
-////.AddCookie("Cookies_2", options =>
-////{
-////    options.Cookie = new CookieBuilder()
-////    {
-////        // Setup for cookies Name, Domain,
-////        // Domain == muốn lưu cookies ở đâu Ex: Google, ...
-////        Name = "TestCookies_V2",
-////    };
-////    options.LoginPath = "/api/authen/unauthorizedV2"; // If not has cookies then navigate to Link
+// Add Authentication
+//builder.Services.AddCookieAuthenticationConfigurationAPI();
 
-////    // ==================== Author thì sẽ khôgn sử dụng ở đây tạo ra class kế thừa
-////    // Custom lại
-////    options.Events.OnValidatePrincipal = (context) =>
-////    {
-////        return Task.CompletedTask;
-////    };
-////})
-//;
+// Configuration Seeder
+// await builder.Services.AddInitialiserConfigurationPersistence(builder.Services.BuildServiceProvider());
 
-//// If not use
-//// options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme and
-//// options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme
-//// Use Authorization ==> Auto run 2
-////builder.Services.AddAuthorization(options =>
-////{
-////    var defaultAuthorizationPolicayBuilder = new AuthorizationPolicyBuilder(
-////        CookieAuthenticationDefaults.AuthenticationScheme,
-////        "Cookies_2");
-
-////    defaultAuthorizationPolicayBuilder = defaultAuthorizationPolicayBuilder.RequireAuthenticatedUser();
-////    options.DefaultPolicy = defaultAuthorizationPolicayBuilder.Build();
-////});
-
-#endregion ==================================== AddAuthentication with Cookies ================================
-
-// Add Config Authentication with JWT
-builder.Services.AddJwtAuthentication(builder.Configuration);
-
-// Config http
-builder.Services.AddHttpClient("OurWebApi", client =>
-{
-    client.BaseAddress = new Uri("http://localhost:5104/");
-});
-
-// Add CORS
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy(name: "BadmintonSystem",
-                      policy =>
-                      {
-                          policy.WithOrigins("http://localhost:4200");
-                          policy.WithMethods("GET", "POST");
-                          policy.AllowAnyHeader();
-                      });
-});
-
+// Configure App and Build
 var app = builder.Build();
 
-// Use CORS
-app.UseCors("BadmintonSystem");
-
-// Middleware
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
-// Add API Endpoint " Minimal API "
-// "1"
-// If using Carter then cmt, just using
-//app.NewVersionedApi("Minimal-API-Gender").MapGenderApiV1().MapGenderApiV2();
-
-// Add API With Carter
-// Map all những cái nào kế thừa : ICarterModule
-// Không cần phải use "1" của Minimal API
+// Map Carter
 app.MapCarter();
 
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment() || app.Environment.IsStaging())
+{
+    app.AddSwaggerConfigurationAPI();
+}
+
+app.UseCors("AllowAllOrigins");
 app.UseHttpsRedirection();
 
-// Authentication ==> Authorization
-app.UseAuthentication();
-
+app.UseAuthentication(); // This need to be added before app.UseAuthorization()
 app.UseAuthorization();
 
 app.MapControllers();
 
-// Run Version
-// Configure the HTTP request pipeline.
-if (builder.Environment.IsDevelopment() || builder.Environment.IsStaging())
-    app.ConfigureSwagger();
+// Initialize and seed the database
+await app.AddInitialiserConfigurationPersistence();
 
-// Using Log of Serilog
 try
 {
     await app.RunAsync();

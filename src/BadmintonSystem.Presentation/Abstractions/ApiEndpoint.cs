@@ -5,27 +5,23 @@ using Microsoft.AspNetCore.Mvc;
 namespace BadmintonSystem.Presentation.Abstractions;
 public abstract class ApiEndpoint
 {
-    protected static IResult HandlerFailure(Result result) =>
-       result switch
-       {
-           { IsSuccess: true } => throw new InvalidOperationException(),
-           IValidationResult validationResult =>
-               Results.BadRequest(
-                   CreateProblemDetails(
-                       "Validation Error", StatusCodes.Status400BadRequest,
-                       result.Error,
-                       validationResult.Errors)),
-           _ =>
-               Results.BadRequest(
-                   CreateProblemDetails(
-                       "Bab Request", StatusCodes.Status400BadRequest,
-                       result.Error))
-       };
+    protected static IResult HandleFailure(Result result)
+        => result switch
+        {
+            // IsFailure = true & IsSuccess = true
+            { IsSuccess: true }
+                => throw new InvalidOperationException(), // this case cannot exists
 
-    private static ProblemDetails CreateProblemDetails(string title, int status,
-        Error error,
-        Error[]? errors = null) =>
-        new ProblemDetails()
+            // IsFailure = true & IsSuccess = false & value != null
+            IValidationResult validationResult
+                 => Results.UnprocessableEntity(CreateProblemDetails("Validation Error", StatusCodes.Status422UnprocessableEntity, result.Error, validationResult.Errors)),
+
+            // IsFailure = true & IsSuccess = false & typeof(Error) != ValidationError
+            _ => Results.BadRequest(CreateProblemDetails("Bad Request", StatusCodes.Status400BadRequest, result.Error))
+        };
+
+    private static ProblemDetails CreateProblemDetails(string title, int status, Error error, Error[]? errors = null)
+        => new()
         {
             Title = title,
             Type = error.Code,

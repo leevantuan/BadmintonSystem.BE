@@ -10,6 +10,7 @@
     <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="8.1.0" />
     <PackageReference Include="Carter" Version="8.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -20,6 +21,12 @@
 
   <ItemGroup>
     <PackageReference Update="SonarAnalyzer.CSharp" Version="9.32.0.97167" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="APIs\V2\" />
+    <Folder Include="DependencyInjection\Extensions\" />
+    <Folder Include="DependencyInjection\Options\" />
   </ItemGroup>
 
 </Project>

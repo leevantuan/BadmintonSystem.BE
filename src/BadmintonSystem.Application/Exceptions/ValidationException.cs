@@ -1,7 +1,6 @@
 ﻿using BadmintonSystem.Domain.Exceptions;
 
 namespace BadmintonSystem.Application.Exceptions;
-
 public sealed class ValidationException : DomainException
 {
     public ValidationException(IReadOnlyCollection<ValidationError> errors)

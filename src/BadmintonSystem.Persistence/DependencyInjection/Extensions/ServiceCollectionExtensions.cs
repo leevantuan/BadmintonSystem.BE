@@ -1,68 +1,55 @@
-﻿using BadmintonSystem.Domain.Abstractions;
-using BadmintonSystem.Domain.Abstractions.Repositories;
+﻿using BadmintonSystem.Domain.Abstractions.Repositories;
 using BadmintonSystem.Domain.Entities.Identity;
 using BadmintonSystem.Persistence.DependencyInjection.Options;
+using BadmintonSystem.Persistence.Interceptors;
 using BadmintonSystem.Persistence.Repositories;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Npgsql.EntityFrameworkCore.PostgreSQL;
 
 namespace BadmintonSystem.Persistence.DependencyInjection.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    public static void AddSqlConfiguration(this IServiceCollection services)
+    private const string SqlConnectionStrings = "SqlConnectionStrings";
+    private const string PostgresConnectionStrings = "PostgresConnectionStrings";
+
+    public static void AddSqlConfigurationPersistence(this IServiceCollection services)
     {
+        // use db context pool => not use normal db context
         services.AddDbContextPool<DbContext, ApplicationDbContext>((provider, builder) =>
         {
-            var configuration = provider.GetRequiredService<IConfiguration>();
-            var options = provider.GetRequiredService<IOptionsMonitor<SqlServerRetryOptions>>(); 
+            var auditableInterceptor = provider.GetRequiredService<UpdateAuditableEntitiesInterceptor>();
 
-            #region ============== SQL-SERVER-STRATEGY-1 ==============
+            var configuration = provider.GetRequiredService<IConfiguration>();
+            var options = provider.GetRequiredService<IOptionsMonitor<SqlServerRetryOptions>>();
 
             builder
-          .EnableDetailedErrors(true)
-          .EnableSensitiveDataLogging(true)
-          .UseLazyLoadingProxies(true) // => If UseLazyLoadingProxies, all of the navigation fields should be VIRTUAL
-          .UseSqlServer(
-              connectionString: configuration.GetConnectionString("ConnectionStrings"),
-              sqlServerOptionsAction: optionsBuilder
-                      => optionsBuilder.ExecutionStrategy(
-                              dependencies => new SqlServerRetryingExecutionStrategy(
-                                  dependencies: dependencies,
-                                  maxRetryCount: options.CurrentValue.MaxRetryCount, // It will retry bao nhiêu lần
-                                  maxRetryDelay: options.CurrentValue.MaxRetryDelay,
-                                  errorNumbersToAdd: options.CurrentValue.ErrorNumbersToAdd)) // If it have error then thêm vào
-                          .MigrationsAssembly(typeof(ApplicationDbContext).Assembly.GetName().Name)); // Generate file Migration ở tại ApplicationDbcontext in Assembly
-
-            #endregion ============== SQL-SERVER-STRATEGY-1 ==============
-
-            #region ============== SQL-SERVER-STRATEGY-2 ==============
-
-            //builder
-            //.EnableDetailedErrors(true)
-            //.EnableSensitiveDataLogging(true)
-            //.UseLazyLoadingProxies(true) // => If UseLazyLoadingProxies, all of the navigation fields should be VIRTUAL
-            //.UseSqlServer(
-            //    connectionString: configuration.GetConnectionString("ConnectionStrings"),
-            //        sqlServerOptionsAction: optionsBuilder
-            //            => optionsBuilder
-            //            .MigrationsAssembly(typeof(ApplicationDbContext).Assembly.GetName().Name));
-
-            #endregion ============== SQL-SERVER-STRATEGY-2 ==============
+                .EnableDetailedErrors()
+                .EnableSensitiveDataLogging(true)
+                .UseLazyLoadingProxies(true) // if you use Lazy Loading, all of the navigation fields should be VIRTUAL
+                .UseSqlServer(
+                    connectionString: configuration.GetConnectionString(nameof(SqlConnectionStrings)),
+                    sqlServerOptionsAction: optionsBuider
+                        => optionsBuider.ExecutionStrategy(
+                                            dependencies => new SqlServerRetryingExecutionStrategy(
+                                                    dependencies: dependencies,
+                                                    maxRetryCount: options.CurrentValue.MaxRetryCount,
+                                                    maxRetryDelay: options.CurrentValue.MaxRetryDelay,
+                                                    errorNumbersToAdd: options.CurrentValue.ErrorNumbersToAdd
+                                            ))
+                                        .MigrationsAssembly(typeof(ApplicationDbContext).Assembly.GetName().Name))
+                .AddInterceptors(auditableInterceptor);
         });
 
-        // Config for App User
-        services.AddIdentityCore<AppUser>(opt =>
-        {
-            opt.Lockout.AllowedForNewUsers = true; // Default true
-            opt.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(2); // Default 5 ==> Lock trong bao lâu
-            opt.Lockout.MaxFailedAccessAttempts = 3; // Default 5 ==> Sai bao nhiêu lần thì sẽ lock
-        })
-            .AddRoles<AppRole>()
-            .AddEntityFrameworkStores<ApplicationDbContext>();
+        services.AddIdentityCore<AppUser>()
+                .AddRoles<AppRole>()
+                .AddEntityFrameworkStores<ApplicationDbContext>();
 
         services.Configure<IdentityOptions>(options =>
         {
@@ -70,28 +57,100 @@ public static class ServiceCollectionExtensions
             options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(2); // Default 5
             options.Lockout.MaxFailedAccessAttempts = 3; // Default 5
 
-            // Config for password
-            options.Password.RequireDigit = false;
-            options.Password.RequireLowercase = false; // Có chữ thường
-            options.Password.RequireNonAlphanumeric = false; // Có số
-            options.Password.RequireUppercase = false; // Có viết hoa
-            options.Password.RequiredLength = 6; // Độ dài 6 kí tự
-            options.Password.RequiredUniqueChars = 1; // Có 1 kí tự đạc biệt
-            options.Lockout.AllowedForNewUsers = true;
+            options.Password.RequireDigit = true;
+            options.Password.RequireLowercase = true;
+            options.Password.RequireNonAlphanumeric = true;
+            options.Password.RequireUppercase = true;
+            options.Password.RequiredLength = 6;
+            options.Password.RequiredUniqueChars = 1;
         });
     }
 
-    // DI for UnitOfWork and Repository
-    public static void AddRepositoryBaseConfiguration(this IServiceCollection services)
+    public static OptionsBuilder<SqlServerRetryOptions> AddSqlServerRetryOptionsConfigurationPersistence(this IServiceCollection services, IConfigurationSection section)
+        => services
+                .AddOptions<SqlServerRetryOptions>()
+                .Bind(section)
+                .ValidateDataAnnotations()
+                .ValidateOnStart();
+
+    public static void AddPostgresConfigurationPersistence(this IServiceCollection services)
     {
-        services.AddTransient(typeof(IUnitOfWork), typeof(EFUnitOfWork));
-        services.AddTransient(typeof(IRepositoryBase<,>), typeof(RepositoryBase<,>));
+        // Enable legacy timestamp behavior for Npgsql
+        AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
+        // use db context pool => not use normal db context
+        services.AddDbContextPool<DbContext, ApplicationDbContext>((provider, builder) =>
+        {
+            var auditableInterceptor = provider.GetRequiredService<UpdateAuditableEntitiesInterceptor>();
+
+            var configuration = provider.GetRequiredService<IConfiguration>();
+            var options = provider.GetRequiredService<IOptionsMonitor<PostgresServerRetryOptions>>();
+
+            builder
+                .EnableDetailedErrors()
+                .EnableSensitiveDataLogging(true)
+                .UseLazyLoadingProxies(true) // if you use Lazy Loading, all of the navigation fields should be VIRTUAL
+                .UseNpgsql(
+                    connectionString: configuration.GetConnectionString(nameof(PostgresConnectionStrings)),
+                    npgsqlOptionsAction: optionsBuider
+                        => optionsBuider.ExecutionStrategy(
+                                            dependencies => new NpgsqlRetryingExecutionStrategy(
+                                                    dependencies: dependencies,
+                                                    maxRetryCount: options.CurrentValue.MaxRetryCount,
+                                                    maxRetryDelay: options.CurrentValue.MaxRetryDelay,
+                                                    errorCodesToAdd: options.CurrentValue.ErrorNumbersToAdd
+                                            ))
+                                        .MigrationsAssembly(typeof(ApplicationDbContext).Assembly.GetName().Name))
+                .AddInterceptors(auditableInterceptor);
+        });
+
+        services.AddIdentityCore<AppUser>()
+                .AddRoles<AppRole>()
+                .AddEntityFrameworkStores<ApplicationDbContext>();
+
+        services.Configure<IdentityOptions>(options =>
+        {
+            options.Lockout.AllowedForNewUsers = true; // Default true
+            options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(2); // Default 5
+            options.Lockout.MaxFailedAccessAttempts = 3; // Default 5
+
+            options.Password.RequireDigit = true;
+            options.Password.RequireLowercase = true;
+            options.Password.RequireNonAlphanumeric = true;
+            options.Password.RequireUppercase = true;
+            options.Password.RequiredLength = 6;
+            options.Password.RequiredUniqueChars = 1;
+        });
     }
 
-    public static OptionsBuilder<SqlServerRetryOptions> ConfigureSqlServerRetryOptions(this IServiceCollection services, IConfigurationSection section)
-         => services
-             .AddOptions<SqlServerRetryOptions>() // Add service options
-             .Bind(section) // Bind section to IConfigurationSection
-             .ValidateDataAnnotations() // Check Data Annotation meet the requirement in SqlServerRetryOptions
-             .ValidateOnStart(); // Ensure, It is valid after start
+    public static OptionsBuilder<PostgresServerRetryOptions> AddPostgresServerRetryOptionsConfigurationPersistence(this IServiceCollection services, IConfigurationSection section)
+        => services
+                .AddOptions<PostgresServerRetryOptions>()
+                .Bind(section)
+                .ValidateDataAnnotations()
+                .ValidateOnStart();
+
+    public static void AddRepositoryBaseConfigurationPersistence(this IServiceCollection services)
+        => services
+                //.AddTransient(typeof(IUnitOfWork), typeof(EFUnitOfWork))
+                .AddTransient(typeof(IRepositoryBase<,>), typeof(RepositoryBase<,>));
+
+    public static void AddInterceptorConfigurationPersistence(this IServiceCollection services)
+    {
+        services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
+        services.AddSingleton<UpdateAuditableEntitiesInterceptor>();
+        services.AddScoped<ApplicationDbContextInitialiser>();
+    }
+
+    public static async Task<IApplicationBuilder> AddInitialiserConfigurationPersistence(
+            this IApplicationBuilder app)
+    {
+        // Add scoped service in Program.cs instead
+        using var scope = app.ApplicationServices.CreateScope();
+        var initialiser = scope.ServiceProvider.GetRequiredService<ApplicationDbContextInitialiser>();
+        await initialiser.InitialiseAsync();
+        await initialiser.SeedAsync();
+
+        return app;
+    }
 }

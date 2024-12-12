@@ -3,10 +3,8 @@
 namespace BadmintonSystem.Contract.Enumerations;
 public class SortOrder : SmartEnum<SortOrder>
 {
-    public SortOrder(string name, int value)
-        : base(name, value)
-    {
-    }
+    public SortOrder(string name, int value) : base(name, value)
+    { }
 
     public static readonly SortOrder Ascending = new(nameof(Ascending), 1);
     public static readonly SortOrder Descending = new(nameof(Descending), 2);

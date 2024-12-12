@@ -1,9 +1,12 @@
-﻿using BadmintonSystem.Domain.Abstractions.Entities;
+﻿using BadmintonSystem.Domain.Enumerations;
 
 namespace BadmintonSystem.Domain.Entities;
-public class UserAddress : AuditableEntity<Guid>
+
+public class UserAddress
 {
-    public Guid? AddressId { get; private set; }
-    public Guid? AppUserId { get; private set; }
-    public bool IsDefault { get; private set; }
+    public Guid AddressId { get; set; }
+
+    public Guid UserId { get; set; }
+
+    public DefaultEnum IsDefault { get; set; }
 }

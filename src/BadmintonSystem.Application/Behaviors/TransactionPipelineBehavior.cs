@@ -1,27 +1,21 @@
-﻿using BadmintonSystem.Domain.Abstractions;
-using BadmintonSystem.Persistence;
+﻿using BadmintonSystem.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace BadmintonSystem.Application.Behaviors;
-
 public sealed class TransactionPipelineBehavior<TRequest, TResponse>
     : IPipelineBehavior<TRequest, TResponse>
     where TRequest : notnull
 {
-    private readonly IUnitOfWork _unitOfWork; // SQL-SERVER-STRATEGY-2
-    private readonly ApplicationDbContext _context; // SQL-SERVER-STRATEGY-1
+    private readonly ApplicationDbContext _context;
 
-    public TransactionPipelineBehavior(IUnitOfWork unitOfWork, ApplicationDbContext context)
+    public TransactionPipelineBehavior(ApplicationDbContext context)
     {
-        _unitOfWork = unitOfWork;
         _context = context;
     }
 
-    public async Task<TResponse> Handle(TRequest request,
-        RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
+    public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
     {
-        // Check is Command then execute
         if (!IsCommand()) // In case TRequest is QueryRequest just ignore
             return await next();
 
@@ -29,8 +23,6 @@ public sealed class TransactionPipelineBehavior<TRequest, TResponse>
 
         //// Use of an EF Core resiliency strategy when using multiple DbContexts within an explicit BeginTransaction():
         //// https://learn.microsoft.com/ef/core/miscellaneous/connection-resiliency
-        // Using Database generate ExecutionStrategy
-        // Sử dụng _context.SaveChange() thay cho _unitOfWork.SaveChangeAnsync
         var strategy = _context.Database.CreateExecutionStrategy();
         return await strategy.ExecuteAsync(async () =>
         {
@@ -42,6 +34,7 @@ public sealed class TransactionPipelineBehavior<TRequest, TResponse>
                 return response;
             }
         });
+
         #endregion ============== SQL-SERVER-STRATEGY-1 ==============
 
         #region ============== SQL-SERVER-STRATEGY-2 ==============
@@ -50,22 +43,15 @@ public sealed class TransactionPipelineBehavior<TRequest, TResponse>
         //using (var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
         //{
         //    var response = await next();
-        //    After next ==> handler
-        //    Trong Handler mặc dù có rất nhiều câu lệnh SaveChange but
-        //    It not save xuống Database, It will lưu tạm
-        //    If it an error then roll back tất cả
-        //    Can use not _unitOfWork.SaveChange
         //    await _unitOfWork.SaveChangesAsync(cancellationToken);
-        //    Thành công hay không
         //    transaction.Complete();
         //    await _unitOfWork.DisposeAsync();
         //    return response;
         //}
-        #endregion ============== SQL-SERVER-STRATEGY-2 ==============
 
+        #endregion ============== SQL-SERVER-STRATEGY-2 ==============
     }
 
-    // Check Ending có Command
     private bool IsCommand()
         => typeof(TRequest).Name.EndsWith("Command");
 }

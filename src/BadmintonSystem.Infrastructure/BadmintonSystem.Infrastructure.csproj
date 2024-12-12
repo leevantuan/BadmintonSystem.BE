@@ -7,10 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Caching\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\BadmintonSystem.Application\BadmintonSystem.Application.csproj" />
     <ProjectReference Include="..\BadmintonSystem.Persistence\BadmintonSystem.Persistence.csproj" />
   </ItemGroup>

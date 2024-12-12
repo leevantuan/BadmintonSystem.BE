@@ -4,7 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace BadmintonSystem.Persistence.Configurations;
-internal class AppRoleConfiguration : IEntityTypeConfiguration<AppRole>
+
+internal sealed class AppRoleConfiguration : IEntityTypeConfiguration<AppRole>
 {
     public void Configure(EntityTypeBuilder<AppRole> builder)
     {
@@ -26,13 +27,6 @@ internal class AppRoleConfiguration : IEntityTypeConfiguration<AppRole>
         builder.HasMany(e => e.UserRoles)
             .WithOne()
             .HasForeignKey(ur => ur.RoleId)
-            .IsRequired();
-
-        // Each User can have many ActionInFunction ==> Relationship
-        // One - Many "User - ActionInFunction"
-        builder.HasMany(e => e.PermissionInRoles)
-            .WithOne()
-            .HasForeignKey(aif => aif.RoleId)
             .IsRequired();
     }
 }

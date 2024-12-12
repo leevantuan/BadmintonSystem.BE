@@ -1,32 +1,19 @@
-﻿using BadmintonSystem.Domain.Abstractions.Entities;
+﻿using BadmintonSystem.Contract.Abstractions.Entities;
+using BadmintonSystem.Domain.Enumerations;
 
 namespace BadmintonSystem.Domain.Entities;
-public class Sale : AuditableEntity<Guid>
+
+public class Sale : EntityAuditBase<Guid>
 {
-    public string Name { get; private set; }
-    public decimal Persent { get; private set; }
-    public DateTime StartTime { get; private set; }
-    public DateTime EndTime { get; private set; }
-    public bool Status { get; private set; }
+    public string Name { get; set; }
 
-    public static Sale CreateSale(string name, decimal persent, DateTime startTime, DateTime endTime, bool? status)
-    {
-        return new Sale()
-        {
-            Name = name,
-            Persent = persent,
-            StartTime = startTime,
-            EndTime = endTime,
-            Status = status ?? false,
-        };
-    }
+    public int Percent { get; set; }
 
-    public void Update(string name, decimal persent, DateTime startTime, DateTime endTime, bool? status)
-    {
-        Name = name;
-        Persent = persent;
-        StartTime = startTime;
-        EndTime = endTime;
-        Status = status ?? false;
-    }
+    public DateTime StartDate { get; set; }
+
+    public DateTime EndDate { get; set; }
+
+    public ActiveEnum IsActive { get; set; }
+
+    public virtual ICollection<Booking> Bookings { get; set; }
 }

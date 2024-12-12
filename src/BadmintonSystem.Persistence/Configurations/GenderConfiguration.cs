@@ -4,16 +4,18 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace BadmintonSystem.Persistence.Configurations;
-internal class GenderConfiguration : IEntityTypeConfiguration<Gender>
+internal sealed class GenderConfiguration : IEntityTypeConfiguration<Gender>
 {
     public void Configure(EntityTypeBuilder<Gender> builder)
     {
         builder.ToTable(TableNames.Gender);
 
-        // Reset primary key == Id
         builder.HasKey(x => x.Id);
+        builder.Property(x => x.Name).HasDefaultValue(null);
 
-        // Config validator for Action
-        builder.Property(x => x.Name).HasMaxLength(50).IsRequired(); // Max length and required
+        builder.HasMany(x => x.Users)
+            .WithOne()
+            .HasForeignKey(x => x.GenderId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

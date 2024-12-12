@@ -3,7 +3,7 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 
 namespace BadmintonSystem.Application.Behaviors;
-public class TracingPipelineBehavior<TRequest, TResponse> :
+public sealed class TracingPipelineBehavior<TRequest, TResponse> :
     IPipelineBehavior<TRequest, TResponse>
     where TRequest : IRequest<TResponse>
 {

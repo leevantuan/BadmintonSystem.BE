@@ -1,7 +1,7 @@
 ﻿namespace BadmintonSystem.Contract.Abstractions.Shared;
+
 public class Result
 {
-    // Check request in Result
     protected internal Result(bool isSuccess, Error error)
     {
         if (isSuccess && error != Error.None)
@@ -24,20 +24,13 @@ public class Result
 
     public Error Error { get; }
 
-    // IsSuccess => trả về kết quả
     public static Result Success() => new(true, Error.None);
 
-    // If IsSuccess == True ==> Return value
-    public static Result<TValue> Success<TValue>(TValue value) =>
-        new(value, true, Error.None);
+    public static Result<TValue> Success<TValue>(TValue value) => new(value, true, Error.None);
 
-    // If Result.Failure == Error
-    public static Result Failure(Error error) =>
-        new(false, error);
+    public static Result Failure(Error error) => new(false, error);
 
-    public static Result<TValue> Failure<TValue>(Error error) =>
-        new(default, false, error);
+    public static Result<TValue> Failure<TValue>(Error error) => new(default, false, error);
 
-    public static Result<TValue> Create<TValue>(TValue? value) =>
-        value is not null ? Success(value) : Failure<TValue>(Error.NullValue);
+    public static Result<TValue> Create<TValue>(TValue? value) => value is not null ? Success(value) : Failure<TValue>(Error.NullValue);
 }

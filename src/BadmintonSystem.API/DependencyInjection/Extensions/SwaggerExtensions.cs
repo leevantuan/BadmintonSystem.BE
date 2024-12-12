@@ -1,4 +1,5 @@
-﻿using BadmintonSystem.API.DependencyInjection.Options;
+﻿using Asp.Versioning.ApiExplorer;
+using BadmintonSystem.API.DependencyInjection.Options;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
@@ -8,23 +9,34 @@ namespace BadmintonSystem.API.DependencyInjection.Extensions;
 
 public static class SwaggerExtensions
 {
-    public static void AddSwagger(this IServiceCollection services)
+    public static void AddSwaggerAPI(this IServiceCollection services)
     {
-        // Add Sawagger Gen in Program to here
-        //services.AddSwaggerGen();
         services.AddSwaggerGen(c =>
         {
-            // Loop qua tất cả các version
-            // this here takes version
-            c.SwaggerDoc($"Swagger", new OpenApiInfo { Title = "Badminton System Manger" });
+            // Retrieve the version description provider
+            var provider = services.BuildServiceProvider().GetRequiredService<IApiVersionDescriptionProvider>();
 
-            c.AddSecurityDefinition("ApiKey", new OpenApiSecurityScheme
+            foreach (var description in provider.ApiVersionDescriptions)
             {
-                Description = "Input your API key",
-                In = ParameterLocation.Header,
+                c.SwaggerDoc(description.GroupName, new OpenApiInfo()
+                {
+                    Title = AppDomain.CurrentDomain.FriendlyName,
+                    Version = description.ApiVersion.ToString()
+                });
+            }
+
+            // Configure security definition for Bearer authentication
+            c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            {
+                Description = "Input your token!. ",
                 Name = "Authorization",
-                Type = SecuritySchemeType.ApiKey
+                In = ParameterLocation.Header,
+                Type = SecuritySchemeType.Http,
+                Scheme = "Bearer",
+                BearerFormat = "JWT"
             });
+
+            // Set up the requirement for the Bearer token in requests
             c.AddSecurityRequirement(new OpenApiSecurityRequirement
             {
                 {
@@ -33,62 +45,27 @@ public static class SwaggerExtensions
                         Reference = new OpenApiReference
                         {
                             Type = ReferenceType.SecurityScheme,
-                            Id = "ApiKey"
-                        }
+                            Id = "Bearer"
+                        },
+                        Scheme = "Bearer",
+                        Name = "Authorization",
+                        In = ParameterLocation.Header
                     },
                     new List<string>()
                 }
             });
         });
 
-        #region ========================= SWAGGER GEN "Bearer" ====================
-
-        //services.AddSwaggerGen(c =>
-        //{
-        //    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Swagger Smart", Version = "v1" });
-
-        //    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-        //    {
-        //        Description = @"JWT Authorization header using the Bearer scheme. \r\n\r\n
-        //              Enter 'Bearer' [space] and then your token in the text input below.
-        //              \r\n\r\nExample: 'Bearer 12345abcdef'",
-        //        Name = "Authorization",
-        //        In = ParameterLocation.Header,
-        //        Type = SecuritySchemeType.ApiKey,
-        //        Scheme = "Bearer"
-        //    });
-
-        //    c.AddSecurityRequirement(new OpenApiSecurityRequirement(){{ new OpenApiSecurityScheme {
-        //                                                            Reference = new OpenApiReference
-        //                                                                {
-        //                                                                Type = ReferenceType.SecurityScheme,
-        //                                                                Id = "Bearer"
-        //                                                                },
-        //                                                                Scheme = "oauth2",
-        //                                                                Name = "Bearer",
-        //                                                                In = ParameterLocation.Header,
-        //                                                            },
-        //                                                            new List<string>()
-        //                                                            }
-        //                                                        });
-        //});
-
-        #endregion ========================= SWAGGER GEN "Bearer" ====================
-
-        // Config thêm cho SwaggerGen
         services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
     }
 
-    // After add SwaggerGen then config it
-    public static void ConfigureSwagger(this WebApplication app)
+    public static void AddSwaggerConfigurationAPI(this WebApplication app)
     {
-        app.UseSwagger(); // Có sử dụng hay không
+        app.UseSwagger();
         app.UseSwaggerUI(options =>
         {
-            // Loop qua tất cả các version
             foreach (var version in app.DescribeApiVersions().Select(version => version.GroupName))
-                options.SwaggerEndpoint($"/swagger/{version}/swagger.json", version); // Tự động Add các version
-
+                options.SwaggerEndpoint($"/swagger/{version}/swagger.json", version);
 
             options.DisplayRequestDuration();
             options.EnableTryItOutByDefault();

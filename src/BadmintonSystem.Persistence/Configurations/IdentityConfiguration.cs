@@ -1,27 +1,20 @@
-﻿using BadmintonSystem.Persistence.Constants;
+﻿using BadmintonSystem.Domain.Entities.Identity;
+using BadmintonSystem.Persistence.Constants;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-// Purpose => Generate Table and reset key == Guid
 namespace BadmintonSystem.Persistence.Configurations;
 
-// Internal just used in Assembly here
-// Sealed can't Inheritance == "Kế thừa"
-// Override Authoziration of IdentityFramework
-// IEntityTypeConfiguration => this is configuration for Entities
-// Purpose => It will configuration for OnModelCreating in DbContext, Instead of writing in Func DbContext
-internal sealed class AppUserRoleConfiguration : IEntityTypeConfiguration<IdentityUserRole<Guid>>
+internal sealed class AppUserRoleConfiguration : IEntityTypeConfiguration<AppUserRole>
 {
-    // Configure IdentityUserRole == Override it
-    public void Configure(EntityTypeBuilder<IdentityUserRole<Guid>> builder)
+    public void Configure(EntityTypeBuilder<AppUserRole> builder)
     {
-        // ToTable => Override table name == TableNames.AppUserRoles
         builder.ToTable(TableNames.AppUserRoles);
 
-        // Generate primary key contain: RoleId and UserId
-        // new { a, b } => generate multiple primary keys
         builder.HasKey(x => new { x.RoleId, x.UserId });
+
+        builder.Property(x => x.IsDefault).HasDefaultValue(false);
     }
 }
 
@@ -31,7 +24,7 @@ internal sealed class AppRoleClaimConfiguration : IEntityTypeConfiguration<Ident
     {
         builder.ToTable(TableNames.AppRoleClaims);
 
-        builder.HasKey(x => x.RoleId);
+        builder.HasKey(x => x.Id);
     }
 }
 
@@ -41,7 +34,7 @@ internal sealed class AppUserClaimConfiguration : IEntityTypeConfiguration<Ident
     {
         builder.ToTable(TableNames.AppUserClaims);
 
-        builder.HasKey(x => x.UserId);
+        builder.HasKey(x => x.Id);
     }
 }
 

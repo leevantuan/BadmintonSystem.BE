@@ -4,7 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace BadmintonSystem.Persistence.Configurations;
-internal class CategoryConfiguration : IEntityTypeConfiguration<Category>
+
+internal sealed class CategoryConfiguration : IEntityTypeConfiguration<Category>
 {
     public void Configure(EntityTypeBuilder<Category> builder)
     {
@@ -12,11 +13,11 @@ internal class CategoryConfiguration : IEntityTypeConfiguration<Category>
 
         builder.HasKey(x => x.Id);
 
-        builder.Property(x => x.Name).HasMaxLength(50).IsRequired();
+        builder.Property(x => x.Name).IsRequired(true);
 
-        builder.HasMany(x => x.AdditionalServices)
-                .WithOne()
-                .HasForeignKey(x => x.CategoryId)
-                .OnDelete(DeleteBehavior.Cascade);
+        builder.HasMany(x => x.Services)
+            .WithOne()
+            .HasForeignKey(x => x.CategoryId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

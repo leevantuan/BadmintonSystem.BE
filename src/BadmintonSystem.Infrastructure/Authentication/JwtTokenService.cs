@@ -10,6 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 namespace BadmintonSystem.Infrastructure.Authentication;
 public class JwtTokenService : IJwtTokenService
 {
+    // get option
     private readonly JwtOption jwtOption = new JwtOption();
 
     public JwtTokenService(IConfiguration configuration)
@@ -19,70 +20,59 @@ public class JwtTokenService : IJwtTokenService
 
     public string GenerateAccessToken(IEnumerable<Claim> claims)
     {
-        // Phải giống nhau thì mới Xác thực được
         var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOption.SecretKey));
+        var signingCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
 
-        // Thuật toán Hash 256
-        var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
-
-        // Các option để Generate
         var tokenOptions = new JwtSecurityToken(
-            issuer: jwtOption.Issuer, // False nếu không giống vẫn chạy
-            audience: jwtOption.Audience, // False nếu không giống vẫn chạy
+            issuer: jwtOption.Issuer,
+            audience: jwtOption.Audience,
             claims: claims,
             expires: DateTime.Now.AddMinutes(jwtOption.ExpireMin),
-            signingCredentials: signinCredentials);
+            signingCredentials: signingCredentials
+        );
 
-        // Generate token
         var tokenString = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
+
         return tokenString;
     }
 
     public string GenerateRefreshToken()
     {
         var randomNumber = new byte[32];
-
-        // Random ra các số và chữ, ký tự đặc biệt
         using (var rng = RandomNumberGenerator.Create())
         {
             rng.GetBytes(randomNumber);
-
-            // Convert base 64
             return Convert.ToBase64String(randomNumber);
         }
     }
 
-    // Kiểm tra có hợp lệ không
     public ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
     {
+        // server
         var Key = Encoding.UTF8.GetBytes(jwtOption.SecretKey);
 
-        // Kiểm tra xem cso đúng với token cấp phát hay không
         var tokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
         {
-            ValidateIssuer = false,
-            ValidateAudience = false,
-            ValidateLifetime = false, // Bỏ qua thời hạn xử lý token
+            ValidateIssuer = false, // on production make it true
+            ValidateAudience = false, // on production make it true
+            ValidateLifetime = false, // here we are saying that we don't care about the token's expiration date
             ValidateIssuerSigningKey = true,
+            ValidIssuer = jwtOption.Issuer,
+            ValidAudience = jwtOption.Audience,
             IssuerSigningKey = new SymmetricSecurityKey(Key),
-            ClockSkew = TimeSpan.Zero,
+            ClockSkew = TimeSpan.Zero
         };
 
         var tokenHandler = new JwtSecurityTokenHandler();
 
-        // Nếu đúng thì sẽ lấy các Claim, token
-        try
-        {
-            var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out SecurityToken securityToken);
+        // check token expired is a token you generate or not ? => because you set ValidateLifeTime = false (server check)
+        // if true (token you generate right) => return principle
+        var principle = tokenHandler.ValidateToken(token, tokenValidationParameters, out SecurityToken securityToken);
 
-            if (securityToken is not JwtSecurityToken jwtSecurityToken || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
-                throw new SecurityTokenException("Token không hợp lệ");
+        JwtSecurityToken jwtSecurityToken = (JwtSecurityToken)securityToken;
+        if (jwtSecurityToken == null || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
+            throw new SecurityTokenException("Invalid token");
 
-            return principal;
-        }
-        catch (Exception ex)
-        {
-            throw new SecurityTokenException("Token không hợp lệ hoặc đã bị lỗi", ex);
-        }
+        return principle;
     }
 }

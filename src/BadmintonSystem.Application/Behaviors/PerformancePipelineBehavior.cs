@@ -3,7 +3,8 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 
 namespace BadmintonSystem.Application.Behaviors;
-public class PerformancePipelineBehavior<TRequest, TResponse> :
+
+public sealed class PerformancePipelineBehavior<TRequest, TResponse> :
     IPipelineBehavior<TRequest, TResponse>
     where TRequest : IRequest<TResponse>
 {
@@ -18,6 +19,7 @@ public class PerformancePipelineBehavior<TRequest, TResponse> :
 
     public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
     {
+        _timer.Start();
         var response = await next();
         _timer.Stop();
 

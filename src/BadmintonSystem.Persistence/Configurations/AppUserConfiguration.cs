@@ -1,10 +1,12 @@
-﻿using BadmintonSystem.Domain.Entities.Identity;
+﻿using BadmintonSystem.Contract.Constants;
+using BadmintonSystem.Domain.Entities.Identity;
 using BadmintonSystem.Persistence.Constants;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace BadmintonSystem.Persistence.Configurations;
-internal class AppUserConfiguration : IEntityTypeConfiguration<AppUser>
+
+internal sealed class AppUserConfiguration : IEntityTypeConfiguration<AppUser>
 {
     public void Configure(EntityTypeBuilder<AppUser> builder)
     {
@@ -14,7 +16,8 @@ internal class AppUserConfiguration : IEntityTypeConfiguration<AppUser>
         builder.Property(x => x.IsDirector).HasDefaultValue(false);
         builder.Property(x => x.IsHeadOfDepartment).HasDefaultValue(false);
         builder.Property(x => x.ManagerId).HasDefaultValue(null);
-        builder.Property(x => x.IsRecipient).HasDefaultValue(-1);
+        builder.Property(x => x.IsReceipient).HasDefaultValue(-1);
+        builder.Property(x => x.AvatarUrl).HasDefaultValue(ImagesUrl.Avatar);
 
         // Each User can have many UserClaims
         builder.HasMany(e => e.Claims)
@@ -40,18 +43,30 @@ internal class AppUserConfiguration : IEntityTypeConfiguration<AppUser>
             .HasForeignKey(ur => ur.UserId)
             .IsRequired();
 
-        // Each User can have many ActionInFunction ==> Relationship
-        // One - Many "User - ActionInFunction"
-        builder.HasMany(e => e.PermissionInUsers)
+        builder.HasMany(x => x.Notifications)
             .WithOne()
-            .HasForeignKey(aif => aif.UserId)
+            .HasForeignKey(x => x.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasMany(x => x.PaymentMethods)
+            .WithOne()
+            .HasForeignKey(x => x.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasMany(x => x.Reviews)
+            .WithOne()
+            .HasForeignKey(x => x.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasMany(x => x.UserAddresses)
+            .WithOne()
+            .HasForeignKey(x => x.UserId)
+            .OnDelete(DeleteBehavior.Cascade)
             .IsRequired();
 
-        // Each User can have many ActionInFunction ==> Relationship
-        // One - Many "User - ActionInFunction"
-        builder.HasMany(e => e.UserAddress)
+        builder.HasMany(x => x.Bookings)
             .WithOne()
-            .HasForeignKey(aif => aif.AppUserId)
-            .IsRequired();
+            .HasForeignKey(x => x.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

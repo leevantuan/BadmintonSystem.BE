@@ -25,12 +25,12 @@ public class ValidationPipelineBehavior<TRequest, TResponse> : IPipelineBehavior
 
         Error[] errors = _validators
             .Select(validator => validator.Validate(request))
-            .SelectMany(validationResult => validationResult.Errors) // Get Error
+            .SelectMany(validationResult => validationResult.Errors)
             .Where(validationFailure => validationFailure is not null)
-            .Select(failure => new Error( 
+            .Select(failure => new Error(
                 failure.PropertyName,
                 failure.ErrorMessage))
-            .Distinct() // Không bị lặp nhau
+            .Distinct()
             .ToArray();
 
         if (errors.Any())

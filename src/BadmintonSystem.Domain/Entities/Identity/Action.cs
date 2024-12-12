@@ -1,10 +1,11 @@
-﻿namespace BadmintonSystem.Domain.Entities.Identity;
-public class Action
-{
-    public string Id { get; set; }
-    public string Name { get; set; }
-    public int? SortOrder { get; set; }
-    public bool? IsActive { get; set; }
+﻿using BadmintonSystem.Contract.Abstractions.Entities;
 
-    public virtual ICollection<ActionInFunction> ActionInFunctions { get; set; }
+namespace BadmintonSystem.Domain.Entities.Identity;
+public class Action : EntityAuditBase<int>
+{
+    public string Name { get; set; }
+
+    public int? SortOrder { get; set; }
+
+    public bool? IsActive { get; set; }
 }

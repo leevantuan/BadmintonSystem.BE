@@ -3,37 +3,38 @@
 namespace BadmintonSystem.Contract.Extensions;
 public static class SortOrderExtension
 {
-    public static SortOrder ConvertStringToSortOrder(string? sortOrder)
+    // handle user doesn't enter sort column or sort order
+    public static SortOrder ConvertStringToSortOrderWithOneColumn(string? sortOrder)
         => !string.IsNullOrWhiteSpace(sortOrder)
-           ? sortOrder.Trim().ToLower().Equals("asc") // If contain Asc == SortOrder.Ascending
-           ? SortOrder.Ascending : SortOrder.Descending : SortOrder.Ascending;
+            ? sortOrder.Trim().ToUpper().Equals("ASC")
+            ? SortOrder.Ascending : SortOrder.Descending : SortOrder.Descending;
 
-    // Format: Column1-ASC,Column2-DESC...
-    public static IDictionary<string, SortOrder> ConvertStringToSortOrderV2(string? sortOrder)
+    public static IDictionary<string, SortOrder> ConvertStringToSortOrderWithMultipleColumn(string? sortColumnAndOrder)
     {
         var result = new Dictionary<string, SortOrder>();
 
-        if (!string.IsNullOrEmpty(sortOrder))
+        if (!string.IsNullOrEmpty(sortColumnAndOrder))
         {
-            if (sortOrder.Trim().Split(",").Length > 0)
+            if (sortColumnAndOrder.Trim().Split(",").Length > 0)
             {
-                foreach (var item in sortOrder.Split(","))
+                foreach (var item in sortColumnAndOrder.Trim().Split(","))
                 {
-                    if (!item.Contains('-'))
-                        throw new FormatException("Sort condition should be follow by format: Column1-ASC,Column2-DESC...");
-                    var property = item.Trim().Split("-"); // Remove Space and split -
-                    var key = GenderExtension.GetSortGenderProperty(property[0]); // This is KEY
-                    var value = ConvertStringToSortOrder(property[1]); // This is VALUE
-                    result.TryAdd(key, value); // Remove Duplicate
+                    if (!item.Contains("-"))
+                        throw new FormatException("Sort condition should be followed by format: Column1-ASC, Column2-DESC...");
+
+                    var property = item.Trim().Split("-");
+                    //var key = ReviewExtension.GetSortReviewProperty(property[0]);
+                    var value = ConvertStringToSortOrderWithOneColumn(property[1]);
+                    result.TryAdd(property[0], value); // it will not add duplicate key
                 }
             }
             else
             {
-                if (!sortOrder.Contains('-'))
-                    throw new FormatException("Sort condition should be follow by format: Column1-ASC,Column2-DESC...");
+                if (!sortColumnAndOrder.Contains("-"))
+                    throw new FormatException("Sort condition should be followed by format: Column1-ASC, Column2-DESC...");
 
-                var property = sortOrder.Trim().Split("-");
-                result.Add(property[0], ConvertStringToSortOrder(property[1]));
+                var property = sortColumnAndOrder.Trim().Split("-");
+                result.Add(property[0], ConvertStringToSortOrderWithOneColumn(property[1]));
             }
         }
 

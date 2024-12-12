@@ -8,11 +8,10 @@ internal sealed class ExceptionHandlingMiddleware : IMiddleware
     private readonly ILogger<ExceptionHandlingMiddleware> _logger;
 
     public ExceptionHandlingMiddleware(ILogger<ExceptionHandlingMiddleware> logger)
-         => _logger = logger;
+        => _logger = logger;
 
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
-
         try
         {
             await next(context);
@@ -25,19 +24,16 @@ internal sealed class ExceptionHandlingMiddleware : IMiddleware
         }
     }
 
-    // Takes infor error to output
-    private static async Task HandleExceptionAsync(HttpContext httpContext,
-                                                   Exception exception)
+    private static async Task HandleExceptionAsync(HttpContext httpContext, Exception exception)
     {
         var statusCode = GetStatusCode(exception);
 
-        // Information an error
         var response = new
         {
             title = GetTitle(exception),
             status = statusCode,
             detail = exception.Message,
-            errors = GetErrors(exception), // ==> Takes info an error Func GetErrors()
+            errors = GetErrors(exception),
         };
 
         httpContext.Response.ContentType = "application/json";
@@ -47,20 +43,20 @@ internal sealed class ExceptionHandlingMiddleware : IMiddleware
         await httpContext.Response.WriteAsync(JsonSerializer.Serialize(response));
     }
 
-    // Get Status Code
     private static int GetStatusCode(Exception exception) =>
         exception switch
         {
-            // Tự định nghĩa
             BadRequestException => StatusCodes.Status400BadRequest,
             NotFoundException => StatusCodes.Status404NotFound,
+            AlreadyExistException => StatusCodes.Status400BadRequest,
             //Application.Exceptions.ValidationException => StatusCodes.Status422UnprocessableEntity,
             FluentValidation.ValidationException => StatusCodes.Status400BadRequest,
+            UnauthorizedException => StatusCodes.Status401Unauthorized,
+            ForbiddenException => StatusCodes.Status403Forbidden,
             FormatException => StatusCodes.Status422UnprocessableEntity,
             _ => StatusCodes.Status500InternalServerError
         };
 
-    // Get Title error
     private static string GetTitle(Exception exception) =>
         exception switch
         {
@@ -79,4 +75,5 @@ internal sealed class ExceptionHandlingMiddleware : IMiddleware
 
         return errors;
     }
+
 }

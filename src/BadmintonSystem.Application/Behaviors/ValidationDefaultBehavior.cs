@@ -2,7 +2,6 @@
 using MediatR;
 
 namespace BadmintonSystem.Application.Behaviors;
-
 public sealed class ValidationDefaultBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     where TRequest : notnull
 {

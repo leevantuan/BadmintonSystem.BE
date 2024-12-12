@@ -12,10 +12,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="DependencyInjection\Options\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\BadmintonSystem.Domain\BadmintonSystem.Domain.csproj" />
   </ItemGroup>
 

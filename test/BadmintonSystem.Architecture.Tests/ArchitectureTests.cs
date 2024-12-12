@@ -1,4 +1,4 @@
-﻿using BadmintonSystem.Contract.Abstractions.Messages;
+﻿using BadmintonSystem.Contract.Abstractions.Message;
 using FluentAssertions;
 using NetArchTest.Rules;
 
