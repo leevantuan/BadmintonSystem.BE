@@ -1,4 +1,5 @@
 ﻿using BadmintonSystem.Contract.Abstractions.Entities;
+using BadmintonSystem.Domain.Enumerations;
 using Microsoft.AspNetCore.Identity;
 
 namespace BadmintonSystem.Domain.Entities.Identity;
@@ -43,9 +44,7 @@ public class AppUser : IdentityUser<Guid>, IAuditable
 
     public virtual ICollection<Booking>? Bookings { get; set; }
 
-    public Guid? GenderId { get; set; }
-
-    public virtual Gender? Gender { get; set; }
+    public GenderEnum? Gender { get; set; }
 
     public DateTime CreatedDate { get; set; }
 

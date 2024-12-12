@@ -36,7 +36,8 @@ public static class DatabaseSeeder
     }
 
     // Seeder AppRole
-    public static async Task AppRoleSeeder(RoleManager<Entities.AppRole> roleManager, ApplicationDbContext context,
+    public static async Task AppRoleSeeder
+    (RoleManager<Entities.AppRole> roleManager, ApplicationDbContext context,
         ILogger logger)
     {
         if (!roleManager.Roles.Any())
@@ -88,7 +89,8 @@ public static class DatabaseSeeder
     }
 
     // Seeder AppUser
-    public static async Task AppUserSeeder(UserManager<Entities.AppUser> userManager, ApplicationDbContext context,
+    public static async Task AppUserSeeder
+    (UserManager<Entities.AppUser> userManager, ApplicationDbContext context,
         ILogger logger)
     {
         if (!userManager.Users.Any())
@@ -125,7 +127,8 @@ public static class DatabaseSeeder
     }
 
     // Seeder RoleClaims Admin
-    public static async Task AppRoleClaimWithAdminSeeder(RoleManager<Entities.AppRole> roleManager,
+    public static async Task AppRoleClaimWithAdminSeeder
+    (RoleManager<Entities.AppRole> roleManager,
         ApplicationDbContext context)
     {
         Entities.AppRole role = await roleManager.FindByNameAsync(AppRoleEnum.ADMIN.ToString())
@@ -144,7 +147,8 @@ public static class DatabaseSeeder
     }
 
     // Seeder RoleClaims Manager
-    public static async Task AppRoleClaimWithManagerSeeder(RoleManager<Entities.AppRole> roleManager,
+    public static async Task AppRoleClaimWithManagerSeeder
+    (RoleManager<Entities.AppRole> roleManager,
         ApplicationDbContext context)
     {
         Entities.AppRole role = await roleManager.FindByNameAsync(AppRoleEnum.MANAGER.ToString())
@@ -163,7 +167,8 @@ public static class DatabaseSeeder
     }
 
     // Seeder RoleClaims Customer
-    public static async Task AppRoleClaimWithCustomerSeeder(RoleManager<Entities.AppRole> roleManager,
+    public static async Task AppRoleClaimWithCustomerSeeder
+    (RoleManager<Entities.AppRole> roleManager,
         ApplicationDbContext context)
     {
         Entities.AppRole role = await roleManager.FindByNameAsync(AppRoleEnum.CUSTOMER.ToString())
@@ -178,47 +183,41 @@ public static class DatabaseSeeder
                 string functionName = functionEnum.ToString().Trim().ToUpper();
                 switch (functionName)
                 {
-                    case "CATEGORY":
-                        await AddAppRoleClaim(functionName, "2", role, context, roleManager);
-                        break;
-                    case "SERVICE":
-                        await AddAppRoleClaim(functionName, "2", role, context, roleManager);
-                        break;
-                    case "NOTIFICATION":
-                        await AddAppRoleClaim(functionName, "2", role, context, roleManager);
-                        break;
-                    case "PAYMENTMETHOD":
+                    case "ADDRESS":
                         await AddAppRoleClaim(functionName, "15", role, context, roleManager);
                         break;
-                    case "SALE":
-                        await AddAppRoleClaim(functionName, "2", role, context, roleManager);
-                        break;
-                    case "BOOKINGTIME":
-                        await AddAppRoleClaim(functionName, "2", role, context, roleManager);
-                        break;
-                    case "BOOKINGLINE":
+                    case "APPUSER":
                         await AddAppRoleClaim(functionName, "15", role, context, roleManager);
-                        break;
-                    case "TIMESLOT":
-                        await AddAppRoleClaim(functionName, "2", role, context, roleManager);
                         break;
                     case "BOOKING":
+                        await AddAppRoleClaim(functionName, "15", role, context, roleManager);
+                        break;
+                    case "CATEGORY":
+                        await AddAppRoleClaim(functionName, "15", role, context, roleManager);
+                        break;
+                    case "CLUB":
+                        await AddAppRoleClaim(functionName, "15", role, context, roleManager);
+                        break;
+                    case "NOFITICATION":
                         await AddAppRoleClaim(functionName, "15", role, context, roleManager);
                         break;
                     case "REVIEW":
                         await AddAppRoleClaim(functionName, "15", role, context, roleManager);
                         break;
-                    case "REVIEWIMAGE":
+                    case "SALE":
                         await AddAppRoleClaim(functionName, "15", role, context, roleManager);
                         break;
-                    case "ADDRESS":
+                    case "SERVICE":
                         await AddAppRoleClaim(functionName, "15", role, context, roleManager);
                         break;
-                    case "USERADDRESS":
+                    case "TIMESLOT":
                         await AddAppRoleClaim(functionName, "15", role, context, roleManager);
                         break;
-                    case "APPUSER":
-                        await AddAppRoleClaim(functionName, "4", role, context, roleManager);
+                    case "YARD":
+                        await AddAppRoleClaim(functionName, "15", role, context, roleManager);
+                        break;
+                    case "YARDTYPE":
+                        await AddAppRoleClaim(functionName, "15", role, context, roleManager);
                         break;
                 }
             }
@@ -226,7 +225,8 @@ public static class DatabaseSeeder
     }
 
     // Seeder UserClaims
-    public static async Task AppUserClaimsSeeder(UserManager<Entities.AppUser> userManager,
+    public static async Task AppUserClaimsSeeder
+    (UserManager<Entities.AppUser> userManager,
         ApplicationDbContext context, ILogger logger)
     {
         string userEmail = "admin@gmail.com";
@@ -259,7 +259,8 @@ public static class DatabaseSeeder
         }
     }
 
-    private static async Task AddAppRoleClaim(string functionName, string value,
+    private static async Task AddAppRoleClaim
+    (string functionName, string value,
         Entities.AppRole role, ApplicationDbContext context, RoleManager<Entities.AppRole> roleManager)
     {
         var claim = new Claim(functionName, value);

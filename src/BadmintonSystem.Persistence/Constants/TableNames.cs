@@ -21,8 +21,10 @@ internal static class TableNames
     internal const string Service = nameof(Service);
     internal const string PaymentType = nameof(PaymentType);
     internal const string PaymentMethod = nameof(PaymentMethod);
+
     internal const string Notification = nameof(Notification);
-    internal const string Gender = nameof(Gender);
+
+    //internal const string Gender = nameof(Gender);
     internal const string Address = nameof(Address);
     internal const string UserAddress = nameof(UserAddress);
     internal const string ClubAddress = nameof(ClubAddress);

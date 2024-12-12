@@ -1,7 +1,8 @@
 ﻿using AutoMapper;
 using BadmintonSystem.Contract.Abstractions.Shared;
-using BadmintonSystem.Contract.Services.V1.Service;
+using BadmintonSystem.Contract.Services.V1.User;
 using BadmintonSystem.Domain.Entities;
+using BadmintonSystem.Domain.Entities.Identity;
 using BadmintonSystem.Domain.Enumerations;
 using static BadmintonSystem.Contract.Services.V1.Category.Response;
 using Request = BadmintonSystem.Contract.Services.V1.Category.Request;
@@ -13,6 +14,9 @@ public class ServiceV1Profile : Profile
 {
     public ServiceV1Profile()
     {
+        // App User
+        CreateMap<AppUser, Response.AppUserResponse>().ReverseMap();
+
         // Category ==> Có lớp con
         CreateMap<Category, CategoryResponse>().ReverseMap();
         CreateMap<Category, Request.CreateCategoryRequest>().ReverseMap();
@@ -25,11 +29,11 @@ public class ServiceV1Profile : Profile
                 => opt.MapFrom(src => src.Items));
 
         // Service ==> Không có lớp con
-        CreateMap<Service, Response.ServiceResponse>().ReverseMap();
+        CreateMap<Service, V1.Service.Response.ServiceResponse>().ReverseMap();
         CreateMap<Service, V1.Service.Request.CreateServiceRequest>().ReverseMap();
-        CreateMap<PagedResult<Service>, PagedResult<Response.ServiceResponse>>().ReverseMap();
-        CreateMap<Service, Response.ServiceDetailResponse>().ReverseMap();
-        CreateMap<PagedResult<Service>, PagedResult<Response.ServiceDetailResponse>>()
+        CreateMap<PagedResult<Service>, PagedResult<V1.Service.Response.ServiceResponse>>().ReverseMap();
+        CreateMap<Service, V1.Service.Response.ServiceDetailResponse>().ReverseMap();
+        CreateMap<PagedResult<Service>, PagedResult<V1.Service.Response.ServiceDetailResponse>>()
             .ForMember(dest => dest.Items, opt
                 => opt.MapFrom(src => src.Items)).ReverseMap();
 

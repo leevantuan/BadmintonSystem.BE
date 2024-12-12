@@ -8,7 +8,7 @@ public static class Query
 
     public record LoginQuery(string Email, string Password) : IQuery<Response.Authenticated>;
 
-    public record GetUserAuthorizationByEmailQuery(string Email) : IQuery<List<Response.UserAuthorization>>;
+    public record GetUserAuthorizationByEmailQuery(string Email) : IQuery<Response.UserDetailResponse>;
 
     //public record Token(string? AccessToken, string? RefreshToken) : IQuery<Response.Authenticated>;
 }

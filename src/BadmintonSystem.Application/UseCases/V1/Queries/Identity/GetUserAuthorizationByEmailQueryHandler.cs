@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using AutoMapper;
 using BadmintonSystem.Contract.Abstractions.Message;
 using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.V1.Identity;
@@ -10,36 +11,32 @@ using Microsoft.AspNetCore.Identity;
 
 namespace BadmintonSystem.Application.UseCases.V1.Queries.Identity;
 
-public sealed class GetUserAuthorizationByEmailQueryHandler
-    : IQueryHandler<Query.GetUserAuthorizationByEmailQuery, List<Response.UserAuthorization>>
+public sealed class GetUserAuthorizationByEmailQueryHandler(
+    UserManager<AppUser> userManager,
+    RoleManager<AppRole> roleManager,
+    IMapper mapper,
+    ApplicationDbContext context)
+    : IQueryHandler<Query.GetUserAuthorizationByEmailQuery, Response.UserDetailResponse>
 {
-    private readonly ApplicationDbContext _context;
-    private readonly RoleManager<AppRole> _roleManager;
-    private readonly UserManager<AppUser> _userManager;
-
-    public GetUserAuthorizationByEmailQueryHandler(UserManager<AppUser> userManager,
-        RoleManager<AppRole> roleManager,
-        ApplicationDbContext context)
-    {
-        _userManager = userManager;
-        _roleManager = roleManager;
-        _context = context;
-    }
-
-    public async Task<Result<List<Response.UserAuthorization>>> Handle(
+    public async Task<Result<Response.UserDetailResponse>> Handle
+    (
         Query.GetUserAuthorizationByEmailQuery request,
         CancellationToken cancellationToken)
     {
-        var results = new List<Response.UserAuthorization>();
+        var result = new Response.UserDetailResponse();
 
-        AppUser user = await _userManager.FindByEmailAsync(request.Email)
+        var authValues = new List<Response.UserAuthorization>();
+
+        AppUser user = await userManager.FindByEmailAsync(request.Email)
                        ?? throw new IdentityException.AppUserException(request.Email);
 
-        IList<Claim>? claims = await _userManager.GetClaimsAsync(user);
+        result.User = mapper.Map<Contract.Services.V1.User.Response.AppUserResponse>(user);
+
+        IList<Claim>? claims = await userManager.GetClaimsAsync(user);
 
         if (claims == null || !claims.Any())
         {
-            return Result.Success(results);
+            return Result.Success(result);
         }
 
         var functionKeys = Enum.GetValues<FunctionEnum>()
@@ -51,11 +48,11 @@ public sealed class GetUserAuthorizationByEmailQueryHandler
             try
             {
                 string? value = claims.FirstOrDefault(x => x.Type == function)?.Value;
-                Response.UserAuthorization? result = ActionHandler(function, value);
+                Response.UserAuthorization? authValue = ActionHandler(function, value);
 
-                if (result != null)
+                if (authValue != null)
                 {
-                    results.Add(result);
+                    authValues.Add(authValue);
                 }
             }
             catch (Exception ex)
@@ -64,7 +61,9 @@ public sealed class GetUserAuthorizationByEmailQueryHandler
             }
         }
 
-        return Result.Success(results);
+        result.Authorizations = authValues;
+
+        return Result.Success(result);
     }
 
     private static Response.UserAuthorization ActionHandler(string? function, string? value)

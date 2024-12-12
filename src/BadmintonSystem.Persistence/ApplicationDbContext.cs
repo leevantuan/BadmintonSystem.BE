@@ -9,10 +9,12 @@ using Action = BadmintonSystem.Domain.Entities.Identity.Action;
 
 namespace BadmintonSystem.Persistence;
 
-public sealed class ApplicationDbContext : IdentityDbContext<AppUser, AppRole, Guid, IdentityUserClaim<Guid>,
-    AppUserRole, IdentityUserLogin<Guid>, IdentityRoleClaim<Guid>, IdentityUserToken<Guid>>
+public sealed class ApplicationDbContext
+    : IdentityDbContext<AppUser, AppRole, Guid, IdentityUserClaim<Guid>,
+        AppUserRole, IdentityUserLogin<Guid>, IdentityRoleClaim<Guid>, IdentityUserToken<Guid>>
 {
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
+    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+        : base(options)
     {
     }
 
@@ -36,7 +38,7 @@ public sealed class ApplicationDbContext : IdentityDbContext<AppUser, AppRole, G
 
     public DbSet<Notification> Notification { get; set; }
 
-    public DbSet<Gender> Gender { get; set; }
+    //public DbSet<Gender> Gender { get; set; }
 
     public DbSet<Address> Address { get; set; }
 

@@ -11,6 +11,13 @@ public static class Response
         public DateTime RefreshTokenExpiryTime { get; set; }
     }
 
+    public class UserDetailResponse
+    {
+        public User.Response.AppUserResponse User { get; set; }
+
+        public List<UserAuthorization> Authorizations { get; set; }
+    }
+
     public class UserAuthorization
     {
         public string FunctionKey { get; set; }
