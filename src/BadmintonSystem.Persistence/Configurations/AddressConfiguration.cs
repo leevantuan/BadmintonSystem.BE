@@ -18,6 +18,7 @@ internal sealed class AddressConfiguration : IEntityTypeConfiguration<Address>
         builder.Property(x => x.AddressLine1).HasDefaultValue(null);
         builder.Property(x => x.AddressLine2).HasDefaultValue(null);
         builder.Property(x => x.City).HasDefaultValue(null);
+        builder.Property(x => x.Province).HasDefaultValue(null);
 
         builder.HasMany(x => x.ClubAddresses)
             .WithOne()

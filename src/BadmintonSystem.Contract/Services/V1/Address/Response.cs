@@ -15,6 +15,8 @@ public static class Response
         public string? AddressLine2 { get; set; }
 
         public string? City { get; set; }
+
+        public string? Province { get; set; }
     }
 
     public class AddressDetailResponse : EntityAuditBase<Guid>
@@ -28,5 +30,7 @@ public static class Response
         public string? AddressLine2 { get; set; }
 
         public string? City { get; set; }
+
+        public string? Province { get; set; }
     }
 }

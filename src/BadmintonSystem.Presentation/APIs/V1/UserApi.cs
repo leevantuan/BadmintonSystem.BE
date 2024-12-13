@@ -1,6 +1,8 @@
 ﻿using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.V1.User;
+using BadmintonSystem.Domain.Enumerations;
 using BadmintonSystem.Presentation.Abstractions;
+using BadmintonSystem.Presentation.Extensions;
 using Carter;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -23,6 +25,9 @@ public class UserApi : ApiEndpoint, ICarterModule
             .RequireAuthorization();
 
         group1.MapPost("register", RegisterV1).AllowAnonymous();
+
+        group1.MapGet("{userId}/addresses", GetAddressByUserIdV1)
+            .RequireJwtAuthorize(FunctionEnum.APPUSER.ToString(), (int)ActionEnum.READ);
     }
 
     private static async Task<IResult> RegisterV1(ISender sender, [FromBody] Request.CreateUserAndAddress request)
@@ -30,5 +35,19 @@ public class UserApi : ApiEndpoint, ICarterModule
         Result result = await sender.Send(new Query.RegisterByCustomerQuery(request));
 
         return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+    }
+
+    private static async Task<IResult> GetAddressByUserIdV1
+    (
+        ISender sender,
+        Guid userId,
+        [AsParameters] Contract.Abstractions.Shared.Request.PagedFilterAndSortRequest request)
+    {
+        var pagedQueryRequest =
+            new Contract.Abstractions.Shared.Request.PagedFilterAndSortQueryRequest(request);
+        Result<PagedResult<Response.AddressByUserDetailResponse>> result =
+            await sender.Send(new Query.GetAddressesByEmailWithFilterAndSortQuery(userId, pagedQueryRequest));
+
+        return Results.Ok(result);
     }
 }

@@ -23,13 +23,12 @@ public static class Response
     }
 
     // Address by user
-    public class AddressByUserDetail : Address.Response.AddressResponse
+    public class AddressByUserDetailResponse : Address.Response.AddressResponse
     {
         public int IsDefault { get; set; }
     }
 
-    public class AddressByUserResponse : AppUserResponse
+    public class AddressByUserSql
     {
-        public List<AddressByUserDetail>? Addresses { get; set; }
     }
 }
