@@ -1,60 +1,97 @@
 ﻿using System.Security.Claims;
+using AutoMapper;
 using BadmintonSystem.Application.Abstractions;
+using BadmintonSystem.Application.Extensions;
 using BadmintonSystem.Contract.Abstractions.Message;
 using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.V1.Identity;
 using BadmintonSystem.Domain.Entities.Identity;
+using BadmintonSystem.Domain.Enumerations;
 using BadmintonSystem.Domain.Exceptions;
 using Microsoft.AspNetCore.Identity;
 using Newtonsoft.Json;
 
 namespace BadmintonSystem.Application.UseCases.V1.Queries.Identity;
-public sealed class GetLoginQueryHandler : IQueryHandler<Query.LoginQuery, Response.Authenticated>
+
+public sealed class GetLoginQueryHandler(
+    IJwtTokenService jwtTokenService,
+    IMapper mapper,
+    UserManager<AppUser> userManager)
+    : IQueryHandler<Query.LoginQuery, Response.LoginResponse>
 {
-    private readonly IJwtTokenService _jwtTokenService;
-    private readonly UserManager<AppUser> _userManager;
-
-    public GetLoginQueryHandler(IJwtTokenService jwtTokenService, UserManager<AppUser> userManager)
-    {
-        _jwtTokenService = jwtTokenService;
-        _userManager = userManager;
-    }
-
-    public async Task<Result<Response.Authenticated>> Handle(Query.LoginQuery request, CancellationToken cancellationToken)
+    public async Task<Result<Response.LoginResponse>> Handle
+        (Query.LoginQuery request, CancellationToken cancellationToken)
     {
         // Check user exists
-        var userByEmail = await _userManager.FindByEmailAsync(request.Email)
-                    ?? throw new IdentityException.AppUserNotFoundException(request.Email);
+        AppUser userByEmail = await userManager.FindByEmailAsync(request.Email)
+                              ?? throw new IdentityException.AppUserNotFoundException(request.Email);
 
-        var isPasswordValid = await _userManager.CheckPasswordAsync(userByEmail, request.Password);
+        bool isPasswordValid = await userManager.CheckPasswordAsync(userByEmail, request.Password);
 
         if (!isPasswordValid)
         {
             throw new IdentityException.AppUserException("Password invalid");
         }
 
-        var roles = await _userManager.GetRolesAsync(userByEmail);
+        IList<string> roles = await userManager.GetRolesAsync(userByEmail);
 
         // Generate JWT Token
-        var claims = new[]
+        Claim[] claims =
         {
-            new Claim(ClaimTypes.Email, userByEmail.Email),
-            new Claim(ClaimTypes.GivenName, userByEmail.FullName),
-            new Claim(ClaimTypes.Role, JsonConvert.SerializeObject(roles)),
-            new Claim(ClaimTypes.NameIdentifier, userByEmail.Id.ToString()),
-            new Claim(ClaimTypes.Name, userByEmail.UserName)
+            new(ClaimTypes.Email, userByEmail.Email),
+            new(ClaimTypes.GivenName, userByEmail.FullName),
+            new(ClaimTypes.Role, JsonConvert.SerializeObject(roles)),
+            new(ClaimTypes.NameIdentifier, userByEmail.Id.ToString()),
+            new(ClaimTypes.Name, userByEmail.UserName)
         };
 
-        var accessToken = _jwtTokenService.GenerateAccessToken(claims);
+        string accessToken = jwtTokenService.GenerateAccessToken(claims);
 
-        var refreshToken = _jwtTokenService.GenerateRefreshToken();
+        string refreshToken = jwtTokenService.GenerateRefreshToken();
 
-        var response = new Response.Authenticated()
+        Contract.Services.V1.User.Response.AppUserResponse? user =
+            mapper.Map<Contract.Services.V1.User.Response.AppUserResponse>(userByEmail);
+
+        var authValues = new List<Response.UserAuthorization>();
+
+        var response = new Response.LoginResponse
         {
             AccessToken = accessToken,
             RefreshToken = refreshToken,
-            RefreshTokenExpiryTime = DateTime.Now.AddMinutes(5)
+            RefreshTokenExpiryTime = DateTime.Now.AddMinutes(5),
+            User = user
         };
+
+        IList<Claim>? claimsUser = await userManager.GetClaimsAsync(userByEmail);
+
+        if (claimsUser == null || !claimsUser.Any())
+        {
+            return Result.Success(response);
+        }
+
+        var functionKeys = Enum.GetValues<FunctionEnum>()
+            .Select(e => e.ToString())
+            .ToList();
+
+        foreach (string function in functionKeys)
+        {
+            try
+            {
+                string? value = claimsUser.FirstOrDefault(x => x.Type == function)?.Value;
+                Response.UserAuthorization? authValue = HandleActionExtension.ActionHandler(function, value);
+
+                if (authValue != null)
+                {
+                    authValues.Add(authValue);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        response.Authorizations = authValues;
 
         return Result.Success(response);
     }

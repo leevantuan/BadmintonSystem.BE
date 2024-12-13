@@ -6,7 +6,7 @@ public static class Query
 {
     public record RegisterQuery(Request.RegisterRequest Data) : IQuery;
 
-    public record LoginQuery(string Email, string Password) : IQuery<Response.Authenticated>;
+    public record LoginQuery(string Email, string Password) : IQuery<Response.LoginResponse>;
 
     public record GetUserAuthorizationByEmailQuery(string Email) : IQuery<Response.UserDetailResponse>;
 

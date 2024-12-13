@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using AutoMapper;
+using BadmintonSystem.Application.Extensions;
 using BadmintonSystem.Contract.Abstractions.Message;
 using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.V1.Identity;
@@ -48,7 +49,7 @@ public sealed class GetUserAuthorizationByEmailQueryHandler(
             try
             {
                 string? value = claims.FirstOrDefault(x => x.Type == function)?.Value;
-                Response.UserAuthorization? authValue = ActionHandler(function, value);
+                Response.UserAuthorization? authValue = HandleActionExtension.ActionHandler(function, value);
 
                 if (authValue != null)
                 {
@@ -64,41 +65,5 @@ public sealed class GetUserAuthorizationByEmailQueryHandler(
         result.Authorizations = authValues;
 
         return Result.Success(result);
-    }
-
-    private static Response.UserAuthorization ActionHandler(string? function, string? value)
-    {
-        if (string.IsNullOrEmpty(function))
-        {
-            return null;
-        }
-
-        var result = new Response.UserAuthorization
-        {
-            FunctionKey = function,
-            Action = new List<string>()
-        };
-
-        if (string.IsNullOrEmpty(value) || !int.TryParse(value, out int actionUserValue))
-        {
-            return result;
-        }
-
-        var actionsEnum = Enum.GetValues<ActionEnum>()
-            .Select(e => (int)e)
-            .ToList();
-
-        foreach (int action in actionsEnum)
-        {
-            int actionValueInitial = action;
-            int actionValue = 1 << actionValueInitial;
-
-            if ((actionUserValue & actionValue) == actionValue)
-            {
-                result.Action.Add(actionValueInitial.ToString());
-            }
-        }
-
-        return result;
     }
 }

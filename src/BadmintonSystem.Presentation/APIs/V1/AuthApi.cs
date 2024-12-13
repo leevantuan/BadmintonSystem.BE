@@ -48,7 +48,7 @@ public class AuthApi : ApiEndpoint, ICarterModule
 
     public static async Task<IResult> AuthenticationV1(ISender sender, [FromBody] Query.LoginQuery login)
     {
-        Result<Response.Authenticated> result = await sender.Send(login);
+        Result<Response.LoginResponse> result = await sender.Send(login);
 
         if (result.IsFailure)
         {
@@ -70,7 +70,8 @@ public class AuthApi : ApiEndpoint, ICarterModule
         return Results.Ok(result);
     }
 
-    public static async Task<IResult> GetUserAuthorizationByEmailV1(ISender sender,
+    public static async Task<IResult> GetUserAuthorizationByEmailV1
+    (ISender sender,
         string Email)
     {
         Result result = await sender.Send(new Query.GetUserAuthorizationByEmailQuery(Email));
@@ -78,7 +79,8 @@ public class AuthApi : ApiEndpoint, ICarterModule
         return Results.Ok(result);
     }
 
-    public static async Task<IResult> ResetRoleForUserV1(ISender sender,
+    public static async Task<IResult> ResetRoleForUserV1
+    (ISender sender,
         [FromBody] Request.ResetUserToDefaultRole request)
     {
         Result result = await sender.Send(new Command.ResetUserToDefaultRoleCommand(request));
@@ -98,7 +100,8 @@ public class AuthApi : ApiEndpoint, ICarterModule
         return Results.Ok(result);
     }
 
-    public static async Task<IResult> UpdateRoleMultipleForUserV1(ISender sender,
+    public static async Task<IResult> UpdateRoleMultipleForUserV1
+    (ISender sender,
         [FromBody] Request.UpdateRoleMultipleForUserRequest request)
     {
         Result result = await sender.Send(new Command.UpdateRoleMultipleForUserCommand(request));
@@ -106,7 +109,8 @@ public class AuthApi : ApiEndpoint, ICarterModule
         return Results.Ok(result);
     }
 
-    public static async Task<IResult> UpdateUserClaimV1(ISender sender,
+    public static async Task<IResult> UpdateUserClaimV1
+    (ISender sender,
         [FromBody] Request.UpdateAppUserClaimRequest request)
     {
         Result result = await sender.Send(new Command.UpdateAppUserClaimCommand(request));
@@ -114,7 +118,8 @@ public class AuthApi : ApiEndpoint, ICarterModule
         return Results.Ok(result);
     }
 
-    public static async Task<IResult> UpdateRoleClaimV1(ISender sender,
+    public static async Task<IResult> UpdateRoleClaimV1
+    (ISender sender,
         [FromBody] Request.UpdateAppRoleClaimRequest request)
     {
         Result result = await sender.Send(new Command.UpdateAppRoleClaimCommand(request));
@@ -134,7 +139,8 @@ public class AuthApi : ApiEndpoint, ICarterModule
         return Results.Ok(result);
     }
 
-    public static async Task<IResult> CreateAppRoleClaimV1(ISender sender,
+    public static async Task<IResult> CreateAppRoleClaimV1
+    (ISender sender,
         [FromBody] Request.CreateAppRoleClaimRequest request)
     {
         Result result = await sender.Send(new Command.CreateAppRoleClaimCommand(request));
