@@ -7,6 +7,7 @@ public static class Request
         string Street,
         string AddressLine1,
         string AddressLine2,
+        string Province,
         string City);
 
     public class UpdateAddressRequest
@@ -22,5 +23,7 @@ public static class Request
         public string? AddressLine2 { get; set; }
 
         public string? City { get; set; }
+
+        public string? Province { get; set; }
     }
 }

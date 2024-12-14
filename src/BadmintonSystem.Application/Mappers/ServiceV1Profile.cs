@@ -17,6 +17,15 @@ public class ServiceV1Profile : Profile
         // App User
         CreateMap<AppUser, Response.AppUserResponse>().ReverseMap();
 
+        // Address
+        CreateMap<Address, V1.Address.Response.AddressResponse>().ReverseMap();
+        CreateMap<Address, V1.Address.Request.CreateAddressRequest>().ReverseMap();
+        // CreateMap<PagedResult<Service>, PagedResult<V1.Service.Response.ServiceResponse>>().ReverseMap();
+        // CreateMap<Service, V1.Service.Response.ServiceDetailResponse>().ReverseMap();
+        // CreateMap<PagedResult<Service>, PagedResult<V1.Service.Response.ServiceDetailResponse>>()
+        //     .ForMember(dest => dest.Items, opt
+        //         => opt.MapFrom(src => src.Items)).ReverseMap();
+
         // Category ==> Có lớp con
         CreateMap<Category, CategoryResponse>().ReverseMap();
         CreateMap<Category, Request.CreateCategoryRequest>().ReverseMap();

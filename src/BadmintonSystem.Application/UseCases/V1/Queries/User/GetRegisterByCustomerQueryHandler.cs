@@ -51,7 +51,8 @@ public sealed class GetRegisterByCustomerQueryHandler(
             AddressLine2 = request.Data.AddressLine2,
             Street = request.Data.Street,
             City = request.Data.City,
-            Unit = request.Data.Unit
+            Unit = request.Data.Unit,
+            Province = request.Data.Province
         };
 
         var newAppUserAddress = new UserAddress
