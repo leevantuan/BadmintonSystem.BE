@@ -8,28 +8,28 @@ using Carter;
 using MicroElements.Swashbuckle.FluentValidation.AspNetCore;
 using Serilog;
 
-var builder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 // Add CORS policy to allow any origin
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAllOrigins",
-                        builder =>
-                        {
-                            builder.AllowAnyOrigin()
-                                   .AllowAnyHeader()
-                                   .AllowAnyMethod();
-                        });
+        builder =>
+        {
+            builder.AllowAnyOrigin()
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
 });
 
 // Add Serilog
 Log.Logger = new LoggerConfiguration().ReadFrom
-                                      .Configuration(builder.Configuration)
-                                      .CreateLogger();
+    .Configuration(builder.Configuration)
+    .CreateLogger();
 
 builder.Logging
-       .ClearProviders()
-       .AddSerilog();
+    .ClearProviders()
+    .AddSerilog();
 
 builder.Host.UseSerilog();
 
@@ -53,7 +53,8 @@ builder.Services.AddInterceptorConfigurationPersistence();
 //builder.Services.AddSqlConfigurationPersistence();
 
 // Add Connection POSTGRES
-builder.Services.AddPostgresServerRetryOptionsConfigurationPersistence(builder.Configuration.GetSection(nameof(SqlServerRetryOptions)));
+builder.Services.AddPostgresServerRetryOptionsConfigurationPersistence(
+    builder.Configuration.GetSection(nameof(SqlServerRetryOptions)));
 builder.Services.AddPostgresConfigurationPersistence();
 
 // Add Repository Base
@@ -64,10 +65,10 @@ builder.Services.AddRepositoryBaseConfigurationPersistence();
 
 // Add Swagger and Validation
 builder.Services
-        .AddSwaggerGenNewtonsoftSupport()
-        .AddFluentValidationRulesToSwagger()
-        .AddEndpointsApiExplorer()
-        .AddSwaggerAPI();
+    .AddSwaggerGenNewtonsoftSupport()
+    .AddFluentValidationRulesToSwagger()
+    .AddEndpointsApiExplorer()
+    .AddSwaggerAPI();
 
 // Add Swagger Api Versioning
 builder.Services
@@ -86,12 +87,11 @@ builder.Services.AddAutoMapperConfigurationApplication();
 
 // Add Authentication
 //builder.Services.AddCookieAuthenticationConfigurationAPI();
-
 // Configuration Seeder
 // await builder.Services.AddInitialiserConfigurationPersistence(builder.Services.BuildServiceProvider());
 
 // Configure App and Build
-var app = builder.Build();
+WebApplication app = builder.Build();
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
@@ -132,4 +132,5 @@ finally
 }
 
 public partial class Program
-{ }
+{
+}

@@ -1,5 +1,5 @@
 ﻿using BadmintonSystem.Contract.Abstractions.Shared;
-using BadmintonSystem.Contract.Services.V1.User;
+using BadmintonSystem.Contract.Services.V1.Identity;
 using BadmintonSystem.Domain.Enumerations;
 using BadmintonSystem.Persistence.Helpers;
 using BadmintonSystem.Presentation.Abstractions;
@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using Command = BadmintonSystem.Contract.Services.V1.User.Command;
 using Request = BadmintonSystem.Contract.Services.V1.User.Request;
 
 namespace BadmintonSystem.Presentation.APIs.V1;
@@ -25,7 +26,12 @@ public class UserApi : ApiEndpoint, ICarterModule
             .HasApiVersion(1)
             .RequireAuthorization();
 
+        group1.MapPost("login", LoginV1).AllowAnonymous();
         group1.MapPost("register", RegisterV1).AllowAnonymous();
+        group1.MapPost("forget-password", ForgetPasswordV1).AllowAnonymous();
+
+        group1.MapPost("change-password", ChangePasswordV1)
+            .RequireJwtAuthorize(FunctionEnum.APPUSER.ToString(), (int)ActionEnum.READ);
 
         group1.MapGet("addresses", GetAddressByUserIdV1)
             .RequireJwtAuthorize(FunctionEnum.APPUSER.ToString(), (int)ActionEnum.READ);
@@ -34,9 +40,36 @@ public class UserApi : ApiEndpoint, ICarterModule
             .RequireJwtAuthorize(FunctionEnum.APPUSER.ToString(), (int)ActionEnum.CREATE);
     }
 
+    private static async Task<IResult> LoginV1(ISender sender, [FromBody] Query.LoginQuery login)
+    {
+        Result<Response.LoginResponse> result = await sender.Send(login);
+
+        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+    }
+
     private static async Task<IResult> RegisterV1(ISender sender, [FromBody] Request.CreateUserAndAddress request)
     {
-        Result result = await sender.Send(new Query.RegisterByCustomerQuery(request));
+        Result result = await sender.Send(new Contract.Services.V1.User.Query.RegisterByCustomerQuery(request));
+
+        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+    }
+
+    private static async Task<IResult> ForgetPasswordV1
+    (
+        ISender sender,
+        [FromBody] Request.ForgetPasswordRequest request)
+    {
+        Result result = await sender.Send(new Command.ForgetPasswordCommand(request));
+
+        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+    }
+
+    private static async Task<IResult> ChangePasswordV1
+    (
+        ISender sender,
+        [FromBody] Request.ChangePasswordRequest request)
+    {
+        Result result = await sender.Send(new Command.ChangePasswordCommand(request));
 
         return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
     }
@@ -65,9 +98,10 @@ public class UserApi : ApiEndpoint, ICarterModule
 
         var pagedQueryRequest =
             new Contract.Abstractions.Shared.Request.PagedFilterAndSortQueryRequest(request);
-        Result<PagedResult<Response.AddressByUserDetailResponse>> result =
+        Result<PagedResult<Contract.Services.V1.User.Response.AddressByUserDetailResponse>> result =
             await sender.Send(
-                new Query.GetAddressesByEmailWithFilterAndSortQuery(userIdCurrent ?? Guid.Empty, pagedQueryRequest));
+                new Contract.Services.V1.User.Query.GetAddressesByEmailWithFilterAndSortQuery(
+                    userIdCurrent ?? Guid.Empty, pagedQueryRequest));
 
         return Results.Ok(result);
     }

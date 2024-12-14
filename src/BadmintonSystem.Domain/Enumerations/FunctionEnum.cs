@@ -2,6 +2,7 @@
 
 public enum FunctionEnum
 {
+    ADMINISTRATOR = 0,
     APPUSER = 1,
     ADDRESS = 2,
     BOOKING = 3,

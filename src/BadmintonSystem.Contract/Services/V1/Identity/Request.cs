@@ -87,4 +87,9 @@ public static class Request
     }
 
     public record ResetUserToDefaultRole(string Email, string RoleName);
+
+    public class ResetPasswordById : User.Request.PasswordRequest
+    {
+        public Guid Id { get; set; }
+    }
 }

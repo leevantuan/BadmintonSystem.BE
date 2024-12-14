@@ -24,32 +24,35 @@ public static class ServiceCollectionExtensions
         // use db context pool => not use normal db context
         services.AddDbContextPool<DbContext, ApplicationDbContext>((provider, builder) =>
         {
-            var auditableInterceptor = provider.GetRequiredService<UpdateAuditableEntitiesInterceptor>();
+            UpdateAuditableEntitiesInterceptor auditableInterceptor =
+                provider.GetRequiredService<UpdateAuditableEntitiesInterceptor>();
 
-            var configuration = provider.GetRequiredService<IConfiguration>();
-            var options = provider.GetRequiredService<IOptionsMonitor<SqlServerRetryOptions>>();
+            IConfiguration configuration = provider.GetRequiredService<IConfiguration>();
+            IOptionsMonitor<SqlServerRetryOptions> options =
+                provider.GetRequiredService<IOptionsMonitor<SqlServerRetryOptions>>();
 
             builder
                 .EnableDetailedErrors()
-                .EnableSensitiveDataLogging(true)
-                .UseLazyLoadingProxies(true) // if you use Lazy Loading, all of the navigation fields should be VIRTUAL
+                .EnableSensitiveDataLogging()
+                .UseLazyLoadingProxies() // if you use Lazy Loading, all of the navigation fields should be VIRTUAL
                 .UseSqlServer(
-                    connectionString: configuration.GetConnectionString(nameof(SqlConnectionStrings)),
-                    sqlServerOptionsAction: optionsBuider
+                    configuration.GetConnectionString(nameof(SqlConnectionStrings)),
+                    optionsBuider
                         => optionsBuider.ExecutionStrategy(
-                                            dependencies => new SqlServerRetryingExecutionStrategy(
-                                                    dependencies: dependencies,
-                                                    maxRetryCount: options.CurrentValue.MaxRetryCount,
-                                                    maxRetryDelay: options.CurrentValue.MaxRetryDelay,
-                                                    errorNumbersToAdd: options.CurrentValue.ErrorNumbersToAdd
-                                            ))
-                                        .MigrationsAssembly(typeof(ApplicationDbContext).Assembly.GetName().Name))
+                                dependencies => new SqlServerRetryingExecutionStrategy(
+                                    dependencies,
+                                    options.CurrentValue.MaxRetryCount,
+                                    options.CurrentValue.MaxRetryDelay,
+                                    options.CurrentValue.ErrorNumbersToAdd
+                                ))
+                            .MigrationsAssembly(typeof(ApplicationDbContext).Assembly.GetName().Name))
                 .AddInterceptors(auditableInterceptor);
         });
 
         services.AddIdentityCore<AppUser>()
-                .AddRoles<AppRole>()
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+            .AddRoles<AppRole>()
+            .AddEntityFrameworkStores<ApplicationDbContext>()
+            .AddDefaultTokenProviders();
 
         services.Configure<IdentityOptions>(options =>
         {
@@ -66,12 +69,15 @@ public static class ServiceCollectionExtensions
         });
     }
 
-    public static OptionsBuilder<SqlServerRetryOptions> AddSqlServerRetryOptionsConfigurationPersistence(this IServiceCollection services, IConfigurationSection section)
-        => services
-                .AddOptions<SqlServerRetryOptions>()
-                .Bind(section)
-                .ValidateDataAnnotations()
-                .ValidateOnStart();
+    public static OptionsBuilder<SqlServerRetryOptions> AddSqlServerRetryOptionsConfigurationPersistence
+        (this IServiceCollection services, IConfigurationSection section)
+    {
+        return services
+            .AddOptions<SqlServerRetryOptions>()
+            .Bind(section)
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+    }
 
     public static void AddPostgresConfigurationPersistence(this IServiceCollection services)
     {
@@ -81,32 +87,34 @@ public static class ServiceCollectionExtensions
         // use db context pool => not use normal db context
         services.AddDbContextPool<DbContext, ApplicationDbContext>((provider, builder) =>
         {
-            var auditableInterceptor = provider.GetRequiredService<UpdateAuditableEntitiesInterceptor>();
+            UpdateAuditableEntitiesInterceptor auditableInterceptor =
+                provider.GetRequiredService<UpdateAuditableEntitiesInterceptor>();
 
-            var configuration = provider.GetRequiredService<IConfiguration>();
-            var options = provider.GetRequiredService<IOptionsMonitor<PostgresServerRetryOptions>>();
+            IConfiguration configuration = provider.GetRequiredService<IConfiguration>();
+            IOptionsMonitor<PostgresServerRetryOptions> options =
+                provider.GetRequiredService<IOptionsMonitor<PostgresServerRetryOptions>>();
 
             builder
                 .EnableDetailedErrors()
-                .EnableSensitiveDataLogging(true)
-                .UseLazyLoadingProxies(true) // if you use Lazy Loading, all of the navigation fields should be VIRTUAL
+                .EnableSensitiveDataLogging()
+                .UseLazyLoadingProxies() // if you use Lazy Loading, all of the navigation fields should be VIRTUAL
                 .UseNpgsql(
-                    connectionString: configuration.GetConnectionString(nameof(PostgresConnectionStrings)),
-                    npgsqlOptionsAction: optionsBuider
+                    configuration.GetConnectionString(nameof(PostgresConnectionStrings)),
+                    optionsBuider
                         => optionsBuider.ExecutionStrategy(
-                                            dependencies => new NpgsqlRetryingExecutionStrategy(
-                                                    dependencies: dependencies,
-                                                    maxRetryCount: options.CurrentValue.MaxRetryCount,
-                                                    maxRetryDelay: options.CurrentValue.MaxRetryDelay,
-                                                    errorCodesToAdd: options.CurrentValue.ErrorNumbersToAdd
-                                            ))
-                                        .MigrationsAssembly(typeof(ApplicationDbContext).Assembly.GetName().Name))
+                                dependencies => new NpgsqlRetryingExecutionStrategy(
+                                    dependencies,
+                                    options.CurrentValue.MaxRetryCount,
+                                    options.CurrentValue.MaxRetryDelay,
+                                    options.CurrentValue.ErrorNumbersToAdd
+                                ))
+                            .MigrationsAssembly(typeof(ApplicationDbContext).Assembly.GetName().Name))
                 .AddInterceptors(auditableInterceptor);
         });
 
         services.AddIdentityCore<AppUser>()
-                .AddRoles<AppRole>()
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+            .AddRoles<AppRole>()
+            .AddEntityFrameworkStores<ApplicationDbContext>();
 
         services.Configure<IdentityOptions>(options =>
         {
@@ -123,17 +131,22 @@ public static class ServiceCollectionExtensions
         });
     }
 
-    public static OptionsBuilder<PostgresServerRetryOptions> AddPostgresServerRetryOptionsConfigurationPersistence(this IServiceCollection services, IConfigurationSection section)
-        => services
-                .AddOptions<PostgresServerRetryOptions>()
-                .Bind(section)
-                .ValidateDataAnnotations()
-                .ValidateOnStart();
+    public static OptionsBuilder<PostgresServerRetryOptions> AddPostgresServerRetryOptionsConfigurationPersistence
+        (this IServiceCollection services, IConfigurationSection section)
+    {
+        return services
+            .AddOptions<PostgresServerRetryOptions>()
+            .Bind(section)
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+    }
 
     public static void AddRepositoryBaseConfigurationPersistence(this IServiceCollection services)
-        => services
-                //.AddTransient(typeof(IUnitOfWork), typeof(EFUnitOfWork))
-                .AddTransient(typeof(IRepositoryBase<,>), typeof(RepositoryBase<,>));
+    {
+        services
+            //.AddTransient(typeof(IUnitOfWork), typeof(EFUnitOfWork))
+            .AddTransient(typeof(IRepositoryBase<,>), typeof(RepositoryBase<,>));
+    }
 
     public static void AddInterceptorConfigurationPersistence(this IServiceCollection services)
     {
@@ -142,12 +155,14 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ApplicationDbContextInitialiser>();
     }
 
-    public static async Task<IApplicationBuilder> AddInitialiserConfigurationPersistence(
-            this IApplicationBuilder app)
+    public static async Task<IApplicationBuilder> AddInitialiserConfigurationPersistence
+    (
+        this IApplicationBuilder app)
     {
         // Add scoped service in Program.cs instead
-        using var scope = app.ApplicationServices.CreateScope();
-        var initialiser = scope.ServiceProvider.GetRequiredService<ApplicationDbContextInitialiser>();
+        using IServiceScope scope = app.ApplicationServices.CreateScope();
+        ApplicationDbContextInitialiser initialiser =
+            scope.ServiceProvider.GetRequiredService<ApplicationDbContextInitialiser>();
         await initialiser.InitialiseAsync();
         await initialiser.SeedAsync();
 

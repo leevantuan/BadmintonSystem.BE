@@ -1,6 +1,7 @@
 ﻿using BadmintonSystem.Contract.Abstractions.Message;
 
 namespace BadmintonSystem.Contract.Services.V1.Identity;
+
 public static class Command
 {
     public record CreateActionCommand(Request.CreateActionRequest Data) : ICommand;
@@ -32,4 +33,6 @@ public static class Command
     public record DeleteAppRoleCommand(Guid Id) : ICommand;
 
     public record ResetUserToDefaultRoleCommand(Request.ResetUserToDefaultRole Data) : ICommand;
+
+    public record ResetPasswordByIdCommand(Request.ResetPasswordById Data) : ICommand;
 }

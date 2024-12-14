@@ -24,156 +24,102 @@ public class AuthApi : ApiEndpoint, ICarterModule
             .HasApiVersion(1)
             .RequireAuthorization();
 
-        group1.MapPost("login", AuthenticationV1).AllowAnonymous();
-        group1.MapPost("register", RegisterV1).AllowAnonymous();
+        group1.MapPost("admin/register", RegisterV1)
+            .RequireJwtAuthorize(FunctionEnum.ADMINISTRATOR.ToString(), (int)ActionEnum.CREATE);
+
+        group1.MapPost("admin/reset-password", ResetPasswordV1)
+            .RequireJwtAuthorize(FunctionEnum.ADMINISTRATOR.ToString(), (int)ActionEnum.CREATE);
 
         group1.MapPut("admin/reset-role-for-user", ResetRoleForUserV1)
-            .RequireJwtAuthorize(FunctionEnum.APPUSER.ToString(), (int)ActionEnum.UPDATE);
+            .RequireJwtAuthorize(FunctionEnum.ADMINISTRATOR.ToString(), (int)ActionEnum.UPDATE);
+
         group1.MapPut("admin/role-multiple-for-user", UpdateRoleMultipleForUserV1)
-            .RequireJwtAuthorize(FunctionEnum.APPUSER.ToString(), (int)ActionEnum.UPDATE);
+            .RequireJwtAuthorize(FunctionEnum.ADMINISTRATOR.ToString(), (int)ActionEnum.UPDATE);
+
         group1.MapPut("admin/role-claim", UpdateRoleClaimV1)
-            .RequireJwtAuthorize(FunctionEnum.APPUSER.ToString(), (int)ActionEnum.UPDATE);
+            .RequireJwtAuthorize(FunctionEnum.ADMINISTRATOR.ToString(), (int)ActionEnum.UPDATE);
+
         group1.MapPut("admin/user-claim", UpdateUserClaimV1)
-            .RequireJwtAuthorize(FunctionEnum.APPUSER.ToString(), (int)ActionEnum.UPDATE);
-        group1.MapPost("admin/register", AdminRegisterV1)
-            .RequireJwtAuthorize(FunctionEnum.APPUSER.ToString(), (int)ActionEnum.CREATE);
-        group1.MapGet("admin/get-user-authorization", GetUserAuthorizationByEmailV1)
-            .RequireJwtAuthorize(FunctionEnum.APPUSER.ToString(), (int)ActionEnum.READ);
+            .RequireJwtAuthorize(FunctionEnum.ADMINISTRATOR.ToString(), (int)ActionEnum.UPDATE);
 
-        group1.MapPost("role", CreateAppRoleV1).AllowAnonymous();
-        group1.MapPost("role-claim", CreateAppRoleClaimV1).AllowAnonymous();
-        group1.MapPost("function", CreateFunctionV1).AllowAnonymous();
-        group1.MapPost("action", CreateActionV1).AllowAnonymous();
+        group1.MapPost("admin/register-by-role", AdminRegisterV1)
+            .RequireJwtAuthorize(FunctionEnum.ADMINISTRATOR.ToString(), (int)ActionEnum.CREATE);
+
+        group1.MapGet("admin/{email}/get-authorization", GetUserAuthorizationByEmailV1)
+            .RequireJwtAuthorize(FunctionEnum.ADMINISTRATOR.ToString(), (int)ActionEnum.READ);
     }
 
-    public static async Task<IResult> AuthenticationV1(ISender sender, [FromBody] Query.LoginQuery login)
-    {
-        Result<Response.LoginResponse> result = await sender.Send(login);
-
-        if (result.IsFailure)
-        {
-            return HandleFailure(result);
-        }
-
-        return Results.Ok(result);
-    }
-
-    public static async Task<IResult> RegisterV1(ISender sender, [FromBody] Request.RegisterRequest request)
+    private static async Task<IResult> RegisterV1(ISender sender, [FromBody] Request.RegisterRequest request)
     {
         Result result = await sender.Send(new Query.RegisterQuery(request));
 
-        if (result.IsFailure)
-        {
-            return HandleFailure(result);
-        }
-
-        return Results.Ok(result);
+        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
     }
 
-    public static async Task<IResult> GetUserAuthorizationByEmailV1
-    (ISender sender,
-        string Email)
+    private static async Task<IResult> ResetPasswordV1
+    (
+        ISender sender,
+        [FromBody] Request.ResetPasswordById request)
     {
-        Result result = await sender.Send(new Query.GetUserAuthorizationByEmailQuery(Email));
+        Result result = await sender.Send(new Command.ResetPasswordByIdCommand(request));
 
-        return Results.Ok(result);
+        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
     }
 
-    public static async Task<IResult> ResetRoleForUserV1
-    (ISender sender,
+    private static async Task<IResult> GetUserAuthorizationByEmailV1
+    (
+        ISender sender,
+        string email)
+    {
+        Result result = await sender.Send(new Query.GetUserAuthorizationByEmailQuery(email));
+
+        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+    }
+
+    private static async Task<IResult> ResetRoleForUserV1
+    (
+        ISender sender,
         [FromBody] Request.ResetUserToDefaultRole request)
     {
         Result result = await sender.Send(new Command.ResetUserToDefaultRoleCommand(request));
 
-        return Results.Ok(result);
+        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
     }
 
-    public static async Task<IResult> AdminRegisterV1(ISender sender, [FromBody] Request.CreateAppUserRequest request)
+    private static async Task<IResult> AdminRegisterV1(ISender sender, [FromBody] Request.CreateAppUserRequest request)
     {
         Result result = await sender.Send(new Command.CreateAppUserCommand(request));
 
-        if (result.IsFailure)
-        {
-            return HandleFailure(result);
-        }
-
-        return Results.Ok(result);
+        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
     }
 
-    public static async Task<IResult> UpdateRoleMultipleForUserV1
-    (ISender sender,
+    private static async Task<IResult> UpdateRoleMultipleForUserV1
+    (
+        ISender sender,
         [FromBody] Request.UpdateRoleMultipleForUserRequest request)
     {
         Result result = await sender.Send(new Command.UpdateRoleMultipleForUserCommand(request));
 
-        return Results.Ok(result);
+        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
     }
 
-    public static async Task<IResult> UpdateUserClaimV1
-    (ISender sender,
+    private static async Task<IResult> UpdateUserClaimV1
+    (
+        ISender sender,
         [FromBody] Request.UpdateAppUserClaimRequest request)
     {
         Result result = await sender.Send(new Command.UpdateAppUserClaimCommand(request));
 
-        return Results.Ok(result);
+        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
     }
 
-    public static async Task<IResult> UpdateRoleClaimV1
-    (ISender sender,
+    private static async Task<IResult> UpdateRoleClaimV1
+    (
+        ISender sender,
         [FromBody] Request.UpdateAppRoleClaimRequest request)
     {
         Result result = await sender.Send(new Command.UpdateAppRoleClaimCommand(request));
 
-        return Results.Ok(result);
-    }
-
-    public static async Task<IResult> CreateAppRoleV1(ISender sender, [FromBody] Request.CreateAppRoleRequest request)
-    {
-        Result result = await sender.Send(new Command.CreateAppRoleCommand(request));
-
-        if (result.IsFailure)
-        {
-            return HandleFailure(result);
-        }
-
-        return Results.Ok(result);
-    }
-
-    public static async Task<IResult> CreateAppRoleClaimV1
-    (ISender sender,
-        [FromBody] Request.CreateAppRoleClaimRequest request)
-    {
-        Result result = await sender.Send(new Command.CreateAppRoleClaimCommand(request));
-
-        if (result.IsFailure)
-        {
-            return HandleFailure(result);
-        }
-
-        return Results.Ok(result);
-    }
-
-    public static async Task<IResult> CreateFunctionV1(ISender sender, [FromBody] Request.CreateFunctionRequest request)
-    {
-        Result result = await sender.Send(new Command.CreateFunctionCommand(request));
-
-        if (result.IsFailure)
-        {
-            return HandleFailure(result);
-        }
-
-        return Results.Ok(result);
-    }
-
-    public static async Task<IResult> CreateActionV1(ISender sender, [FromBody] Request.CreateActionRequest request)
-    {
-        Result result = await sender.Send(new Command.CreateActionCommand(request));
-
-        if (result.IsFailure)
-        {
-            return HandleFailure(result);
-        }
-
-        return Results.Ok(result);
+        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
     }
 }

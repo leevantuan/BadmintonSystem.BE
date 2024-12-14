@@ -10,26 +10,18 @@ using Microsoft.AspNetCore.Identity;
 
 namespace BadmintonSystem.Application.UseCases.V1.Commands.Identity;
 
-public sealed class UpdateAppRoleClaimCommandHandler : ICommandHandler<Command.UpdateAppRoleClaimCommand>
+public sealed class UpdateAppRoleClaimCommandHandler(
+    UserManager<AppUser> userManager,
+    RoleManager<AppRole> roleManager,
+    ApplicationDbContext context)
+    : ICommandHandler<Command.UpdateAppRoleClaimCommand>
 {
-    private readonly ApplicationDbContext _context;
-    private readonly RoleManager<AppRole> _roleManager;
-    private readonly UserManager<AppUser> _userManager;
-
-    public UpdateAppRoleClaimCommandHandler(UserManager<AppUser> userManager, RoleManager<AppRole> roleManager,
-        ApplicationDbContext context)
-    {
-        _userManager = userManager;
-        _roleManager = roleManager;
-        _context = context;
-    }
-
     public async Task<Result> Handle(Command.UpdateAppRoleClaimCommand request, CancellationToken cancellationToken)
     {
-        AppRole role = await _roleManager.FindByNameAsync(StringExtension.CapitalizeFirstLetter(request.Data.RoleCode))
+        AppRole role = await roleManager.FindByNameAsync(StringExtension.CapitalizeFirstLetter(request.Data.RoleCode))
                        ?? throw new IdentityException.AppRoleNotFoundException(request.Data.RoleCode);
 
-        IList<Claim> roleClaims = await _roleManager.GetClaimsAsync(role);
+        IList<Claim> roleClaims = await roleManager.GetClaimsAsync(role);
 
         var requestDict =
             request.Data?.ListFunctions?.ToDictionary(item => item.FunctionKey.Trim().ToUpper(),
@@ -41,10 +33,10 @@ public sealed class UpdateAppRoleClaimCommandHandler : ICommandHandler<Command.U
             {
                 string newValue = ConvertBinary(value);
 
-                await _roleManager.RemoveClaimAsync(role, item);
+                await roleManager.RemoveClaimAsync(role, item);
 
                 var newClaim = new Claim(item.Type, newValue);
-                await _roleManager.AddClaimAsync(role, newClaim);
+                await roleManager.AddClaimAsync(role, newClaim);
 
                 requestDict.Remove(item.Type);
             }
@@ -55,7 +47,7 @@ public sealed class UpdateAppRoleClaimCommandHandler : ICommandHandler<Command.U
             string newValue = ConvertBinary(res.Value);
 
             var newClaim = new Claim(res.Key.ToUpper(), newValue);
-            await _roleManager.AddClaimAsync(role, newClaim);
+            await roleManager.AddClaimAsync(role, newClaim);
         }
 
         return Result.Success();

@@ -9,26 +9,18 @@ using Microsoft.AspNetCore.Identity;
 
 namespace BadmintonSystem.Application.UseCases.V1.Commands.Identity;
 
-public sealed class UpdateAppUserClaimCommandHandler : ICommandHandler<Command.UpdateAppUserClaimCommand>
+public sealed class UpdateAppUserClaimCommandHandler(
+    UserManager<AppUser> userManager,
+    RoleManager<AppRole> roleManager,
+    ApplicationDbContext context)
+    : ICommandHandler<Command.UpdateAppUserClaimCommand>
 {
-    private readonly ApplicationDbContext _context;
-    private readonly RoleManager<AppRole> _roleManager;
-    private readonly UserManager<AppUser> _userManager;
-
-    public UpdateAppUserClaimCommandHandler(UserManager<AppUser> userManager, RoleManager<AppRole> roleManager,
-        ApplicationDbContext context)
-    {
-        _userManager = userManager;
-        _roleManager = roleManager;
-        _context = context;
-    }
-
     public async Task<Result> Handle(Command.UpdateAppUserClaimCommand request, CancellationToken cancellationToken)
     {
-        AppUser user = await _userManager.FindByEmailAsync(request.Data.Email)
+        AppUser user = await userManager.FindByEmailAsync(request.Data.Email)
                        ?? throw new IdentityException.AppUserNotFoundException(request.Data.Email);
 
-        IList<Claim> userClaims = await _userManager.GetClaimsAsync(user);
+        IList<Claim> userClaims = await userManager.GetClaimsAsync(user);
 
         var requestDict =
             request.Data?.ListFunctions?.ToDictionary(item => item.FunctionKey.Trim().ToUpper(),
@@ -40,10 +32,10 @@ public sealed class UpdateAppUserClaimCommandHandler : ICommandHandler<Command.U
             {
                 string newValue = ConvertBinary(value);
 
-                await _userManager.RemoveClaimAsync(user, item);
+                await userManager.RemoveClaimAsync(user, item);
 
                 var newClaim = new Claim(item.Type, newValue);
-                await _userManager.AddClaimAsync(user, newClaim);
+                await userManager.AddClaimAsync(user, newClaim);
 
                 requestDict.Remove(item.Type);
             }
@@ -54,7 +46,7 @@ public sealed class UpdateAppUserClaimCommandHandler : ICommandHandler<Command.U
             string newValue = ConvertBinary(res.Value);
 
             var newClaim = new Claim(res.Key.ToUpper(), newValue);
-            await _userManager.AddClaimAsync(user, newClaim);
+            await userManager.AddClaimAsync(user, newClaim);
         }
 
         return Result.Success();

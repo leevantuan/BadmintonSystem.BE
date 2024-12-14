@@ -37,4 +37,23 @@ public static class Request
 
         public string Province { get; set; }
     }
+
+    public class PasswordRequest
+    {
+        public string Password { get; set; }
+
+        public string ConfirmPassword { get; set; }
+    }
+
+    public class ForgetPasswordRequest : PasswordRequest
+    {
+        public string Email { get; set; }
+    }
+
+    public class ChangePasswordRequest : PasswordRequest
+    {
+        public Guid Id { get; set; }
+
+        public string CurrentPassword { get; set; }
+    }
 }
