@@ -2,18 +2,11 @@
 
 public static class Response
 {
-    // public class Authenticated
-    // {
-    //     public string? AccessToken { get; set; }
-    //
-    //     public string? RefreshToken { get; set; }
-    //
-    //     public DateTime RefreshTokenExpiryTime { get; set; }
-    // }
-
     public class UserDetailResponse
     {
         public User.Response.AppUserResponse User { get; set; }
+
+        public List<string> Roles { get; set; }
 
         public List<UserAuthorization> Authorizations { get; set; }
     }
@@ -25,6 +18,13 @@ public static class Response
         public string? RefreshToken { get; set; }
 
         public DateTime RefreshTokenExpiryTime { get; set; }
+    }
+
+    public class RoleAuthorization
+    {
+        public string RoleName { get; set; }
+
+        public List<UserAuthorization> Authorizations { get; set; }
     }
 
     public class UserAuthorization

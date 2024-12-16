@@ -30,20 +30,22 @@ public class UserApi : ApiEndpoint, ICarterModule
         group1.MapPost("register", RegisterV1).AllowAnonymous();
         group1.MapPost("forget-password", ForgetPasswordV1).AllowAnonymous();
 
-        group1.MapPost("change-password", ChangePasswordV1)
-            .RequireJwtAuthorize(FunctionEnum.APPUSER.ToString(), (int)ActionEnum.READ);
+        group1.MapPut("change-password", ChangePasswordV1)
+            .RequireJwtAuthorize(FunctionEnum.APPUSER.ToString(), (int)ActionEnum.UPDATE);
+
+        // ADDRESS
+        group1.MapPost("address", CreateAddressByUserIdV1)
+            .RequireJwtAuthorize(FunctionEnum.APPUSER.ToString(), (int)ActionEnum.CREATE);
 
         group1.MapGet("addresses", GetAddressByUserIdV1)
             .RequireJwtAuthorize(FunctionEnum.APPUSER.ToString(), (int)ActionEnum.READ);
 
-        group1.MapGet("payment-methods", GetPaymentMethodByUserIdV1)
-            .RequireJwtAuthorize(FunctionEnum.APPUSER.ToString(), (int)ActionEnum.READ);
-
-        group1.MapPost("address", CreateAddressByUserIdV1)
-            .RequireJwtAuthorize(FunctionEnum.APPUSER.ToString(), (int)ActionEnum.CREATE);
-
+        // PAYMENT METHOD
         group1.MapPost("payment-method", CreatePaymentMethodByUserIdV1)
             .RequireJwtAuthorize(FunctionEnum.APPUSER.ToString(), (int)ActionEnum.CREATE);
+
+        group1.MapGet("payment-methods", GetPaymentMethodByUserIdV1)
+            .RequireJwtAuthorize(FunctionEnum.APPUSER.ToString(), (int)ActionEnum.READ);
     }
 
     private static async Task<IResult> LoginV1(ISender sender, [FromBody] Query.LoginQuery login)

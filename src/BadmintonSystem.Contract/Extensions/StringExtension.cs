@@ -2,6 +2,16 @@
 
 public static class StringExtension
 {
+    public static string Uppercase(string input)
+    {
+        if (string.IsNullOrWhiteSpace(input))
+        {
+            return input;
+        }
+
+        return input.Trim().ToUpper();
+    }
+
     public static string CapitalizeFirstLetter(string input)
     {
         if (string.IsNullOrWhiteSpace(input))

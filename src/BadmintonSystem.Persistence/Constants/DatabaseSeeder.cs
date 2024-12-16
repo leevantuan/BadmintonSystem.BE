@@ -183,6 +183,9 @@ public static class DatabaseSeeder
                 string functionName = functionEnum.ToString().Trim().ToUpper();
                 switch (functionName)
                 {
+                    case "ADMINISTRATOR":
+                        await AddAppRoleClaim(functionName, "0", role, context, roleManager);
+                        break;
                     case "ADDRESS":
                         await AddAppRoleClaim(functionName, "15", role, context, roleManager);
                         break;

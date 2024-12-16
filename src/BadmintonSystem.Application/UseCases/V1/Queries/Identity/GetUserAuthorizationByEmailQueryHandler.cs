@@ -3,9 +3,9 @@ using AutoMapper;
 using BadmintonSystem.Application.Extensions;
 using BadmintonSystem.Contract.Abstractions.Message;
 using BadmintonSystem.Contract.Abstractions.Shared;
+using BadmintonSystem.Contract.Extensions;
 using BadmintonSystem.Contract.Services.V1.Identity;
 using BadmintonSystem.Domain.Entities.Identity;
-using BadmintonSystem.Domain.Enumerations;
 using BadmintonSystem.Domain.Exceptions;
 using BadmintonSystem.Persistence;
 using Microsoft.AspNetCore.Identity;
@@ -26,43 +26,40 @@ public sealed class GetUserAuthorizationByEmailQueryHandler(
     {
         var result = new Response.UserDetailResponse();
 
-        var authValues = new List<Response.UserAuthorization>();
-
         AppUser user = await userManager.FindByEmailAsync(request.Email)
                        ?? throw new IdentityException.AppUserException(request.Email);
 
         result.User = mapper.Map<Contract.Services.V1.User.Response.AppUserResponse>(user);
 
-        IList<Claim>? claims = await userManager.GetClaimsAsync(user);
+        IList<string> roles = await userManager.GetRolesAsync(user);
 
-        if (claims == null || !claims.Any())
+        result.Roles = roles.ToList();
+
+        // USER CLAIMS
+        IList<Claim>? userClaims = await userManager.GetClaimsAsync(user);
+
+        // Initial Claim By UserClaim
+        var resultClaims = userClaims.ToDictionary(item => item.Type, item => item.Value);
+
+        // ROLE CLAIMS
+        foreach (string roleName in roles)
         {
-            return Result.Success(result);
+            string roleNameCapitalize = StringExtension.Uppercase(roleName);
+
+            AppRole? role = await roleManager.FindByNameAsync(roleNameCapitalize)
+                            ?? throw new IdentityException.AppRoleException(roleNameCapitalize);
+
+            IList<Claim> roleClaim = await roleManager.GetClaimsAsync(role);
+
+            // MERGE ROLE
+            resultClaims = AuthenticationExtension.MergeClaims(resultClaims, roleClaim);
         }
 
-        var functionKeys = Enum.GetValues<FunctionEnum>()
-            .Select(e => e.ToString())
+        userClaims = resultClaims
+            .Select(e => new Claim(e.Key, e.Value))
             .ToList();
 
-        foreach (string function in functionKeys)
-        {
-            try
-            {
-                string? value = claims.FirstOrDefault(x => x.Type == function)?.Value;
-                Response.UserAuthorization? authValue = HandleActionExtension.ActionHandler(function, value);
-
-                if (authValue != null)
-                {
-                    authValues.Add(authValue);
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-        }
-
-        result.Authorizations = authValues;
+        result.Authorizations = AuthenticationExtension.GetActionValues(userClaims);
 
         return Result.Success(result);
     }

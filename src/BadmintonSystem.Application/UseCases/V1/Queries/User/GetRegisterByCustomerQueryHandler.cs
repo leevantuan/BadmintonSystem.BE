@@ -1,5 +1,4 @@
-﻿using System.Security.Claims;
-using BadmintonSystem.Contract.Abstractions.Message;
+﻿using BadmintonSystem.Contract.Abstractions.Message;
 using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Extensions;
 using BadmintonSystem.Contract.Services.V1.User;
@@ -83,13 +82,13 @@ public sealed class GetRegisterByCustomerQueryHandler(
         }
 
         // add default user claim
-        AppRole role = await roleManager.FindByNameAsync(AppRoleEnum.CUSTOMER.ToString())
-                       ?? throw new IdentityException.AppRoleNotFoundException(AppRoleEnum.CUSTOMER.ToString());
-
-        // get list role claim
-        IList<Claim> claims = await roleManager.GetClaimsAsync(role);
-
-        await userManager.AddClaimsAsync(newUser, claims);
+        // AppRole role = await roleManager.FindByNameAsync(AppRoleEnum.CUSTOMER.ToString())
+        //                ?? throw new IdentityException.AppRoleNotFoundException(AppRoleEnum.CUSTOMER.ToString());
+        //
+        // // get list role claim
+        // IList<Claim> claims = await roleManager.GetClaimsAsync(role);
+        //
+        // await userManager.AddClaimsAsync(newUser, claims);
 
         context.Address.Add(newAddress);
 

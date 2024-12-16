@@ -6,7 +6,6 @@ using BadmintonSystem.Contract.Abstractions.Message;
 using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.V1.Identity;
 using BadmintonSystem.Domain.Entities.Identity;
-using BadmintonSystem.Domain.Enumerations;
 using BadmintonSystem.Domain.Exceptions;
 using Microsoft.AspNetCore.Identity;
 using Newtonsoft.Json;
@@ -52,9 +51,7 @@ public sealed class GetLoginQueryHandler(
         Contract.Services.V1.User.Response.AppUserResponse? user =
             mapper.Map<Contract.Services.V1.User.Response.AppUserResponse>(userByEmail);
 
-        var authValues = new List<Response.UserAuthorization>();
-
-        var response = new Response.LoginResponse
+        var result = new Response.LoginResponse
         {
             AccessToken = accessToken,
             RefreshToken = refreshToken,
@@ -66,33 +63,11 @@ public sealed class GetLoginQueryHandler(
 
         if (claimsUser == null || !claimsUser.Any())
         {
-            return Result.Success(response);
+            return Result.Success(result);
         }
 
-        var functionKeys = Enum.GetValues<FunctionEnum>()
-            .Select(e => e.ToString())
-            .ToList();
+        result.Authorizations = AuthenticationExtension.GetActionValues(claimsUser);
 
-        foreach (string function in functionKeys)
-        {
-            try
-            {
-                string? value = claimsUser.FirstOrDefault(x => x.Type == function)?.Value;
-                Response.UserAuthorization? authValue = HandleActionExtension.ActionHandler(function, value);
-
-                if (authValue != null)
-                {
-                    authValues.Add(authValue);
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-        }
-
-        response.Authorizations = authValues;
-
-        return Result.Success(response);
+        return Result.Success(result);
     }
 }

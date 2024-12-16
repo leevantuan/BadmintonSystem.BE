@@ -24,17 +24,14 @@ public class AuthApi : ApiEndpoint, ICarterModule
             .HasApiVersion(1)
             .RequireAuthorization();
 
+        group1.MapPost("admin/role", CreateRoleV1)
+            .RequireJwtAuthorize(FunctionEnum.ADMINISTRATOR.ToString(), (int)ActionEnum.CREATE);
+
         group1.MapPost("admin/register", RegisterV1)
             .RequireJwtAuthorize(FunctionEnum.ADMINISTRATOR.ToString(), (int)ActionEnum.CREATE);
 
-        group1.MapPost("admin/reset-password", ResetPasswordV1)
+        group1.MapPost("admin/register-with-role", AdminRegisterV1)
             .RequireJwtAuthorize(FunctionEnum.ADMINISTRATOR.ToString(), (int)ActionEnum.CREATE);
-
-        group1.MapPut("admin/reset-role-for-user", ResetRoleForUserV1)
-            .RequireJwtAuthorize(FunctionEnum.ADMINISTRATOR.ToString(), (int)ActionEnum.UPDATE);
-
-        group1.MapPut("admin/role-multiple-for-user", UpdateRoleMultipleForUserV1)
-            .RequireJwtAuthorize(FunctionEnum.ADMINISTRATOR.ToString(), (int)ActionEnum.UPDATE);
 
         group1.MapPut("admin/role-claim", UpdateRoleClaimV1)
             .RequireJwtAuthorize(FunctionEnum.ADMINISTRATOR.ToString(), (int)ActionEnum.UPDATE);
@@ -42,11 +39,27 @@ public class AuthApi : ApiEndpoint, ICarterModule
         group1.MapPut("admin/user-claim", UpdateUserClaimV1)
             .RequireJwtAuthorize(FunctionEnum.ADMINISTRATOR.ToString(), (int)ActionEnum.UPDATE);
 
-        group1.MapPost("admin/register-by-role", AdminRegisterV1)
-            .RequireJwtAuthorize(FunctionEnum.ADMINISTRATOR.ToString(), (int)ActionEnum.CREATE);
+        group1.MapPut("admin/reset-password", ResetPasswordV1)
+            .RequireJwtAuthorize(FunctionEnum.ADMINISTRATOR.ToString(), (int)ActionEnum.UPDATE);
 
-        group1.MapGet("admin/{email}/get-authorization", GetUserAuthorizationByEmailV1)
+        group1.MapPut("admin/role-multiple-for-user", UpdateRoleMultipleForUserV1)
+            .RequireJwtAuthorize(FunctionEnum.ADMINISTRATOR.ToString(), (int)ActionEnum.UPDATE);
+
+        group1.MapPost("admin/email/get-authorization", GetUserAuthorizationByEmailV1)
             .RequireJwtAuthorize(FunctionEnum.ADMINISTRATOR.ToString(), (int)ActionEnum.READ);
+
+        group1.MapPost("admin/role-names/get-authorization", GetUserAuthorizationByRoleNamesV1)
+            .RequireJwtAuthorize(FunctionEnum.ADMINISTRATOR.ToString(), (int)ActionEnum.READ);
+    }
+
+    private static async Task<IResult> CreateRoleV1
+    (
+        ISender sender,
+        [FromBody] Request.CreateAppRoleRequest request)
+    {
+        Result result = await sender.Send(new Command.CreateAppRoleCommand(request));
+
+        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> RegisterV1(ISender sender, [FromBody] Request.RegisterRequest request)
@@ -66,10 +79,21 @@ public class AuthApi : ApiEndpoint, ICarterModule
         return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
     }
 
+    private static async Task<IResult> GetUserAuthorizationByRoleNamesV1
+    (
+        ISender sender,
+        [FromBody] List<string> roleNames)
+    {
+        Result<List<Response.RoleAuthorization>> result =
+            await sender.Send(new Query.GetAuthorizationByRoleNamesQuery(roleNames));
+
+        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+    }
+
     private static async Task<IResult> GetUserAuthorizationByEmailV1
     (
         ISender sender,
-        string email)
+        [FromBody] string email)
     {
         Result result = await sender.Send(new Query.GetUserAuthorizationByEmailQuery(email));
 

@@ -10,5 +10,7 @@ public static class Query
 
     public record GetUserAuthorizationByEmailQuery(string Email) : IQuery<Response.UserDetailResponse>;
 
+    public record GetAuthorizationByRoleNamesQuery(List<string> RoleNames) : IQuery<List<Response.RoleAuthorization>>;
+
     //public record Token(string? AccessToken, string? RefreshToken) : IQuery<Response.Authenticated>;
 }

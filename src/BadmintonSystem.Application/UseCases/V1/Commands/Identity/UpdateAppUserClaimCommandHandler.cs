@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using BadmintonSystem.Application.Extensions;
 using BadmintonSystem.Contract.Abstractions.Message;
 using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.V1.Identity;
@@ -30,7 +31,7 @@ public sealed class UpdateAppUserClaimCommandHandler(
         {
             if (requestDict.TryGetValue(item.Type, out string value))
             {
-                string newValue = ConvertBinary(value);
+                string newValue = AuthenticationExtension.ConvertToBinary(value);
 
                 await userManager.RemoveClaimAsync(user, item);
 
@@ -43,25 +44,12 @@ public sealed class UpdateAppUserClaimCommandHandler(
 
         foreach (KeyValuePair<string, string> res in requestDict)
         {
-            string newValue = ConvertBinary(res.Value);
+            string newValue = AuthenticationExtension.ConvertToBinary(res.Value);
 
             var newClaim = new Claim(res.Key.ToUpper(), newValue);
             await userManager.AddClaimAsync(user, newClaim);
         }
 
         return Result.Success();
-    }
-
-    private static string ConvertBinary(string value)
-    {
-        var listAction = value.Trim().Split(',').ToList();
-
-        int newValue = 0;
-        foreach (string action in listAction)
-        {
-            newValue += 1 << Convert.ToInt32(action);
-        }
-
-        return newValue.ToString();
     }
 }
