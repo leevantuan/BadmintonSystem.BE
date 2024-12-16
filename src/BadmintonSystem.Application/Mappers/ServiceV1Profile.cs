@@ -20,11 +20,12 @@ public class ServiceV1Profile : Profile
         // Address
         CreateMap<Address, V1.Address.Response.AddressResponse>().ReverseMap();
         CreateMap<Address, V1.Address.Request.CreateAddressRequest>().ReverseMap();
-        // CreateMap<PagedResult<Service>, PagedResult<V1.Service.Response.ServiceResponse>>().ReverseMap();
-        // CreateMap<Service, V1.Service.Response.ServiceDetailResponse>().ReverseMap();
-        // CreateMap<PagedResult<Service>, PagedResult<V1.Service.Response.ServiceDetailResponse>>()
-        //     .ForMember(dest => dest.Items, opt
-        //         => opt.MapFrom(src => src.Items)).ReverseMap();
+
+        // Payment method
+        CreateMap<PaymentMethod, Response.PaymentMethodByUserResponse>()
+            .ForMember(dest => (DefaultEnum)dest.IsDefault, opt
+                => opt.MapFrom(src => src.IsDefault));
+        CreateMap<PaymentMethod, V1.PaymentMethod.Request.CreatePaymentMethodRequest>().ReverseMap();
 
         // Category ==> Có lớp con
         CreateMap<Category, CategoryResponse>().ReverseMap();

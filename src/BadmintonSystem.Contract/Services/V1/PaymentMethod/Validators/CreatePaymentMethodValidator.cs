@@ -10,7 +10,7 @@ public sealed class CreatePaymentMethodValidator : AbstractValidator<Command.Cre
 
         RuleFor(x => x.Data.Expiry).NotEmpty().WithMessage("Expiry not null or empty");
 
-        RuleFor(x => x.Data.Default).NotEmpty().WithMessage("Default not null or empty");
+        RuleFor(x => x.Data.IsDefault).NotEmpty().WithMessage("Default not null or empty");
 
         RuleFor(x => x.Data.Provider).NotEmpty().WithMessage("Provider not null or empty");
 

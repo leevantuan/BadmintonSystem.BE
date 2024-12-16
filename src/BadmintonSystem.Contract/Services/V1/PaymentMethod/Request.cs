@@ -6,7 +6,7 @@ public static class Request
         string Provider,
         int AccountNumber,
         DateTime? Expiry,
-        int Default,
+        int IsDefault,
         Guid UserId);
 
     public class UpdatePaymentMethodRequest

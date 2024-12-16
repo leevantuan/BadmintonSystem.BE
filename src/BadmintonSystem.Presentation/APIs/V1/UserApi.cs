@@ -36,7 +36,13 @@ public class UserApi : ApiEndpoint, ICarterModule
         group1.MapGet("addresses", GetAddressByUserIdV1)
             .RequireJwtAuthorize(FunctionEnum.APPUSER.ToString(), (int)ActionEnum.READ);
 
+        group1.MapGet("payment-methods", GetPaymentMethodByUserIdV1)
+            .RequireJwtAuthorize(FunctionEnum.APPUSER.ToString(), (int)ActionEnum.READ);
+
         group1.MapPost("address", CreateAddressByUserIdV1)
+            .RequireJwtAuthorize(FunctionEnum.APPUSER.ToString(), (int)ActionEnum.CREATE);
+
+        group1.MapPost("payment-method", CreatePaymentMethodByUserIdV1)
             .RequireJwtAuthorize(FunctionEnum.APPUSER.ToString(), (int)ActionEnum.CREATE);
     }
 
@@ -88,6 +94,20 @@ public class UserApi : ApiEndpoint, ICarterModule
         return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
     }
 
+    private static async Task<IResult> CreatePaymentMethodByUserIdV1
+    (
+        ISender sender,
+        [FromBody] Contract.Services.V1.PaymentMethod.Request.CreatePaymentMethodRequest request,
+        IHttpContextAccessor httpContextAccessor
+    )
+    {
+        Guid? userIdCurrent = httpContextAccessor.HttpContext?.GetCurrentUserId();
+        Result result =
+            await sender.Send(new Command.CreatePaymentMethodByUserIdCommand(userIdCurrent ?? Guid.Empty, request));
+
+        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+    }
+
     private static async Task<IResult> GetAddressByUserIdV1
     (
         ISender sender,
@@ -102,6 +122,21 @@ public class UserApi : ApiEndpoint, ICarterModule
             await sender.Send(
                 new Contract.Services.V1.User.Query.GetAddressesByEmailWithFilterAndSortQuery(
                     userIdCurrent ?? Guid.Empty, pagedQueryRequest));
+
+        return Results.Ok(result);
+    }
+
+    private static async Task<IResult> GetPaymentMethodByUserIdV1
+    (
+        ISender sender,
+        IHttpContextAccessor httpContextAccessor)
+    {
+        Guid? userIdCurrent = httpContextAccessor.HttpContext?.GetCurrentUserId();
+
+        Result<PagedResult<Contract.Services.V1.User.Response.PaymentMethodByUserResponse>> result =
+            await sender.Send(
+                new Contract.Services.V1.User.Query.GetPaymentMethodsByUserIdQuery(
+                    userIdCurrent ?? Guid.Empty));
 
         return Results.Ok(result);
     }

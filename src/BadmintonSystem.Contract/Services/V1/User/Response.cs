@@ -28,7 +28,7 @@ public static class Response
         public int IsDefault { get; set; }
     }
 
-    public class AddressByUserSql
+    public class PaymentMethodByUserResponse : PaymentMethod.Response.PaymentMethodDetailResponse
     {
     }
 }

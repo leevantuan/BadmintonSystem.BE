@@ -7,7 +7,7 @@ public static class Response
         string Provider,
         int AccountNumber,
         DateTime? Expiry,
-        int Default,
+        int IsDefault,
         Guid UserId);
 
     public class PaymentMethodDetailResponse
@@ -20,7 +20,7 @@ public static class Response
 
         public string? Provider { get; set; }
 
-        public int? Default { get; set; }
+        public int IsDefault { get; set; }
 
         public Guid? UserId { get; set; }
     }

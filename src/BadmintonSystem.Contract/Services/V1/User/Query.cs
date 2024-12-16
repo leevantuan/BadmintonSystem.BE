@@ -11,4 +11,8 @@ public static class Query
         Guid UserId,
         Abstractions.Shared.Request.PagedFilterAndSortQueryRequest Data)
         : IQuery<PagedResult<Response.AddressByUserDetailResponse>>;
+
+    public record GetPaymentMethodsByUserIdQuery(
+        Guid UserId)
+        : IQuery<PagedResult<Response.PaymentMethodByUserResponse>>;
 }
