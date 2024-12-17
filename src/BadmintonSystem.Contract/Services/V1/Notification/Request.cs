@@ -4,6 +4,7 @@ public static class Request
 {
     public record CreateNotificationRequest(
         string Content,
+        int IsRead,
         Guid UserId);
 
     public class UpdateNotificationRequest
@@ -11,6 +12,8 @@ public static class Request
         public Guid Id { get; set; }
 
         public string? Content { get; set; }
+
+        public int? IsRead { get; set; }
 
         public Guid UserId { get; set; }
     }

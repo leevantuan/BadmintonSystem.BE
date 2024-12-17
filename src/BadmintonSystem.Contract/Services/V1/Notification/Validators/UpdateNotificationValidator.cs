@@ -10,6 +10,8 @@ public sealed class UpdateNotificationValidator : AbstractValidator<Command.Upda
 
         RuleFor(x => x.Data.Content).NotEmpty().WithMessage("Content not null or empty");
 
+        RuleFor(x => x.Data.IsRead).NotEmpty().WithMessage("IsRead not null or empty");
+
         RuleFor(x => x.Data.UserId).NotEmpty().WithMessage("UserId not null or empty");
     }
 }

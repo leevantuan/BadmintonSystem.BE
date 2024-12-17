@@ -31,4 +31,8 @@ public static class Response
     public class PaymentMethodByUserResponse : PaymentMethod.Response.PaymentMethodDetailResponse
     {
     }
+
+    public class NotificationByUserResponse : Notification.Response.NotificationDetailResponse
+    {
+    }
 }

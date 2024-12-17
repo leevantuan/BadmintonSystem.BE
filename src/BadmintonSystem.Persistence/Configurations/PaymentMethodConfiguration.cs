@@ -16,7 +16,6 @@ internal sealed class PaymentMethodConfiguration : IEntityTypeConfiguration<Paym
         builder.Property(x => x.Expiry).HasDefaultValue(null);
         builder.Property(x => x.Provider).HasDefaultValue(null);
         builder.Property(x => x.IsDefault).HasDefaultValue(null);
-        //builder.Property(x => x.PaymentTypeId).HasDefaultValue(null);
         builder.Property(x => x.UserId).HasDefaultValue(null);
     }
 }

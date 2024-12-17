@@ -56,4 +56,9 @@ public static class Request
 
         public string CurrentPassword { get; set; }
     }
+
+    public class UpdateAddressByUserIdRequest : Address.Request.UpdateAddressRequest
+    {
+        public int IsDefault { get; set; }
+    }
 }

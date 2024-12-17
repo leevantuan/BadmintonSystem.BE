@@ -7,11 +7,14 @@ public static class Response
     public record NotificationResponse(
         Guid Id,
         string Content,
+        int IsRead,
         Guid UserId);
 
     public class NotificationDetailResponse : EntityAuditBase<Guid>
     {
         public string? Content { get; set; }
+
+        public int? IsRead { get; set; }
 
         public Guid? UserId { get; set; }
     }

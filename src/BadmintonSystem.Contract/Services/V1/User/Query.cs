@@ -15,4 +15,8 @@ public static class Query
     public record GetPaymentMethodsByUserIdQuery(
         Guid UserId)
         : IQuery<PagedResult<Response.PaymentMethodByUserResponse>>;
+
+    public record GetNotificationsByUserIdQuery(
+        Guid UserId)
+        : IQuery<PagedResult<Response.NotificationByUserResponse>>;
 }

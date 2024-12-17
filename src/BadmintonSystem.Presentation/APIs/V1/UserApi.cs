@@ -37,8 +37,14 @@ public class UserApi : ApiEndpoint, ICarterModule
         group1.MapPost("address", CreateAddressByUserIdV1)
             .RequireJwtAuthorize(FunctionEnum.APPUSER.ToString(), (int)ActionEnum.CREATE);
 
+        group1.MapPut("address", UpdateAddressByUserIdV1)
+            .RequireJwtAuthorize(FunctionEnum.APPUSER.ToString(), (int)ActionEnum.UPDATE);
+
         group1.MapGet("addresses", GetAddressByUserIdV1)
             .RequireJwtAuthorize(FunctionEnum.APPUSER.ToString(), (int)ActionEnum.READ);
+
+        group1.MapDelete("address/{addressId}", DeleteAddressByUserIdV1)
+            .RequireJwtAuthorize(FunctionEnum.APPUSER.ToString(), (int)ActionEnum.DELETE);
 
         // PAYMENT METHOD
         group1.MapPost("payment-method", CreatePaymentMethodByUserIdV1)
@@ -92,6 +98,34 @@ public class UserApi : ApiEndpoint, ICarterModule
         Guid? userIdCurrent = httpContextAccessor.HttpContext?.GetCurrentUserId();
         Result result =
             await sender.Send(new Command.CreateAddressByUserIdCommand(userIdCurrent ?? Guid.Empty, request));
+
+        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+    }
+
+    private static async Task<IResult> UpdateAddressByUserIdV1
+    (
+        ISender sender,
+        [FromBody] Request.UpdateAddressByUserIdRequest request,
+        IHttpContextAccessor httpContextAccessor
+    )
+    {
+        Guid? userIdCurrent = httpContextAccessor.HttpContext?.GetCurrentUserId();
+        Result result =
+            await sender.Send(new Command.UpdateAddressByUserIdCommand(userIdCurrent ?? Guid.Empty, request));
+
+        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+    }
+
+    private static async Task<IResult> DeleteAddressByUserIdV1
+    (
+        ISender sender,
+        Guid addressId,
+        IHttpContextAccessor httpContextAccessor
+    )
+    {
+        Guid? userIdCurrent = httpContextAccessor.HttpContext?.GetCurrentUserId();
+        Result result =
+            await sender.Send(new Command.DeleteAddressByUserIdCommand(userIdCurrent ?? Guid.Empty, addressId));
 
         return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
     }

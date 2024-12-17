@@ -13,6 +13,7 @@ internal sealed class NotificationConfiguration : IEntityTypeConfiguration<Notif
 
         builder.HasKey(x => x.Id);
         builder.Property(x => x.Content).IsRequired();
+        builder.Property(x => x.IsRead).IsRequired();
         builder.Property(x => x.UserId).IsRequired();
     }
 }
