@@ -10,19 +10,21 @@ namespace BadmintonSystem.Presentation.Extensions;
 
 public static class JwtAuthorizationExtensions
 {
-    public static RouteHandlerBuilder RequireJwtAuthorize(
+    public static RouteHandlerBuilder RequireJwtAuthorize
+    (
         this RouteHandlerBuilder builder,
         string functionKey,
         int actionValue)
     {
         builder.AddEndpointFilter(async (context, next) =>
         {
-            var httpContext = context.HttpContext;
-            var userManager = httpContext.RequestServices.GetRequiredService<UserManager<AppUser>>();
+            HttpContext httpContext = context.HttpContext;
+            UserManager<AppUser> userManager = httpContext.RequestServices.GetRequiredService<UserManager<AppUser>>();
+            RoleManager<AppRole> roleManager = httpContext.RequestServices.GetRequiredService<RoleManager<AppRole>>();
 
-            var filter = new JwtAuthorizeFilter(functionKey, actionValue, userManager);
+            var filter = new JwtAuthorizeFilter(functionKey, actionValue, userManager, roleManager);
 
-            var isAccess = await filter.CanAccessToAction(httpContext);
+            bool isAccess = await filter.CanAccessToAction(httpContext);
 
             if (!isAccess)
             {
