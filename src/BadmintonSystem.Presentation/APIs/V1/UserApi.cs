@@ -50,8 +50,14 @@ public class UserApi : ApiEndpoint, ICarterModule
         group1.MapPost("payment-method", CreatePaymentMethodByUserIdV1)
             .RequireJwtAuthorize(FunctionEnum.APPUSER.ToString(), (int)ActionEnum.CREATE);
 
+        group1.MapPut("payment-method", UpdatePaymentMethodByUserIdV1)
+            .RequireJwtAuthorize(FunctionEnum.APPUSER.ToString(), (int)ActionEnum.UPDATE);
+
         group1.MapGet("payment-methods", GetPaymentMethodByUserIdV1)
             .RequireJwtAuthorize(FunctionEnum.APPUSER.ToString(), (int)ActionEnum.READ);
+
+        group1.MapDelete("payment-method/{paymentMethodId}", DeletePaymentMethodByUserIdV1)
+            .RequireJwtAuthorize(FunctionEnum.APPUSER.ToString(), (int)ActionEnum.DELETE);
     }
 
     private static async Task<IResult> LoginV1(ISender sender, [FromBody] Query.LoginQuery login)
@@ -160,6 +166,35 @@ public class UserApi : ApiEndpoint, ICarterModule
                     userIdCurrent ?? Guid.Empty, pagedQueryRequest));
 
         return Results.Ok(result);
+    }
+
+    private static async Task<IResult> UpdatePaymentMethodByUserIdV1
+    (
+        ISender sender,
+        [FromBody] Contract.Services.V1.PaymentMethod.Request.UpdatePaymentMethodRequest request,
+        IHttpContextAccessor httpContextAccessor
+    )
+    {
+        Guid? userIdCurrent = httpContextAccessor.HttpContext?.GetCurrentUserId();
+        Result result =
+            await sender.Send(new Command.UpdatePaymentMethodByUserIdCommand(userIdCurrent ?? Guid.Empty, request));
+
+        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+    }
+
+    private static async Task<IResult> DeletePaymentMethodByUserIdV1
+    (
+        ISender sender,
+        Guid paymentMethodId,
+        IHttpContextAccessor httpContextAccessor
+    )
+    {
+        Guid? userIdCurrent = httpContextAccessor.HttpContext?.GetCurrentUserId();
+        Result result =
+            await sender.Send(
+                new Command.DeletePaymentMethodByUserIdCommand(userIdCurrent ?? Guid.Empty, paymentMethodId));
+
+        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> GetPaymentMethodByUserIdV1

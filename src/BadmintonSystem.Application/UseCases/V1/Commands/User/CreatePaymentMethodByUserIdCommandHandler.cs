@@ -33,7 +33,15 @@ public sealed class CreatePaymentMethodByUserIdCommandHandler(
         PaymentMethod? paymentMethod = mapper.Map<PaymentMethod>(request.Data);
 
         paymentMethod.UserId = request.UserId;
-        paymentMethod.IsDefault = (DefaultEnum)request.Data.IsDefault;
+
+        IQueryable<PaymentMethod> paymentMethods = paymentMethodRepository.FindAll(x => x.UserId == request.UserId);
+
+        paymentMethod.IsDefault = DefaultEnum.TRUE;
+
+        if (paymentMethods.Any())
+        {
+            paymentMethod.IsDefault = DefaultEnum.FALSE;
+        }
 
         context.PaymentMethod.Add(paymentMethod);
 

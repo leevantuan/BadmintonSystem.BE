@@ -32,7 +32,7 @@ public sealed class ApplicationDbContext
 
     public DbSet<Service> Service { get; set; }
 
-    public DbSet<PaymentType> PaymentType { get; set; }
+    //public DbSet<PaymentType> PaymentType { get; set; }
 
     public DbSet<PaymentMethod> PaymentMethod { get; set; }
 

@@ -4,7 +4,7 @@ public static class Request
 {
     public record CreatePaymentMethodRequest(
         string Provider,
-        int AccountNumber,
+        string AccountNumber,
         DateTime? Expiry,
         int IsDefault,
         Guid UserId);
@@ -13,13 +13,13 @@ public static class Request
     {
         public Guid Id { get; set; }
 
-        public int? AccountNumber { get; set; }
+        public string? AccountNumber { get; set; }
 
         public DateTime? Expiry { get; set; }
 
         public string? Provider { get; set; }
 
-        public int? Default { get; set; }
+        public int? IsDefault { get; set; }
 
         public Guid? UserId { get; set; }
     }
