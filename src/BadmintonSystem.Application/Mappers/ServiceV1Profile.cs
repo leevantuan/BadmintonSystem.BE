@@ -26,6 +26,7 @@ public class ServiceV1Profile : Profile
             .ForMember(dest => (DefaultEnum)dest.IsDefault, opt
                 => opt.MapFrom(src => src.IsDefault));
         CreateMap<PaymentMethod, V1.PaymentMethod.Request.CreatePaymentMethodRequest>().ReverseMap();
+        CreateMap<PaymentMethod, Response.NotificationByUserResponse>().ReverseMap();
 
         // Category ==> Có lớp con
         CreateMap<Category, CategoryResponse>().ReverseMap();

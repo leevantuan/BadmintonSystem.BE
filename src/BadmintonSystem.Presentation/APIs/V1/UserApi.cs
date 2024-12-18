@@ -58,6 +58,13 @@ public class UserApi : ApiEndpoint, ICarterModule
 
         group1.MapDelete("payment-method/{paymentMethodId}", DeletePaymentMethodByUserIdV1)
             .RequireJwtAuthorize(FunctionEnum.APPUSER.ToString(), (int)ActionEnum.DELETE);
+
+        // NOTIFICATION
+        group1.MapGet("notifications", GetNotificationsByUserIdV1)
+            .RequireJwtAuthorize(FunctionEnum.APPUSER.ToString(), (int)ActionEnum.READ);
+
+        group1.MapDelete("notifications/{notificationId}", DeleteNotificationByUserIdV1)
+            .RequireJwtAuthorize(FunctionEnum.APPUSER.ToString(), (int)ActionEnum.DELETE);
     }
 
     private static async Task<IResult> LoginV1(ISender sender, [FromBody] Query.LoginQuery login)
@@ -210,5 +217,39 @@ public class UserApi : ApiEndpoint, ICarterModule
                     userIdCurrent ?? Guid.Empty));
 
         return Results.Ok(result);
+    }
+
+    private static async Task<IResult> GetNotificationsByUserIdV1
+    (
+        ISender sender,
+        [AsParameters] Contract.Abstractions.Shared.Request.PagedFilterAndSortRequest request,
+        IHttpContextAccessor httpContextAccessor)
+    {
+        Guid? userIdCurrent = httpContextAccessor.HttpContext?.GetCurrentUserId();
+
+        var pagedQueryRequest =
+            new Contract.Abstractions.Shared.Request.PagedFilterAndSortQueryRequest(request);
+
+        Result<PagedResult<Contract.Services.V1.User.Response.NotificationByUserResponse>> result =
+            await sender.Send(
+                new Contract.Services.V1.User.Query.GetNotificationsByUserIdWithFilterAndSortQuery(
+                    userIdCurrent ?? Guid.Empty, pagedQueryRequest));
+
+        return Results.Ok(result);
+    }
+
+    private static async Task<IResult> DeleteNotificationByUserIdV1
+    (
+        ISender sender,
+        Guid notificationId,
+        IHttpContextAccessor httpContextAccessor
+    )
+    {
+        Guid? userIdCurrent = httpContextAccessor.HttpContext?.GetCurrentUserId();
+        Result result =
+            await sender.Send(
+                new Command.DeleteNotificationByUserIdCommand(userIdCurrent ?? Guid.Empty, notificationId));
+
+        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
     }
 }

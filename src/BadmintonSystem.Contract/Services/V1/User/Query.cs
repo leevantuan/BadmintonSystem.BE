@@ -16,7 +16,8 @@ public static class Query
         Guid UserId)
         : IQuery<PagedResult<Response.PaymentMethodByUserResponse>>;
 
-    public record GetNotificationsByUserIdQuery(
-        Guid UserId)
+    public record GetNotificationsByUserIdWithFilterAndSortQuery(
+        Guid UserId,
+        Abstractions.Shared.Request.PagedFilterAndSortQueryRequest Data)
         : IQuery<PagedResult<Response.NotificationByUserResponse>>;
 }
