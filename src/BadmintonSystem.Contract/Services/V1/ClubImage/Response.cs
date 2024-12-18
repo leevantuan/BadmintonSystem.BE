@@ -12,7 +12,5 @@ public static class Response
         public Guid Id { get; set; }
 
         public string? ImageLink { get; set; }
-
-        public Guid? ClubId { get; set; }
     }
 }

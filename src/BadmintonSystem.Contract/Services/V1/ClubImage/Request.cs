@@ -2,9 +2,12 @@
 
 public static class Request
 {
-    public record CreateClubImageRequest(
-        string ImageLink,
-        Guid ClubId);
+    public class CreateClubImageRequest
+    {
+        public string? ImageLink { get; set; }
+
+        public Guid? ClubId { get; set; }
+    }
 
     public class UpdateClubImageRequest
     {

@@ -1,4 +1,4 @@
-﻿using BadmintonSystem.Domain.Entities.Identity;
+﻿using BadmintonSystem.Domain.Entities;
 using BadmintonSystem.Persistence.Constants;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;

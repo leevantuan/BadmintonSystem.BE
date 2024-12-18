@@ -1,10 +1,14 @@
-﻿using AutoMapper;
+﻿using System.Runtime.CompilerServices;
+using System.Text;
+using AutoMapper;
 using BadmintonSystem.Contract.Abstractions.Message;
 using BadmintonSystem.Contract.Abstractions.Shared;
+using BadmintonSystem.Contract.Extensions;
 using BadmintonSystem.Contract.Services.V1.Club;
 using BadmintonSystem.Domain.Abstractions.Repositories;
-using BadmintonSystem.Domain.Exceptions;
+using BadmintonSystem.Domain.Entities;
 using BadmintonSystem.Persistence;
+using Microsoft.EntityFrameworkCore;
 
 namespace BadmintonSystem.Application.UseCases.V1.Queries.Club;
 
@@ -12,15 +16,90 @@ public sealed class GetClubByIdQueryHandler(
     ApplicationDbContext context,
     IMapper mapper,
     IRepositoryBase<Domain.Entities.Club, Guid> clubRepository)
-    : IQueryHandler<Query.GetClubByIdQuery, Response.ClubResponse>
+    : IQueryHandler<Query.GetClubByIdQuery, Response.ClubDetailResponse>
 {
-    public async Task<Result<Response.ClubResponse>> Handle
+    public async Task<Result<Response.ClubDetailResponse>> Handle
         (Query.GetClubByIdQuery request, CancellationToken cancellationToken)
     {
-        Domain.Entities.Club club = await clubRepository.FindByIdAsync(request.Id, cancellationToken)
-                                    ?? throw new ClubException.ClubNotFoundException(request.Id);
+        string clubColumns = StringExtension
+            .TransformPropertiesToSqlAliases<Domain.Entities.Club,
+                Response.ClubDetail>();
 
-        Response.ClubResponse? result = mapper.Map<Response.ClubResponse>(club);
+        string clubInformationColumns = StringExtension
+            .TransformPropertiesToSqlAliases<ClubInformation,
+                Contract.Services.V1.ClubInformation.Response.ClubInformationDetailResponse>();
+
+        string clubImageColumns = StringExtension
+            .TransformPropertiesToSqlAliases<ClubImage,
+                Contract.Services.V1.ClubImage.Response.ClubImageDetailResponse>();
+
+        string clubAddressColumns = StringExtension
+            .TransformPropertiesToSqlAliases<Address,
+                Contract.Services.V1.Address.Response.AddressDetailResponse>();
+
+        var queryBuilder = new StringBuilder();
+        queryBuilder.Append($@"SELECT {clubColumns}, {clubInformationColumns}, {clubImageColumns}, {clubAddressColumns}
+                                FROM ""{nameof(Domain.Entities.Club)}"" AS club
+                                JOIN ""{nameof(ClubInformation)}"" AS clubInformation
+                                ON clubInformation.""{nameof(ClubInformation.ClubId)}"" = club.""{nameof(Domain.Entities.Club.Id)}""
+                                JOIN ""{nameof(ClubImage)}"" AS clubImage
+                                ON clubImage.""{nameof(ClubImage.ClubId)}"" = club.""{nameof(Domain.Entities.Club.Id)}""
+                                JOIN ""{nameof(ClubAddress)}"" AS clubAddress
+                                ON clubAddress.""{nameof(ClubAddress.ClubId)}"" = club.""{nameof(Domain.Entities.Club.Id)}""
+                                JOIN ""{nameof(Address)}"" AS address
+                                ON address.""{nameof(Address.Id)}"" = clubAddress.""{nameof(ClubAddress.AddressId)}""
+                                WHERE club.""{nameof(Domain.Entities.Club.Id)}"" = '{request.Id.ToString()}'");
+
+        List<Response.GetClubDetailSql> queryResult = await clubRepository
+            .ExecuteSqlQuery<Response.GetClubDetailSql>(
+                FormattableStringFactory.Create(queryBuilder.ToString()))
+            .ToListAsync(cancellationToken);
+
+        // Group By
+        Response.ClubDetailResponse? result = queryResult.GroupBy(p => p.Club_Id)
+            .Select(g => new Response.ClubDetailResponse
+            {
+                Id = g.Key ?? Guid.Empty,
+                Name = g.First().Club_Name,
+                Hotline = g.First().Club_Hotline,
+                OpeningTime = g.First().Club_OpeningTime,
+                ClosingTime = g.First().Club_ClosingTime,
+                Code = g.First().Club_Code,
+                ClubInformation = g.Where(x => x.ClubInformation_Id != null)
+                    .Select(s => new Contract.Services.V1.ClubInformation.Response.ClubInformationDetailResponse
+                    {
+                        Id = s.ClubInformation_Id,
+                        FacebookPageLink = s.ClubInformation_FacebookPageLink,
+                        InstagramLink = s.ClubInformation_InstagramLink,
+                        MapLink = s.ClubInformation_MapLink
+                    })
+                    .DistinctBy(s => s.Id)
+                    .FirstOrDefault(),
+
+                ClubImages = g.Where(x => x.ClubImage_Id != null)
+                    .Select(s => new Contract.Services.V1.ClubImage.Response.ClubImageDetailResponse
+                    {
+                        Id = s.ClubImage_Id ?? Guid.Empty,
+                        ImageLink = s.ClubImage_ImageLink
+                    })
+                    .Distinct()
+                    .ToList(),
+
+                ClubAddress = g.Where(x => x.Address_Id != null)
+                    .Select(s => new Contract.Services.V1.Address.Response.AddressDetailResponse
+                    {
+                        Id = s.Address_Id ?? Guid.Empty,
+                        Unit = s.Address_Unit,
+                        Street = s.Address_Street,
+                        AddressLine1 = s.Address_AddressLine1,
+                        AddressLine2 = s.Address_AddressLine2,
+                        City = s.Address_City,
+                        Province = s.Address_Province
+                    })
+                    .DistinctBy(s => s.Id)
+                    .FirstOrDefault()
+            })
+            .FirstOrDefault();
 
         return Result.Success(result);
     }

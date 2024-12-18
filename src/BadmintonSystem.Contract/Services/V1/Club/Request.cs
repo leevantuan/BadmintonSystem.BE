@@ -2,12 +2,18 @@
 
 public static class Request
 {
-    public record CreateClubRequest(
-        string Name,
-        string Hotline,
-        TimeSpan OpeningTime,
-        TimeSpan ClosingTime,
-        string Code);
+    public class CreateClubRequest
+    {
+        public string? Name { get; set; }
+
+        public string? Hotline { get; set; }
+
+        public TimeSpan? OpeningTime { get; set; }
+
+        public TimeSpan? ClosingTime { get; set; }
+
+        public string? Code { get; set; }
+    }
 
     public class UpdateClubRequest
     {
@@ -22,5 +28,23 @@ public static class Request
         public TimeSpan? ClosingTime { get; set; }
 
         public string? Code { get; set; }
+    }
+
+    public class CreateClubDetailsRequest : CreateClubRequest
+    {
+        public ClubInformation.Request.CreateClubInformationRequest ClubInformation { get; set; }
+
+        public List<ClubImage.Request.CreateClubImageRequest> ClubImages { get; set; }
+
+        public Address.Request.CreateAddressRequest ClubAddress { get; set; }
+    }
+
+    public class UpdateClubDetailsRequest : UpdateClubRequest
+    {
+        public ClubInformation.Request.UpdateClubInformationRequest ClubInformation { get; set; }
+
+        public List<ClubImage.Request.UpdateClubImageRequest> ClubImages { get; set; }
+
+        public Address.Request.UpdateAddressRequest ClubAddress { get; set; }
     }
 }

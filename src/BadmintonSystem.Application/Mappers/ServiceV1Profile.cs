@@ -14,6 +14,10 @@ public class ServiceV1Profile : Profile
 {
     public ServiceV1Profile()
     {
+        // CLUB INFORMATION
+        CreateMap<ClubInformation, V1.ClubInformation.Request.CreateClubInformationRequest>().ReverseMap();
+        CreateMap<ClubImage, V1.ClubImage.Request.CreateClubImageRequest>().ReverseMap();
+
         // App User
         CreateMap<AppUser, Response.AppUserResponse>().ReverseMap();
 

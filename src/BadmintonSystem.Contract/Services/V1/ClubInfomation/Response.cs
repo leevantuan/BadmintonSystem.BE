@@ -18,7 +18,5 @@ public static class Response
         public string? InstagramLink { get; set; }
 
         public string? MapLink { get; set; }
-
-        public Guid? ClubId { get; set; }
     }
 }

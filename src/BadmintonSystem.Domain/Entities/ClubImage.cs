@@ -1,6 +1,6 @@
 ﻿using BadmintonSystem.Contract.Abstractions.Entities;
 
-namespace BadmintonSystem.Domain.Entities.Identity;
+namespace BadmintonSystem.Domain.Entities;
 
 public class ClubImage : EntityAuditBase<Guid>
 {

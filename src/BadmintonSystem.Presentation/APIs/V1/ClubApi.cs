@@ -46,7 +46,7 @@ public class ClubApi : ApiEndpoint, ICarterModule
     private static async Task<IResult> CreateClubV1
     (
         ISender sender,
-        [FromBody] Request.CreateClubRequest createClub,
+        [FromBody] Request.CreateClubDetailsRequest createClub,
         IHttpContextAccessor httpContextAccessor)
     {
         Guid? userId = httpContextAccessor.HttpContext?.GetCurrentUserId();
@@ -67,7 +67,7 @@ public class ClubApi : ApiEndpoint, ICarterModule
     (
         ISender sender,
         Guid id,
-        [FromBody] Request.UpdateClubRequest updateClub
+        [FromBody] Request.UpdateClubDetailsRequest updateClub
     )
     {
         updateClub.Id = id;
@@ -90,7 +90,7 @@ public class ClubApi : ApiEndpoint, ICarterModule
 
     private static async Task<IResult> GetClubByIdV1(ISender sender, Guid clubId)
     {
-        Result<Response.ClubResponse> result = await sender.Send(new Query.GetClubByIdQuery(clubId));
+        Result<Response.ClubDetailResponse> result = await sender.Send(new Query.GetClubByIdQuery(clubId));
 
         return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
     }

@@ -19,7 +19,7 @@ public static class Response
         public string? Province { get; set; }
     }
 
-    public class AddressDetailResponse : EntityAuditBase<Guid>
+    public class AddressDetailResponse : EntityBase<Guid>
     {
         public string? Unit { get; set; }
 

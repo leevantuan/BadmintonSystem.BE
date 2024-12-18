@@ -9,7 +9,7 @@ public static class Query
         : IQuery<PagedResult<Response.ClubResponse>>;
 
     public record GetClubByIdQuery(Guid Id)
-        : IQuery<Response.ClubResponse>;
+        : IQuery<Response.ClubDetailResponse>;
 
     public record GetClubsWithFilterAndSortValueQuery(
         Abstractions.Shared.Request.PagedFilterAndSortQueryRequest Data)
