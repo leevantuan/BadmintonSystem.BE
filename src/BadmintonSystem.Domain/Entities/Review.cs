@@ -10,5 +10,7 @@ public class Review : EntityAuditBase<Guid>
 
     public Guid UserId { get; set; }
 
+    public Guid ClubId { get; set; }
+
     public virtual ICollection<ReviewImage>? ReviewImages { get; set; }
 }

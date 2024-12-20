@@ -20,4 +20,9 @@ public static class Query
         Guid UserId,
         Abstractions.Shared.Request.PagedFilterAndSortQueryRequest Data)
         : IQuery<PagedResult<Response.NotificationByUserResponse>>;
+
+    public record GetReviewsByUserIdWithFilterAndSortQuery(
+        Guid UserId,
+        Abstractions.Shared.Request.PagedFilterAndSortQueryRequest Data)
+        : IQuery<PagedResult<Response.ReviewByUserResponse>>;
 }

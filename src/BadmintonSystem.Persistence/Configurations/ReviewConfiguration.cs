@@ -17,6 +17,8 @@ internal sealed class ReviewConfiguration : IEntityTypeConfiguration<Review>
 
         builder.Property(x => x.RatingValue).HasDefaultValue(null).IsRequired();
 
+        builder.Property(x => x.ClubId).IsRequired();
+
         builder.HasMany(x => x.ReviewImages)
             .WithOne()
             .HasForeignKey(x => x.ReviewId)

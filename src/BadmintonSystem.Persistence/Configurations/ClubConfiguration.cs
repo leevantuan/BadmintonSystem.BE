@@ -31,6 +31,12 @@ internal sealed class ClubConfiguration : IEntityTypeConfiguration<Club>
             .OnDelete(DeleteBehavior.Cascade)
             .IsRequired();
 
+        builder.HasMany(e => e.Reviews)
+            .WithOne()
+            .HasForeignKey(x => x.ClubId)
+            .OnDelete(DeleteBehavior.Cascade)
+            .IsRequired();
+
         builder.HasOne(e => e.ClubInformation)
             .WithOne()
             .HasForeignKey<ClubInformation>(e => e.ClubId)

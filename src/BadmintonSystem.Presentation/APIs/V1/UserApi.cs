@@ -35,16 +35,16 @@ public class UserApi : ApiEndpoint, ICarterModule
 
         // ADDRESS
         group1.MapPost("address", CreateAddressByUserIdV1)
-            .RequireJwtAuthorize(FunctionEnum.APPUSER.ToString(), (int)ActionEnum.CREATE);
+            .RequireJwtAuthorize(FunctionEnum.ADDRESS.ToString(), (int)ActionEnum.CREATE);
 
         group1.MapPut("address", UpdateAddressByUserIdV1)
-            .RequireJwtAuthorize(FunctionEnum.APPUSER.ToString(), (int)ActionEnum.UPDATE);
+            .RequireJwtAuthorize(FunctionEnum.ADDRESS.ToString(), (int)ActionEnum.UPDATE);
 
         group1.MapGet("addresses", GetAddressByUserIdV1)
-            .RequireJwtAuthorize(FunctionEnum.APPUSER.ToString(), (int)ActionEnum.READ);
+            .RequireJwtAuthorize(FunctionEnum.ADDRESS.ToString(), (int)ActionEnum.READ);
 
         group1.MapDelete("address/{addressId}", DeleteAddressByUserIdV1)
-            .RequireJwtAuthorize(FunctionEnum.APPUSER.ToString(), (int)ActionEnum.DELETE);
+            .RequireJwtAuthorize(FunctionEnum.ADDRESS.ToString(), (int)ActionEnum.DELETE);
 
         // PAYMENT METHOD
         group1.MapPost("payment-method", CreatePaymentMethodByUserIdV1)
@@ -61,10 +61,23 @@ public class UserApi : ApiEndpoint, ICarterModule
 
         // NOTIFICATION
         group1.MapGet("notifications", GetNotificationsByUserIdV1)
-            .RequireJwtAuthorize(FunctionEnum.APPUSER.ToString(), (int)ActionEnum.READ);
+            .RequireJwtAuthorize(FunctionEnum.NOTIFICATION.ToString(), (int)ActionEnum.READ);
 
         group1.MapDelete("notifications/{notificationId}", DeleteNotificationByUserIdV1)
-            .RequireJwtAuthorize(FunctionEnum.APPUSER.ToString(), (int)ActionEnum.DELETE);
+            .RequireJwtAuthorize(FunctionEnum.NOTIFICATION.ToString(), (int)ActionEnum.DELETE);
+
+        // REVIEW
+        group1.MapPost("review", CreateReviewByUserIdV1)
+            .RequireJwtAuthorize(FunctionEnum.REVIEW.ToString(), (int)ActionEnum.CREATE);
+
+        group1.MapPut("review", UpdateReviewByUserIdV1)
+            .RequireJwtAuthorize(FunctionEnum.REVIEW.ToString(), (int)ActionEnum.UPDATE);
+
+        group1.MapGet("reviews", GetReviewByUserIdWithFilterAndSortV1)
+            .RequireJwtAuthorize(FunctionEnum.REVIEW.ToString(), (int)ActionEnum.READ);
+
+        group1.MapDelete("review/{reviewId}", DeleteReviewByUserIdV1)
+            .RequireJwtAuthorize(FunctionEnum.REVIEW.ToString(), (int)ActionEnum.DELETE);
     }
 
     private static async Task<IResult> LoginV1(ISender sender, [FromBody] Query.LoginQuery login)
@@ -101,6 +114,7 @@ public class UserApi : ApiEndpoint, ICarterModule
         return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
     }
 
+    // ADDRESS ================================================
     private static async Task<IResult> CreateAddressByUserIdV1
     (
         ISender sender,
@@ -143,20 +157,6 @@ public class UserApi : ApiEndpoint, ICarterModule
         return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
     }
 
-    private static async Task<IResult> CreatePaymentMethodByUserIdV1
-    (
-        ISender sender,
-        [FromBody] Contract.Services.V1.PaymentMethod.Request.CreatePaymentMethodRequest request,
-        IHttpContextAccessor httpContextAccessor
-    )
-    {
-        Guid? userIdCurrent = httpContextAccessor.HttpContext?.GetCurrentUserId();
-        Result result =
-            await sender.Send(new Command.CreatePaymentMethodByUserIdCommand(userIdCurrent ?? Guid.Empty, request));
-
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
-    }
-
     private static async Task<IResult> GetAddressByUserIdV1
     (
         ISender sender,
@@ -173,6 +173,21 @@ public class UserApi : ApiEndpoint, ICarterModule
                     userIdCurrent ?? Guid.Empty, pagedQueryRequest));
 
         return Results.Ok(result);
+    }
+
+    // PAYMENT METHOD ================================================
+    private static async Task<IResult> CreatePaymentMethodByUserIdV1
+    (
+        ISender sender,
+        [FromBody] Contract.Services.V1.PaymentMethod.Request.CreatePaymentMethodRequest request,
+        IHttpContextAccessor httpContextAccessor
+    )
+    {
+        Guid? userIdCurrent = httpContextAccessor.HttpContext?.GetCurrentUserId();
+        Result result =
+            await sender.Send(new Command.CreatePaymentMethodByUserIdCommand(userIdCurrent ?? Guid.Empty, request));
+
+        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> UpdatePaymentMethodByUserIdV1
@@ -219,6 +234,7 @@ public class UserApi : ApiEndpoint, ICarterModule
         return Results.Ok(result);
     }
 
+    // NOTIFICATION ================================================
     private static async Task<IResult> GetNotificationsByUserIdV1
     (
         ISender sender,
@@ -251,5 +267,68 @@ public class UserApi : ApiEndpoint, ICarterModule
                 new Command.DeleteNotificationByUserIdCommand(userIdCurrent ?? Guid.Empty, notificationId));
 
         return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+    }
+
+    // REVIEW ================================================
+    private static async Task<IResult> CreateReviewByUserIdV1
+    (
+        ISender sender,
+        [FromBody] Request.CreateReviewByUserIdRequest request,
+        IHttpContextAccessor httpContextAccessor
+    )
+    {
+        Guid? userIdCurrent = httpContextAccessor.HttpContext?.GetCurrentUserId();
+        Result result =
+            await sender.Send(new Command.CreateReviewByUserIdCommand(userIdCurrent ?? Guid.Empty, request));
+
+        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+    }
+
+    private static async Task<IResult> UpdateReviewByUserIdV1
+    (
+        ISender sender,
+        [FromBody] Request.UpdateReviewByUserIdRequest request,
+        IHttpContextAccessor httpContextAccessor
+    )
+    {
+        Guid? userIdCurrent = httpContextAccessor.HttpContext?.GetCurrentUserId();
+        Result result =
+            await sender.Send(new Command.UpdateReviewByUserIdCommand(userIdCurrent ?? Guid.Empty, request));
+
+        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+    }
+
+    private static async Task<IResult> DeleteReviewByUserIdV1
+    (
+        ISender sender,
+        Guid reviewId,
+        IHttpContextAccessor httpContextAccessor
+    )
+    {
+        Guid? userIdCurrent = httpContextAccessor.HttpContext?.GetCurrentUserId();
+        Result result =
+            await sender.Send(
+                new Command.DeleteReviewByUserIdCommand(userIdCurrent ?? Guid.Empty, reviewId));
+
+        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+    }
+
+    private static async Task<IResult> GetReviewByUserIdWithFilterAndSortV1
+    (
+        ISender sender,
+        [AsParameters] Contract.Abstractions.Shared.Request.PagedFilterAndSortRequest request,
+        IHttpContextAccessor httpContextAccessor)
+    {
+        Guid? userIdCurrent = httpContextAccessor.HttpContext?.GetCurrentUserId();
+
+        var pagedQueryRequest =
+            new Contract.Abstractions.Shared.Request.PagedFilterAndSortQueryRequest(request);
+
+        Result<PagedResult<Contract.Services.V1.User.Response.ReviewByUserResponse>> result =
+            await sender.Send(
+                new Contract.Services.V1.User.Query.GetReviewsByUserIdWithFilterAndSortQuery(
+                    userIdCurrent ?? Guid.Empty, pagedQueryRequest));
+
+        return Results.Ok(result);
     }
 }

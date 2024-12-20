@@ -1,5 +1,4 @@
 ﻿using BadmintonSystem.Contract.Abstractions.Entities;
-using BadmintonSystem.Domain.Entities.Identity;
 
 namespace BadmintonSystem.Domain.Entities;
 
@@ -14,6 +13,8 @@ public class Club : EntityAuditBase<Guid>
     public TimeSpan ClosingTime { get; set; }
 
     public string? Code { get; set; }
+
+    public virtual ICollection<Review> Reviews { get; set; }
 
     public virtual ICollection<ClubAddress> ClubAddresses { get; set; }
 

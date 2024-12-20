@@ -2,7 +2,16 @@
 
 public static class Request
 {
-    public record CreateReviewRequest(string Comment, int RatingValue, Guid UserId);
+    public class CreateReviewRequest
+    {
+        public string? Comment { get; set; }
+
+        public int RatingValue { get; set; }
+
+        public Guid UserId { get; set; }
+
+        public Guid ClubId { get; set; }
+    }
 
     public class UpdateReviewRequest
     {
@@ -13,5 +22,7 @@ public static class Request
         public int RatingValue { get; set; }
 
         public Guid UserId { get; set; }
+
+        public Guid ClubId { get; set; }
     }
 }

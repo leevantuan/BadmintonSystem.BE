@@ -90,6 +90,10 @@ public class ServiceV1Profile : Profile
             .ForMember(dest => dest.Items, opt
                 => opt.MapFrom(src => src.Items)).ReverseMap();
 
+        // Review Image
+        CreateMap<ReviewImage, V1.ReviewImage.Request.CreateReviewImageRequest>().ReverseMap();
+        CreateMap<ReviewImage, V1.ReviewImage.Response.ReviewImageDetailResponse>().ReverseMap();
+
         // Notification
         CreateMap<Notification, V1.Notification.Response.NotificationResponse>().ReverseMap();
         CreateMap<Notification, V1.Notification.Request.CreateNotificationRequest>().ReverseMap();

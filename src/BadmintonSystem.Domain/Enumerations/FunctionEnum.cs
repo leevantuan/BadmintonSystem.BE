@@ -8,7 +8,7 @@ public enum FunctionEnum
     BOOKING = 3,
     CATEGORY = 4,
     CLUB = 5,
-    NOFITICATION = 6,
+    NOTIFICATION = 6,
     REVIEW = 7,
     SALE = 8,
     SERVICE = 9,

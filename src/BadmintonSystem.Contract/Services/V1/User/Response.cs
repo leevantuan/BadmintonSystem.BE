@@ -35,4 +35,9 @@ public static class Response
     public class NotificationByUserResponse : Notification.Response.NotificationDetailResponse
     {
     }
+
+    public class ReviewByUserResponse : Review.Response.ReviewDetailResponse
+    {
+        public List<ReviewImage.Response.ReviewImageDetailResponse>? ReviewImages { get; set; }
+    }
 }

@@ -61,4 +61,16 @@ public static class Request
     {
         public int IsDefault { get; set; }
     }
+
+    public class CreateReviewByUserIdRequest : Review.Request.CreateReviewRequest
+    {
+        public List<ReviewImage.Request.CreateReviewImageRequest>? ReviewImages { get; set; }
+    }
+
+    public class UpdateReviewByUserIdRequest : Review.Request.CreateReviewRequest
+    {
+        public Guid Id { get; set; }
+
+        public List<ReviewImage.Request.CreateReviewImageRequest>? ReviewImages { get; set; }
+    }
 }
