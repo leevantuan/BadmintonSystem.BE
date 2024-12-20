@@ -83,7 +83,7 @@ public class PaymentMethodApi : ApiEndpoint, ICarterModule
 
     private static async Task<IResult> GetPaymentMethodByIdV1(ISender sender, Guid paymentMethodId)
     {
-        Result<Response.PaymentMethodResponse> result =
+        Result<Response.PaymentMethodDetailResponse> result =
             await sender.Send(new Query.GetPaymentMethodByIdQuery(paymentMethodId));
 
         return result.IsFailure ? HandleFailure(result) : Results.Ok(result);

@@ -26,24 +26,4 @@ public static class Query
         Guid UserId,
         Abstractions.Shared.Request.PagedFilterAndSortQueryRequest Data)
         : IQuery<PagedResult<Response.ReviewByUserResponse>>;
-
-    // GET BY ID
-    public record GetAddressesByIdWithFilterAndSortQuery(
-        Guid UserId,
-        Abstractions.Shared.Request.PagedFilterAndSortQueryRequest Data)
-        : IQuery<Response.AddressByUserDetailResponse>;
-
-    public record GetPaymentMethodsByIdQuery(
-        Guid UserId)
-        : IQuery<Response.PaymentMethodByUserResponse>;
-
-    public record GetNotificationsByIdWithFilterAndSortQuery(
-        Guid UserId,
-        Abstractions.Shared.Request.PagedFilterAndSortQueryRequest Data)
-        : IQuery<Response.NotificationByUserResponse>;
-
-    public record GetReviewsByIdWithFilterAndSortQuery(
-        Guid UserId,
-        Abstractions.Shared.Request.PagedFilterAndSortQueryRequest Data)
-        : IQuery<Response.ReviewByUserResponse>;
 }

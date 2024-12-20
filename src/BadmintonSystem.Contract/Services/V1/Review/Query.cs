@@ -9,7 +9,7 @@ public static class Query
         : IQuery<PagedResult<Response.ReviewResponse>>;
 
     public record GetReviewByIdQuery(Guid Id)
-        : IQuery<Response.ReviewResponse>;
+        : IQuery<Response.GetReviewDetailResponse>;
 
     public record GetReviewsWithFilterAndSortValueQuery(
         Abstractions.Shared.Request.PagedFilterAndSortQueryRequest Data)

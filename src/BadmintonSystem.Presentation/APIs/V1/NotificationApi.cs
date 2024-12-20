@@ -75,10 +75,13 @@ public class NotificationApi : ApiEndpoint, ICarterModule
         return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
     }
 
-    private static async Task<IResult> GetNotificationByIdV1(ISender sender, Guid notificationId)
+    private static async Task<IResult> GetNotificationByIdV1
+        (ISender sender, Guid notificationId, IHttpContextAccessor httpContextAccessor)
     {
-        Result<Response.NotificationResponse> result =
-            await sender.Send(new Query.GetNotificationByIdQuery(notificationId));
+        Guid? userIdCurrent = httpContextAccessor.HttpContext?.GetCurrentUserId();
+
+        Result<Response.NotificationDetailResponse> result =
+            await sender.Send(new Query.GetNotificationsByIdQuery(userIdCurrent ?? Guid.Empty, notificationId));
 
         return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
     }

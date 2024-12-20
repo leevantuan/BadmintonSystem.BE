@@ -83,7 +83,7 @@ public class ReviewApi : ApiEndpoint, ICarterModule
 
     private static async Task<IResult> GetReviewByIdV1(ISender sender, Guid reviewId)
     {
-        Result<Response.ReviewResponse> result = await sender.Send(new Query.GetReviewByIdQuery(reviewId));
+        Result<Response.GetReviewDetailResponse> result = await sender.Send(new Query.GetReviewByIdQuery(reviewId));
 
         return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
     }

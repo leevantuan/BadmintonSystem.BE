@@ -16,4 +16,17 @@ public static class Response
 
         public Guid ClubId { get; set; }
     }
+
+    public class GetReviewDetailResponse : EntityAuditBase<Guid>
+    {
+        public string? Comment { get; set; }
+
+        public int RatingValue { get; set; }
+
+        public Guid UserId { get; set; }
+
+        public Guid ClubId { get; set; }
+
+        public List<ReviewImage.Response.ReviewImageDetailResponse>? ReviewImages { get; set; }
+    }
 }

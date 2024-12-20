@@ -16,7 +16,7 @@ namespace BadmintonSystem.Application.UseCases.V1.Queries.User;
 
 public sealed class GetAddressesByEmailWithFilterAndSortQueryHandler(
     ApplicationDbContext context,
-    IRepositoryBase<Address, Guid> addressRepository,
+    IRepositoryBase<Domain.Entities.Address, Guid> addressRepository,
     IMapper mapper)
     : IQueryHandler<Query.GetAddressesByEmailWithFilterAndSortQuery, PagedResult<Response.AddressByUserDetailResponse>>
 {
@@ -28,27 +28,27 @@ public sealed class GetAddressesByEmailWithFilterAndSortQueryHandler(
 
         // Pagination
         int pageIndex = request.Data.PageIndex <= 0
-            ? PagedResult<Address>.DefaultPageIndex
+            ? PagedResult<Domain.Entities.Address>.DefaultPageIndex
             : request.Data.PageIndex;
         int pageSize = request.Data.PageSize <= 0
-            ? PagedResult<Address>.DefaultPageSize
-            : request.Data.PageSize > PagedResult<Address>.UpperPageSize
-                ? PagedResult<Address>.UpperPageSize
+            ? PagedResult<Domain.Entities.Address>.DefaultPageSize
+            : request.Data.PageSize > PagedResult<Domain.Entities.Address>.UpperPageSize
+                ? PagedResult<Domain.Entities.Address>.UpperPageSize
                 : request.Data.PageSize;
 
         var baseQueryBuilder = new StringBuilder();
         baseQueryBuilder.Append(
-            $@"FROM ""{nameof(Address)}"" AS address 
+            $@"FROM ""{nameof(Domain.Entities.Address)}"" AS address 
                 JOIN ""{nameof(UserAddress)}"" AS userAddress
-                ON userAddress.""{nameof(UserAddress.AddressId)}"" = address.""{nameof(Address.Id)}""
-                WHERE address.""{nameof(Address.IsDeleted)}"" = false
+                ON userAddress.""{nameof(UserAddress.AddressId)}"" = address.""{nameof(Domain.Entities.Address.Id)}""
+                WHERE address.""{nameof(Domain.Entities.Address.IsDeleted)}"" = false
                 AND userAddress.""{nameof(UserAddress.UserId)}"" = '{request.UserId}' ");
 
         // SEARCH
         if (!string.IsNullOrWhiteSpace(request.Data.SearchTerm))
         {
             baseQueryBuilder.Append(
-                $@"AND ""{nameof(Address.Province)}"" ILIKE '%{request.Data.SearchTerm}%' ");
+                $@"AND ""{nameof(Domain.Entities.Address.Province)}"" ILIKE '%{request.Data.SearchTerm}%' ");
         }
 
         // FILTER MULTIPLE

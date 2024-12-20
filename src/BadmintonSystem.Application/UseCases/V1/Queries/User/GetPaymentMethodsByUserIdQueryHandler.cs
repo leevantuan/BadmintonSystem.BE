@@ -3,7 +3,6 @@ using BadmintonSystem.Contract.Abstractions.Message;
 using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.V1.User;
 using BadmintonSystem.Domain.Abstractions.Repositories;
-using BadmintonSystem.Domain.Entities;
 using BadmintonSystem.Domain.Entities.Identity;
 using BadmintonSystem.Domain.Exceptions;
 using BadmintonSystem.Persistence;
@@ -12,7 +11,7 @@ namespace BadmintonSystem.Application.UseCases.V1.Queries.User;
 
 public sealed class GetPaymentMethodsByUserIdQueryHandler(
     ApplicationDbContext context,
-    IRepositoryBase<PaymentMethod, Guid> paymentMethodRepository,
+    IRepositoryBase<Domain.Entities.PaymentMethod, Guid> paymentMethodRepository,
     IMapper mapper)
     : IQueryHandler<Query.GetPaymentMethodsByUserIdQuery, PagedResult<Response.PaymentMethodByUserResponse>>
 {

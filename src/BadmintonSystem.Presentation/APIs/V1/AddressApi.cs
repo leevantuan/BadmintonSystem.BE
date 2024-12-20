@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Request = BadmintonSystem.Contract.Services.V1.Address.Request;
+using Response = BadmintonSystem.Contract.Services.V1.User.Response;
 
 namespace BadmintonSystem.Presentation.APIs.V1;
 
@@ -65,10 +66,13 @@ public class AddressApi : ApiEndpoint, ICarterModule
         return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
     }
 
-    private static async Task<IResult> GetAddressByIdV1(ISender sender, Guid addressId)
+    private static async Task<IResult> GetAddressByIdV1
+        (ISender sender, Guid addressId, IHttpContextAccessor httpContextAccessor)
     {
-        Result<Response.AddressResponse> result =
-            await sender.Send(new Query.GetAddressByIdQuery(addressId));
+        Guid? userId = httpContextAccessor.HttpContext?.GetCurrentUserId();
+
+        Result<Response.AddressByUserDetailResponse> result =
+            await sender.Send(new Query.GetAddressesByIdQuery(userId ?? Guid.Empty, addressId));
 
         return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
     }

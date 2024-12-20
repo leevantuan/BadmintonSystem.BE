@@ -7,7 +7,6 @@ using BadmintonSystem.Contract.Enumerations;
 using BadmintonSystem.Contract.Extensions;
 using BadmintonSystem.Contract.Services.V1.User;
 using BadmintonSystem.Domain.Abstractions.Repositories;
-using BadmintonSystem.Domain.Entities;
 using BadmintonSystem.Domain.Exceptions;
 using BadmintonSystem.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -29,12 +28,12 @@ public sealed class GetNotificationsByUserIdWithFilterAndSortQueryHandler(
 
         // Pagination
         int pageIndex = request.Data.PageIndex <= 0
-            ? PagedResult<Address>.DefaultPageIndex
+            ? PagedResult<Domain.Entities.Address>.DefaultPageIndex
             : request.Data.PageIndex;
         int pageSize = request.Data.PageSize <= 0
-            ? PagedResult<Address>.DefaultPageSize
-            : request.Data.PageSize > PagedResult<Address>.UpperPageSize
-                ? PagedResult<Address>.UpperPageSize
+            ? PagedResult<Domain.Entities.Address>.DefaultPageSize
+            : request.Data.PageSize > PagedResult<Domain.Entities.Address>.UpperPageSize
+                ? PagedResult<Domain.Entities.Address>.UpperPageSize
                 : request.Data.PageSize;
 
         var baseQueryBuilder = new StringBuilder();
@@ -47,7 +46,7 @@ public sealed class GetNotificationsByUserIdWithFilterAndSortQueryHandler(
         if (!string.IsNullOrWhiteSpace(request.Data.SearchTerm))
         {
             baseQueryBuilder.Append(
-                $@"AND ""{nameof(Address.Province)}"" ILIKE '%{request.Data.SearchTerm}%' ");
+                $@"AND ""{nameof(Domain.Entities.Address.Province)}"" ILIKE '%{request.Data.SearchTerm}%' ");
         }
 
         // FILTER MULTIPLE

@@ -43,7 +43,7 @@ public sealed class GetRegisterByCustomerQueryHandler(
             SecurityStamp = Guid.NewGuid().ToString() // Set a unique security stamp
         };
 
-        var newAddress = new Address
+        var newAddress = new Domain.Entities.Address
         {
             Id = Guid.NewGuid(),
             AddressLine1 = request.Data.AddressLine1,
@@ -80,15 +80,6 @@ public sealed class GetRegisterByCustomerQueryHandler(
 
             throw new IdentityException.AppRoleException(errors);
         }
-
-        // add default user claim
-        // AppRole role = await roleManager.FindByNameAsync(AppRoleEnum.CUSTOMER.ToString())
-        //                ?? throw new IdentityException.AppRoleNotFoundException(AppRoleEnum.CUSTOMER.ToString());
-        //
-        // // get list role claim
-        // IList<Claim> claims = await roleManager.GetClaimsAsync(role);
-        //
-        // await userManager.AddClaimsAsync(newUser, claims);
 
         context.Address.Add(newAddress);
 

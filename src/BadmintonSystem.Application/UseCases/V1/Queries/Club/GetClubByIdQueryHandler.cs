@@ -34,7 +34,7 @@ public sealed class GetClubByIdQueryHandler(
                 Contract.Services.V1.ClubImage.Response.ClubImageDetailResponse>();
 
         string clubAddressColumns = StringExtension
-            .TransformPropertiesToSqlAliases<Address,
+            .TransformPropertiesToSqlAliases<Domain.Entities.Address,
                 Contract.Services.V1.Address.Response.AddressDetailResponse>();
 
         var queryBuilder = new StringBuilder();
@@ -46,8 +46,8 @@ public sealed class GetClubByIdQueryHandler(
                                 ON clubImage.""{nameof(ClubImage.ClubId)}"" = club.""{nameof(Domain.Entities.Club.Id)}""
                                 JOIN ""{nameof(ClubAddress)}"" AS clubAddress
                                 ON clubAddress.""{nameof(ClubAddress.ClubId)}"" = club.""{nameof(Domain.Entities.Club.Id)}""
-                                JOIN ""{nameof(Address)}"" AS address
-                                ON address.""{nameof(Address.Id)}"" = clubAddress.""{nameof(ClubAddress.AddressId)}""
+                                JOIN ""{nameof(Domain.Entities.Address)}"" AS address
+                                ON address.""{nameof(Domain.Entities.Address.Id)}"" = clubAddress.""{nameof(ClubAddress.AddressId)}""
                                 WHERE club.""{nameof(Domain.Entities.Club.Id)}"" = '{request.Id.ToString()}'");
 
         List<Response.GetClubDetailSql> queryResult = await clubRepository

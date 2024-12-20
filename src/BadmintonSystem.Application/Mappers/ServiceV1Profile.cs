@@ -82,6 +82,7 @@ public class ServiceV1Profile : Profile
                 => opt.MapFrom(src => src.Items)).ReverseMap();
 
         // Review
+        CreateMap<Review, V1.Review.Response.GetReviewDetailResponse>().ReverseMap();
         CreateMap<Review, V1.Review.Response.ReviewResponse>().ReverseMap();
         CreateMap<Review, V1.Review.Request.CreateReviewRequest>().ReverseMap();
         CreateMap<PagedResult<Review>, PagedResult<V1.Review.Response.ReviewResponse>>().ReverseMap();

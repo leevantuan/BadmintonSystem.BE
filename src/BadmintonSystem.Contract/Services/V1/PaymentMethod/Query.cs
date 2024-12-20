@@ -8,6 +8,6 @@ public static class Query
     public record GetPaymentMethodsQuery(Abstractions.Shared.Request.PagedQueryRequest Data)
         : IQuery<PagedResult<Response.PaymentMethodResponse>>;
 
-    public record GetPaymentMethodByIdQuery(Guid Id)
-        : IQuery<Response.PaymentMethodResponse>;
+    public record GetPaymentMethodByIdQuery(Guid PaymentMethodId)
+        : IQuery<Response.PaymentMethodDetailResponse>;
 }
