@@ -1,13 +1,13 @@
 ﻿using AutoMapper;
 using BadmintonSystem.Contract.Abstractions.Message;
 using BadmintonSystem.Contract.Abstractions.Shared;
-using BadmintonSystem.Contract.Services.V1.User;
+using BadmintonSystem.Contract.Services.V1.Review;
 using BadmintonSystem.Domain.Abstractions.Repositories;
 using BadmintonSystem.Domain.Entities;
 using BadmintonSystem.Domain.Exceptions;
 using BadmintonSystem.Persistence;
 
-namespace BadmintonSystem.Application.UseCases.V1.Commands.User;
+namespace BadmintonSystem.Application.UseCases.V1.Commands.Review;
 
 public sealed class UpdateReviewByUserIdCommandHandler(
     ApplicationDbContext context,

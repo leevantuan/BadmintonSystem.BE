@@ -1,13 +1,13 @@
 ﻿using AutoMapper;
 using BadmintonSystem.Contract.Abstractions.Message;
 using BadmintonSystem.Contract.Abstractions.Shared;
-using BadmintonSystem.Contract.Services.V1.User;
+using BadmintonSystem.Contract.Services.V1.Notification;
 using BadmintonSystem.Domain.Abstractions.Repositories;
 using BadmintonSystem.Domain.Exceptions;
 using BadmintonSystem.Persistence;
 using Microsoft.EntityFrameworkCore;
 
-namespace BadmintonSystem.Application.UseCases.V1.Commands.User;
+namespace BadmintonSystem.Application.UseCases.V1.Commands.Notification;
 
 public sealed class DeleteNotificationByUserIdCommandHandler(
     ApplicationDbContext context,

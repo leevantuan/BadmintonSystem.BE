@@ -12,4 +12,8 @@ public static class Command
 
     public record DeleteNotificationsCommand(List<string> Ids)
         : ICommand;
+
+    public record DeleteNotificationByUserIdCommand(
+        Guid UserId,
+        Guid NotificationId) : ICommand;
 }

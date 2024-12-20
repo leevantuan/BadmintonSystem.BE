@@ -1,24 +1,23 @@
 ﻿using AutoMapper;
 using BadmintonSystem.Contract.Abstractions.Message;
 using BadmintonSystem.Contract.Abstractions.Shared;
-using BadmintonSystem.Contract.Services.V1.User;
+using BadmintonSystem.Contract.Services.V1.PaymentMethod;
 using BadmintonSystem.Domain.Abstractions.Repositories;
-using BadmintonSystem.Domain.Entities;
 using BadmintonSystem.Domain.Enumerations;
 using BadmintonSystem.Persistence;
 
-namespace BadmintonSystem.Application.UseCases.V1.Commands.User;
+namespace BadmintonSystem.Application.UseCases.V1.Commands.PaymentMethod;
 
 public sealed class DeletePaymentMethodByUserIdCommandHandler(
     ApplicationDbContext context,
     IMapper mapper,
-    IRepositoryBase<PaymentMethod, Guid> paymentMethodRepository)
+    IRepositoryBase<Domain.Entities.PaymentMethod, Guid> paymentMethodRepository)
     : ICommandHandler<Command.DeletePaymentMethodByUserIdCommand>
 {
     public async Task<Result> Handle
         (Command.DeletePaymentMethodByUserIdCommand request, CancellationToken cancellationToken)
     {
-        PaymentMethod paymentMethod =
+        Domain.Entities.PaymentMethod paymentMethod =
             await paymentMethodRepository.FindByIdAsync(request.PaymentMethodId, cancellationToken);
 
         var paymentMethods = paymentMethodRepository.FindAll(x => x.UserId == request.UserId).ToList();
@@ -32,7 +31,7 @@ public sealed class DeletePaymentMethodByUserIdCommandHandler(
 
         if (paymentMethod.IsDefault == DefaultEnum.TRUE)
         {
-            PaymentMethod? filteredList = paymentMethods.FirstOrDefault(x => x != paymentMethod);
+            Domain.Entities.PaymentMethod? filteredList = paymentMethods.FirstOrDefault(x => x != paymentMethod);
 
             filteredList.IsDefault = DefaultEnum.TRUE;
         }

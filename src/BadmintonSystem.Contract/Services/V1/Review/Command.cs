@@ -4,12 +4,9 @@ namespace BadmintonSystem.Contract.Services.V1.Review;
 
 public static class Command
 {
-    public record CreateReviewCommand(Guid UserId, Request.CreateReviewRequest Data)
-        : ICommand<Response.ReviewResponse>;
+    public record CreateReviewByUserIdCommand(Guid UserId, Request.CreateReviewByUserIdRequest Data) : ICommand;
 
-    public record UpdateReviewCommand(Request.UpdateReviewRequest Data)
-        : ICommand<Response.ReviewResponse>;
+    public record UpdateReviewByUserIdCommand(Guid UserId, Request.UpdateReviewByUserIdRequest Data) : ICommand;
 
-    public record DeleteReviewsCommand(List<string> Ids)
-        : ICommand;
+    public record DeleteReviewByUserIdCommand(Guid UserId, Guid ReviewId) : ICommand;
 }

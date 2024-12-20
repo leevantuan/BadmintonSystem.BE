@@ -2,7 +2,7 @@
 using AutoMapper;
 using BadmintonSystem.Contract.Abstractions.Message;
 using BadmintonSystem.Contract.Abstractions.Shared;
-using BadmintonSystem.Contract.Services.V1.User;
+using BadmintonSystem.Contract.Services.V1.Address;
 using BadmintonSystem.Domain.Abstractions.Repositories;
 using BadmintonSystem.Domain.Entities;
 using BadmintonSystem.Domain.Enumerations;
@@ -10,12 +10,12 @@ using BadmintonSystem.Domain.Exceptions;
 using BadmintonSystem.Persistence;
 using Microsoft.EntityFrameworkCore;
 
-namespace BadmintonSystem.Application.UseCases.V1.Commands.User;
+namespace BadmintonSystem.Application.UseCases.V1.Commands.Address;
 
 public sealed class UpdateAddressByUserIdCommandHandler(
     ApplicationDbContext context,
     IMapper mapper,
-    IRepositoryBase<Address, Guid> addressRepository)
+    IRepositoryBase<Domain.Entities.Address, Guid> addressRepository)
     : ICommandHandler<Command.UpdateAddressByUserIdCommand>
 {
     public async Task<Result> Handle(Command.UpdateAddressByUserIdCommand request, CancellationToken cancellationToken)
@@ -24,7 +24,7 @@ public sealed class UpdateAddressByUserIdCommandHandler(
             context.UserAddress.FirstOrDefault(x => x.UserId == request.UserId && x.AddressId == request.Data.Id)
             ?? throw new UserAddressException.UserAddressNotFoundException();
 
-        Address address = await addressRepository.FindByIdAsync(request.Data.Id, cancellationToken);
+        Domain.Entities.Address address = await addressRepository.FindByIdAsync(request.Data.Id, cancellationToken);
 
         address.Unit = request.Data.Unit ?? address.Unit;
         address.Street = request.Data.Street ?? address.Street;

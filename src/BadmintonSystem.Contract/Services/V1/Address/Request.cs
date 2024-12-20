@@ -33,4 +33,10 @@ public static class Request
 
         public string? Province { get; set; }
     }
+
+    // REQUEST ADDRESS BY USERID
+    public class UpdateAddressByUserIdRequest : UpdateAddressRequest
+    {
+        public int IsDefault { get; set; }
+    }
 }

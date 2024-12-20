@@ -25,4 +25,18 @@ public static class Request
 
         public Guid ClubId { get; set; }
     }
+
+    // REVIEW REQUEST BY USER
+
+    public class CreateReviewByUserIdRequest : CreateReviewRequest
+    {
+        public List<ReviewImage.Request.CreateReviewImageRequest>? ReviewImages { get; set; }
+    }
+
+    public class UpdateReviewByUserIdRequest : CreateReviewRequest
+    {
+        public Guid Id { get; set; }
+
+        public List<ReviewImage.Request.CreateReviewImageRequest>? ReviewImages { get; set; }
+    }
 }

@@ -56,21 +56,4 @@ public static class Request
 
         public string CurrentPassword { get; set; }
     }
-
-    public class UpdateAddressByUserIdRequest : Address.Request.UpdateAddressRequest
-    {
-        public int IsDefault { get; set; }
-    }
-
-    public class CreateReviewByUserIdRequest : Review.Request.CreateReviewRequest
-    {
-        public List<ReviewImage.Request.CreateReviewImageRequest>? ReviewImages { get; set; }
-    }
-
-    public class UpdateReviewByUserIdRequest : Review.Request.CreateReviewRequest
-    {
-        public Guid Id { get; set; }
-
-        public List<ReviewImage.Request.CreateReviewImageRequest>? ReviewImages { get; set; }
-    }
 }

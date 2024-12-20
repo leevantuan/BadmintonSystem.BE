@@ -1,5 +1,5 @@
 ﻿using BadmintonSystem.Contract.Abstractions.Shared;
-using BadmintonSystem.Contract.Services.V1.Review;
+using BadmintonSystem.Contract.Services.V1.PaymentMethod;
 using BadmintonSystem.Domain.Enumerations;
 using BadmintonSystem.Persistence.Helpers;
 using BadmintonSystem.Presentation.Abstractions;
@@ -10,80 +10,81 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
-using Request = BadmintonSystem.Contract.Services.V1.Review.Request;
+using Request = BadmintonSystem.Contract.Services.V1.PaymentMethod.Request;
 
 namespace BadmintonSystem.Presentation.APIs.V1;
 
-public class ReviewApi : ApiEndpoint, ICarterModule
+public class PaymentMethodApi : ApiEndpoint, ICarterModule
 {
-    private const string BaseUrl = "/api/v{version:apiVersion}/reviews";
+    private const string BaseUrl = "/api/v{version:apiVersion}/payment-methods";
 
     public void AddRoutes(IEndpointRouteBuilder app)
     {
-        RouteGroupBuilder group1 = app.NewVersionedApi("reviews")
+        RouteGroupBuilder group1 = app.NewVersionedApi("payment methods")
             .MapGroup(BaseUrl)
             .HasApiVersion(1)
             .RequireAuthorization();
 
-        group1.MapPost(string.Empty, CreateReviewByUserIdV1)
+        group1.MapPost(string.Empty, CreatePaymentMethodByUserIdV1)
             .RequireJwtAuthorize(FunctionEnum.REVIEW.ToString(), (int)ActionEnum.CREATE);
 
-        group1.MapGet("{reviewId}", GetReviewByIdV1)
+        group1.MapGet("{paymentMethodId}", GetPaymentMethodByIdV1)
             .RequireJwtAuthorize(FunctionEnum.REVIEW.ToString(), (int)ActionEnum.READ);
 
-        group1.MapPut(string.Empty, UpdateReviewByUserIdV1)
+        group1.MapPut(string.Empty, UpdatePaymentMethodByUserIdV1)
             .RequireJwtAuthorize(FunctionEnum.REVIEW.ToString(), (int)ActionEnum.UPDATE);
 
-        group1.MapDelete("{reviewId}", DeleteReviewByUserIdV1)
+        group1.MapDelete("{paymentMethodId}", DeletePaymentMethodByUserIdV1)
             .RequireJwtAuthorize(FunctionEnum.REVIEW.ToString(), (int)ActionEnum.DELETE);
     }
 
-    private static async Task<IResult> CreateReviewByUserIdV1
+    private static async Task<IResult> CreatePaymentMethodByUserIdV1
     (
         ISender sender,
-        [FromBody] Request.CreateReviewByUserIdRequest request,
+        [FromBody] Request.CreatePaymentMethodRequest request,
         IHttpContextAccessor httpContextAccessor
     )
     {
         Guid? userIdCurrent = httpContextAccessor.HttpContext?.GetCurrentUserId();
         Result result =
-            await sender.Send(new Command.CreateReviewByUserIdCommand(userIdCurrent ?? Guid.Empty, request));
+            await sender.Send(new Command.CreatePaymentMethodByUserIdCommand(userIdCurrent ?? Guid.Empty, request));
 
         return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
     }
 
-    private static async Task<IResult> UpdateReviewByUserIdV1
+    private static async Task<IResult> UpdatePaymentMethodByUserIdV1
     (
         ISender sender,
-        [FromBody] Request.UpdateReviewByUserIdRequest request,
+        [FromBody] Request.UpdatePaymentMethodRequest request,
         IHttpContextAccessor httpContextAccessor
     )
     {
         Guid? userIdCurrent = httpContextAccessor.HttpContext?.GetCurrentUserId();
         Result result =
-            await sender.Send(new Command.UpdateReviewByUserIdCommand(userIdCurrent ?? Guid.Empty, request));
+            await sender.Send(new Command.UpdatePaymentMethodByUserIdCommand(userIdCurrent ?? Guid.Empty, request));
 
         return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
     }
 
-    private static async Task<IResult> DeleteReviewByUserIdV1
+    private static async Task<IResult> DeletePaymentMethodByUserIdV1
     (
         ISender sender,
-        Guid reviewId,
+        Guid paymentMethodId,
         IHttpContextAccessor httpContextAccessor
     )
     {
         Guid? userIdCurrent = httpContextAccessor.HttpContext?.GetCurrentUserId();
         Result result =
             await sender.Send(
-                new Command.DeleteReviewByUserIdCommand(userIdCurrent ?? Guid.Empty, reviewId));
+                new Command.DeletePaymentMethodByUserIdCommand(userIdCurrent ?? Guid.Empty, paymentMethodId));
 
         return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
     }
 
-    private static async Task<IResult> GetReviewByIdV1(ISender sender, Guid reviewId)
+    private static async Task<IResult> GetPaymentMethodByIdV1(ISender sender, Guid paymentMethodId)
     {
-        Result<Response.ReviewResponse> result = await sender.Send(new Query.GetReviewByIdQuery(reviewId));
+        Result<Response.PaymentMethodResponse> result =
+            await sender.Send(new Query.GetPaymentMethodByIdQuery(paymentMethodId));
 
         return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
     }

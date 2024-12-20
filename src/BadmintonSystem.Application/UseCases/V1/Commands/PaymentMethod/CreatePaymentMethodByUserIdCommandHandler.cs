@@ -1,19 +1,18 @@
 ﻿using AutoMapper;
 using BadmintonSystem.Contract.Abstractions.Message;
 using BadmintonSystem.Contract.Abstractions.Shared;
-using BadmintonSystem.Contract.Services.V1.User;
+using BadmintonSystem.Contract.Services.V1.PaymentMethod;
 using BadmintonSystem.Domain.Abstractions.Repositories;
-using BadmintonSystem.Domain.Entities;
 using BadmintonSystem.Domain.Enumerations;
 using BadmintonSystem.Domain.Exceptions;
 using BadmintonSystem.Persistence;
 
-namespace BadmintonSystem.Application.UseCases.V1.Commands.User;
+namespace BadmintonSystem.Application.UseCases.V1.Commands.PaymentMethod;
 
 public sealed class CreatePaymentMethodByUserIdCommandHandler(
     ApplicationDbContext context,
     IMapper mapper,
-    IRepositoryBase<PaymentMethod, Guid> paymentMethodRepository)
+    IRepositoryBase<Domain.Entities.PaymentMethod, Guid> paymentMethodRepository)
     : ICommandHandler<Command.CreatePaymentMethodByUserIdCommand>
 {
     public async Task<Result> Handle
@@ -22,7 +21,7 @@ public sealed class CreatePaymentMethodByUserIdCommandHandler(
         _ = context.AppUsers.FirstOrDefault(x => x.Id == request.UserId)
             ?? throw new IdentityException.AppUserNotFoundException(request.UserId);
 
-        PaymentMethod alreadyExist =
+        Domain.Entities.PaymentMethod alreadyExist =
             await paymentMethodRepository.FindSingleAsync(x => x.Provider == request.Data.Provider, cancellationToken);
 
         if (alreadyExist != null)
@@ -30,11 +29,12 @@ public sealed class CreatePaymentMethodByUserIdCommandHandler(
             throw new PaymentMethodException.PaymentMethodAlreadyExistException(request.Data.Provider);
         }
 
-        PaymentMethod? paymentMethod = mapper.Map<PaymentMethod>(request.Data);
+        Domain.Entities.PaymentMethod? paymentMethod = mapper.Map<Domain.Entities.PaymentMethod>(request.Data);
 
         paymentMethod.UserId = request.UserId;
 
-        IQueryable<PaymentMethod> paymentMethods = paymentMethodRepository.FindAll(x => x.UserId == request.UserId);
+        IQueryable<Domain.Entities.PaymentMethod> paymentMethods =
+            paymentMethodRepository.FindAll(x => x.UserId == request.UserId);
 
         paymentMethod.IsDefault = DefaultEnum.TRUE;
 

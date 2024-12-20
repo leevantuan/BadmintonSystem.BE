@@ -34,50 +34,20 @@ public class UserApi : ApiEndpoint, ICarterModule
             .RequireJwtAuthorize(FunctionEnum.APPUSER.ToString(), (int)ActionEnum.UPDATE);
 
         // ADDRESS
-        group1.MapPost("address", CreateAddressByUserIdV1)
-            .RequireJwtAuthorize(FunctionEnum.ADDRESS.ToString(), (int)ActionEnum.CREATE);
-
-        group1.MapPut("address", UpdateAddressByUserIdV1)
-            .RequireJwtAuthorize(FunctionEnum.ADDRESS.ToString(), (int)ActionEnum.UPDATE);
-
         group1.MapGet("addresses", GetAddressByUserIdV1)
             .RequireJwtAuthorize(FunctionEnum.ADDRESS.ToString(), (int)ActionEnum.READ);
 
-        group1.MapDelete("address/{addressId}", DeleteAddressByUserIdV1)
-            .RequireJwtAuthorize(FunctionEnum.ADDRESS.ToString(), (int)ActionEnum.DELETE);
-
         // PAYMENT METHOD
-        group1.MapPost("payment-method", CreatePaymentMethodByUserIdV1)
-            .RequireJwtAuthorize(FunctionEnum.APPUSER.ToString(), (int)ActionEnum.CREATE);
-
-        group1.MapPut("payment-method", UpdatePaymentMethodByUserIdV1)
-            .RequireJwtAuthorize(FunctionEnum.APPUSER.ToString(), (int)ActionEnum.UPDATE);
-
         group1.MapGet("payment-methods", GetPaymentMethodByUserIdV1)
             .RequireJwtAuthorize(FunctionEnum.APPUSER.ToString(), (int)ActionEnum.READ);
-
-        group1.MapDelete("payment-method/{paymentMethodId}", DeletePaymentMethodByUserIdV1)
-            .RequireJwtAuthorize(FunctionEnum.APPUSER.ToString(), (int)ActionEnum.DELETE);
 
         // NOTIFICATION
         group1.MapGet("notifications", GetNotificationsByUserIdV1)
             .RequireJwtAuthorize(FunctionEnum.NOTIFICATION.ToString(), (int)ActionEnum.READ);
 
-        group1.MapDelete("notifications/{notificationId}", DeleteNotificationByUserIdV1)
-            .RequireJwtAuthorize(FunctionEnum.NOTIFICATION.ToString(), (int)ActionEnum.DELETE);
-
         // REVIEW
-        group1.MapPost("review", CreateReviewByUserIdV1)
-            .RequireJwtAuthorize(FunctionEnum.REVIEW.ToString(), (int)ActionEnum.CREATE);
-
-        group1.MapPut("review", UpdateReviewByUserIdV1)
-            .RequireJwtAuthorize(FunctionEnum.REVIEW.ToString(), (int)ActionEnum.UPDATE);
-
         group1.MapGet("reviews", GetReviewByUserIdWithFilterAndSortV1)
             .RequireJwtAuthorize(FunctionEnum.REVIEW.ToString(), (int)ActionEnum.READ);
-
-        group1.MapDelete("review/{reviewId}", DeleteReviewByUserIdV1)
-            .RequireJwtAuthorize(FunctionEnum.REVIEW.ToString(), (int)ActionEnum.DELETE);
     }
 
     private static async Task<IResult> LoginV1(ISender sender, [FromBody] Query.LoginQuery login)
@@ -114,49 +84,6 @@ public class UserApi : ApiEndpoint, ICarterModule
         return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
     }
 
-    // ADDRESS ================================================
-    private static async Task<IResult> CreateAddressByUserIdV1
-    (
-        ISender sender,
-        [FromBody] Contract.Services.V1.Address.Request.CreateAddressRequest request,
-        IHttpContextAccessor httpContextAccessor
-    )
-    {
-        Guid? userIdCurrent = httpContextAccessor.HttpContext?.GetCurrentUserId();
-        Result result =
-            await sender.Send(new Command.CreateAddressByUserIdCommand(userIdCurrent ?? Guid.Empty, request));
-
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
-    }
-
-    private static async Task<IResult> UpdateAddressByUserIdV1
-    (
-        ISender sender,
-        [FromBody] Request.UpdateAddressByUserIdRequest request,
-        IHttpContextAccessor httpContextAccessor
-    )
-    {
-        Guid? userIdCurrent = httpContextAccessor.HttpContext?.GetCurrentUserId();
-        Result result =
-            await sender.Send(new Command.UpdateAddressByUserIdCommand(userIdCurrent ?? Guid.Empty, request));
-
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
-    }
-
-    private static async Task<IResult> DeleteAddressByUserIdV1
-    (
-        ISender sender,
-        Guid addressId,
-        IHttpContextAccessor httpContextAccessor
-    )
-    {
-        Guid? userIdCurrent = httpContextAccessor.HttpContext?.GetCurrentUserId();
-        Result result =
-            await sender.Send(new Command.DeleteAddressByUserIdCommand(userIdCurrent ?? Guid.Empty, addressId));
-
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
-    }
-
     private static async Task<IResult> GetAddressByUserIdV1
     (
         ISender sender,
@@ -173,50 +100,6 @@ public class UserApi : ApiEndpoint, ICarterModule
                     userIdCurrent ?? Guid.Empty, pagedQueryRequest));
 
         return Results.Ok(result);
-    }
-
-    // PAYMENT METHOD ================================================
-    private static async Task<IResult> CreatePaymentMethodByUserIdV1
-    (
-        ISender sender,
-        [FromBody] Contract.Services.V1.PaymentMethod.Request.CreatePaymentMethodRequest request,
-        IHttpContextAccessor httpContextAccessor
-    )
-    {
-        Guid? userIdCurrent = httpContextAccessor.HttpContext?.GetCurrentUserId();
-        Result result =
-            await sender.Send(new Command.CreatePaymentMethodByUserIdCommand(userIdCurrent ?? Guid.Empty, request));
-
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
-    }
-
-    private static async Task<IResult> UpdatePaymentMethodByUserIdV1
-    (
-        ISender sender,
-        [FromBody] Contract.Services.V1.PaymentMethod.Request.UpdatePaymentMethodRequest request,
-        IHttpContextAccessor httpContextAccessor
-    )
-    {
-        Guid? userIdCurrent = httpContextAccessor.HttpContext?.GetCurrentUserId();
-        Result result =
-            await sender.Send(new Command.UpdatePaymentMethodByUserIdCommand(userIdCurrent ?? Guid.Empty, request));
-
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
-    }
-
-    private static async Task<IResult> DeletePaymentMethodByUserIdV1
-    (
-        ISender sender,
-        Guid paymentMethodId,
-        IHttpContextAccessor httpContextAccessor
-    )
-    {
-        Guid? userIdCurrent = httpContextAccessor.HttpContext?.GetCurrentUserId();
-        Result result =
-            await sender.Send(
-                new Command.DeletePaymentMethodByUserIdCommand(userIdCurrent ?? Guid.Empty, paymentMethodId));
-
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> GetPaymentMethodByUserIdV1
@@ -252,65 +135,6 @@ public class UserApi : ApiEndpoint, ICarterModule
                     userIdCurrent ?? Guid.Empty, pagedQueryRequest));
 
         return Results.Ok(result);
-    }
-
-    private static async Task<IResult> DeleteNotificationByUserIdV1
-    (
-        ISender sender,
-        Guid notificationId,
-        IHttpContextAccessor httpContextAccessor
-    )
-    {
-        Guid? userIdCurrent = httpContextAccessor.HttpContext?.GetCurrentUserId();
-        Result result =
-            await sender.Send(
-                new Command.DeleteNotificationByUserIdCommand(userIdCurrent ?? Guid.Empty, notificationId));
-
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
-    }
-
-    // REVIEW ================================================
-    private static async Task<IResult> CreateReviewByUserIdV1
-    (
-        ISender sender,
-        [FromBody] Request.CreateReviewByUserIdRequest request,
-        IHttpContextAccessor httpContextAccessor
-    )
-    {
-        Guid? userIdCurrent = httpContextAccessor.HttpContext?.GetCurrentUserId();
-        Result result =
-            await sender.Send(new Command.CreateReviewByUserIdCommand(userIdCurrent ?? Guid.Empty, request));
-
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
-    }
-
-    private static async Task<IResult> UpdateReviewByUserIdV1
-    (
-        ISender sender,
-        [FromBody] Request.UpdateReviewByUserIdRequest request,
-        IHttpContextAccessor httpContextAccessor
-    )
-    {
-        Guid? userIdCurrent = httpContextAccessor.HttpContext?.GetCurrentUserId();
-        Result result =
-            await sender.Send(new Command.UpdateReviewByUserIdCommand(userIdCurrent ?? Guid.Empty, request));
-
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
-    }
-
-    private static async Task<IResult> DeleteReviewByUserIdV1
-    (
-        ISender sender,
-        Guid reviewId,
-        IHttpContextAccessor httpContextAccessor
-    )
-    {
-        Guid? userIdCurrent = httpContextAccessor.HttpContext?.GetCurrentUserId();
-        Result result =
-            await sender.Send(
-                new Command.DeleteReviewByUserIdCommand(userIdCurrent ?? Guid.Empty, reviewId));
-
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> GetReviewByUserIdWithFilterAndSortV1

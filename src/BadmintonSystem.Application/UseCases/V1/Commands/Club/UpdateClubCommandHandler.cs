@@ -25,7 +25,7 @@ public sealed class UpdateClubCommandHandler(
         ClubAddress? clubAddress =
             context.ClubAddress.FirstOrDefault(x => x.ClubId == request.Data.ClubInformation.ClubId);
 
-        Address? address = context.Address.FirstOrDefault(x => x.Id == clubAddress.AddressId);
+        Domain.Entities.Address? address = context.Address.FirstOrDefault(x => x.Id == clubAddress.AddressId);
 
         IEnumerable<ClubImage> clubImages =
             context.ClubImage.Where(x => x.ClubId == club.Id).ToList();

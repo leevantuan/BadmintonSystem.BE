@@ -1,19 +1,19 @@
 ﻿using AutoMapper;
 using BadmintonSystem.Contract.Abstractions.Message;
 using BadmintonSystem.Contract.Abstractions.Shared;
-using BadmintonSystem.Contract.Services.V1.User;
+using BadmintonSystem.Contract.Services.V1.Address;
 using BadmintonSystem.Domain.Abstractions.Repositories;
 using BadmintonSystem.Domain.Entities;
 using BadmintonSystem.Domain.Enumerations;
 using BadmintonSystem.Domain.Exceptions;
 using BadmintonSystem.Persistence;
 
-namespace BadmintonSystem.Application.UseCases.V1.Commands.User;
+namespace BadmintonSystem.Application.UseCases.V1.Commands.Address;
 
 public sealed class CreateAddressByUserIdCommandHandler(
     ApplicationDbContext context,
     IMapper mapper,
-    IRepositoryBase<Address, Guid> addressRepository)
+    IRepositoryBase<Domain.Entities.Address, Guid> addressRepository)
     : ICommandHandler<Command.CreateAddressByUserIdCommand>
 {
     public async Task<Result> Handle(Command.CreateAddressByUserIdCommand request, CancellationToken cancellationToken)
@@ -21,7 +21,7 @@ public sealed class CreateAddressByUserIdCommandHandler(
         _ = context.AppUsers.FirstOrDefault(x => x.Id == request.UserId)
             ?? throw new IdentityException.AppUserNotFoundException(request.UserId);
 
-        Address? address = mapper.Map<Address>(request.Data);
+        Domain.Entities.Address? address = mapper.Map<Domain.Entities.Address>(request.Data);
 
         address.Id = Guid.NewGuid();
 

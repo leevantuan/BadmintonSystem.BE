@@ -4,12 +4,10 @@ namespace BadmintonSystem.Contract.Services.V1.Address;
 
 public static class Command
 {
-    public record CreateAddressCommand(Guid UserId, Request.CreateAddressRequest Data)
-        : ICommand<Response.AddressResponse>;
+    // ADDRESS BY USER
+    public record CreateAddressByUserIdCommand(Guid UserId, Request.CreateAddressRequest Data) : ICommand;
 
-    public record UpdateAddressCommand(Request.UpdateAddressRequest Data)
-        : ICommand<Response.AddressResponse>;
+    public record UpdateAddressByUserIdCommand(Guid UserId, Request.UpdateAddressByUserIdRequest Data) : ICommand;
 
-    public record DeleteAddressesCommand(List<string> Ids)
-        : ICommand;
+    public record DeleteAddressByUserIdCommand(Guid UserId, Guid AddressId) : ICommand;
 }

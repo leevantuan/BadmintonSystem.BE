@@ -28,11 +28,6 @@ public class NotificationApi : ApiEndpoint, ICarterModule
         group1.MapPost(string.Empty, CreateNotificationV1)
             .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.CREATE);
 
-        group1.MapGet(string.Empty, GetNotificationsV1)
-            .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.READ);
-        group1.MapGet("filter-and-sort-value", GetNotificationsFilterAndSortValueV1)
-            .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.READ);
-
         group1.MapGet("{notificationId}", GetNotificationByIdV1)
             .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.READ);
 
@@ -40,6 +35,9 @@ public class NotificationApi : ApiEndpoint, ICarterModule
             .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.UPDATE);
 
         group1.MapDelete(string.Empty, DeleteNotificationsV1)
+            .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.DELETE);
+
+        group1.MapDelete("{notificationId}", DeleteNotificationByUserIdV1)
             .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.DELETE);
     }
 
@@ -77,18 +75,6 @@ public class NotificationApi : ApiEndpoint, ICarterModule
         return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
     }
 
-    private static async Task<IResult> GetNotificationsV1
-    (
-        ISender sender,
-        [AsParameters] Contract.Abstractions.Shared.Request.PagedRequest request)
-    {
-        var pagedQueryRequest = new Contract.Abstractions.Shared.Request.PagedQueryRequest(request);
-        Result<PagedResult<Response.NotificationResponse>> result =
-            await sender.Send(new Query.GetNotificationsQuery(pagedQueryRequest));
-
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
-    }
-
     private static async Task<IResult> GetNotificationByIdV1(ISender sender, Guid notificationId)
     {
         Result<Response.NotificationResponse> result =
@@ -97,16 +83,19 @@ public class NotificationApi : ApiEndpoint, ICarterModule
         return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
     }
 
-    private static async Task<IResult> GetNotificationsFilterAndSortValueV1
+
+    private static async Task<IResult> DeleteNotificationByUserIdV1
     (
         ISender sender,
-        [AsParameters] Contract.Abstractions.Shared.Request.PagedFilterAndSortRequest request)
+        Guid notificationId,
+        IHttpContextAccessor httpContextAccessor
+    )
     {
-        var pagedQueryRequest =
-            new Contract.Abstractions.Shared.Request.PagedFilterAndSortQueryRequest(request);
-        Result<PagedResult<Response.NotificationDetailResponse>> result =
-            await sender.Send(new Query.GetNotificationsWithFilterAndSortValueQuery(pagedQueryRequest));
+        Guid? userIdCurrent = httpContextAccessor.HttpContext?.GetCurrentUserId();
+        Result result =
+            await sender.Send(
+                new Command.DeleteNotificationByUserIdCommand(userIdCurrent ?? Guid.Empty, notificationId));
 
-        return Results.Ok(result);
+        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
     }
 }

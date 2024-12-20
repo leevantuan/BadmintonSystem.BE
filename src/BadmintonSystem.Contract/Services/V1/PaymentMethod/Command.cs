@@ -4,12 +4,15 @@ namespace BadmintonSystem.Contract.Services.V1.PaymentMethod;
 
 public static class Command
 {
-    public record CreatePaymentMethodCommand(Guid UserId, Request.CreatePaymentMethodRequest Data)
-        : ICommand<Response.PaymentMethodResponse>;
+    public record CreatePaymentMethodByUserIdCommand(
+        Guid UserId,
+        Request.CreatePaymentMethodRequest Data) : ICommand;
 
-    public record UpdatePaymentMethodCommand(Request.UpdatePaymentMethodRequest Data)
-        : ICommand<Response.PaymentMethodResponse>;
+    public record UpdatePaymentMethodByUserIdCommand(
+        Guid UserId,
+        Request.UpdatePaymentMethodRequest Data) : ICommand;
 
-    public record DeletePaymentMethodsCommand(List<string> Ids)
-        : ICommand;
+    public record DeletePaymentMethodByUserIdCommand(
+        Guid UserId,
+        Guid PaymentMethodId) : ICommand;
 }

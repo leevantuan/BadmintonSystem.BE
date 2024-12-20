@@ -19,7 +19,7 @@ public sealed class CreateClubCommandHandler(
     {
         Domain.Entities.Club club = mapper.Map<Domain.Entities.Club>(request.Data);
         ClubInformation? clubInformation = mapper.Map<ClubInformation>(request.Data.ClubInformation);
-        Address? clubAddress = mapper.Map<Address>(request.Data.ClubAddress);
+        Domain.Entities.Address? clubAddress = mapper.Map<Domain.Entities.Address>(request.Data.ClubAddress);
         IEnumerable<ClubImage> clubImages =
             request.Data.ClubImages.Select(x => mapper.Map<ClubImage>(x));
 

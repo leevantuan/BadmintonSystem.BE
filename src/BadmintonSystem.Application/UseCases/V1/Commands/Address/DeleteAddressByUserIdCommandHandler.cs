@@ -1,19 +1,19 @@
 ﻿using AutoMapper;
 using BadmintonSystem.Contract.Abstractions.Message;
 using BadmintonSystem.Contract.Abstractions.Shared;
-using BadmintonSystem.Contract.Services.V1.User;
+using BadmintonSystem.Contract.Services.V1.Address;
 using BadmintonSystem.Domain.Abstractions.Repositories;
 using BadmintonSystem.Domain.Entities;
 using BadmintonSystem.Domain.Enumerations;
 using BadmintonSystem.Domain.Exceptions;
 using BadmintonSystem.Persistence;
 
-namespace BadmintonSystem.Application.UseCases.V1.Commands.User;
+namespace BadmintonSystem.Application.UseCases.V1.Commands.Address;
 
 public sealed class DeleteAddressByUserIdCommandHandler(
     ApplicationDbContext context,
     IMapper mapper,
-    IRepositoryBase<Address, Guid> addressRepository)
+    IRepositoryBase<Domain.Entities.Address, Guid> addressRepository)
     : ICommandHandler<Command.DeleteAddressByUserIdCommand>
 {
     public async Task<Result> Handle(Command.DeleteAddressByUserIdCommand request, CancellationToken cancellationToken)
@@ -22,7 +22,7 @@ public sealed class DeleteAddressByUserIdCommandHandler(
             context.UserAddress.FirstOrDefault(x => x.UserId == request.UserId && x.AddressId == request.AddressId)
             ?? throw new UserAddressException.UserAddressNotFoundException();
 
-        Address address = await addressRepository.FindByIdAsync(request.AddressId, cancellationToken);
+        Domain.Entities.Address address = await addressRepository.FindByIdAsync(request.AddressId, cancellationToken);
 
         var userAddresses = context.UserAddress.Where(x => x.UserId == request.UserId).ToList();
 
