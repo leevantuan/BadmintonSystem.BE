@@ -3,13 +3,13 @@ using BadmintonSystem.Domain.Enumerations;
 
 namespace BadmintonSystem.Domain.Entities;
 
-public class Yard : EntityAuditBase<Guid>
+public class Price : EntityAuditBase<Guid>
 {
-    public string Name { get; set; }
+    public decimal YardPrice { get; set; }
 
-    public Guid YardTypeId { get; set; }
+    public DefaultEnum IsDefault { get; set; }
 
-    public StatusEnum IsStatus { get; set; }
+    public virtual ICollection<YardType>? YardTypes { get; set; }
 
     public virtual ICollection<YardPrice>? YardPrices { get; set; }
 }

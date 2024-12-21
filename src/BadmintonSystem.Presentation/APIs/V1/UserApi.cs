@@ -31,7 +31,7 @@ public class UserApi : ApiEndpoint, ICarterModule
         group1.MapPost("forget-password", ForgetPasswordV1).AllowAnonymous();
 
         group1.MapPut("change-password", ChangePasswordV1)
-            .RequireJwtAuthorize(FunctionEnum.APPUSER.ToString(), (int)ActionEnum.UPDATE);
+            .RequireJwtAuthorize(FunctionEnum.USER.ToString(), (int)ActionEnum.UPDATE);
 
         // ADDRESS
         group1.MapGet("addresses", GetAddressByUserIdV1)
@@ -39,7 +39,7 @@ public class UserApi : ApiEndpoint, ICarterModule
 
         // PAYMENT METHOD
         group1.MapGet("payment-methods", GetPaymentMethodByUserIdV1)
-            .RequireJwtAuthorize(FunctionEnum.APPUSER.ToString(), (int)ActionEnum.READ);
+            .RequireJwtAuthorize(FunctionEnum.USER.ToString(), (int)ActionEnum.READ);
 
         // NOTIFICATION
         group1.MapGet("notifications", GetNotificationsByUserIdV1)

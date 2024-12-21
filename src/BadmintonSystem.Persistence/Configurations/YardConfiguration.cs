@@ -13,11 +13,13 @@ internal sealed class YardConfiguration : IEntityTypeConfiguration<Yard>
 
         builder.HasKey(x => x.Id);
 
-        builder.Property(x => x.Name).HasDefaultValue(null);
+        builder.Property(x => x.Name).HasDefaultValue(null).IsRequired();
+
+        builder.Property(x => x.IsStatus).HasDefaultValue(null).IsRequired();
 
         builder.Property(x => x.YardTypeId).HasDefaultValue(null).IsRequired();
 
-        builder.HasMany(x => x.BookingLines)
+        builder.HasMany(x => x.YardPrices)
             .WithOne()
             .HasForeignKey(x => x.YardId)
             .OnDelete(DeleteBehavior.NoAction);

@@ -21,5 +21,10 @@ internal sealed class TimeSlotConfiguration : IEntityTypeConfiguration<TimeSlot>
             .WithOne()
             .HasForeignKey(x => x.TimeSlotId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasMany(x => x.YardPrices)
+            .WithOne()
+            .HasForeignKey(x => x.TimeSlotId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

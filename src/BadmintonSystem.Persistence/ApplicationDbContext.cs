@@ -32,13 +32,9 @@ public sealed class ApplicationDbContext
 
     public DbSet<Service> Service { get; set; }
 
-    //public DbSet<PaymentType> PaymentType { get; set; }
-
     public DbSet<PaymentMethod> PaymentMethod { get; set; }
 
     public DbSet<Notification> Notification { get; set; }
-
-    //public DbSet<Gender> Gender { get; set; }
 
     public DbSet<Address> Address { get; set; }
 
@@ -69,6 +65,10 @@ public sealed class ApplicationDbContext
     public DbSet<Booking> Booking { get; set; }
 
     public DbSet<Sale> Sale { get; set; }
+
+    public DbSet<Price> Price { get; set; }
+
+    public DbSet<YardPrice> YardPrice { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

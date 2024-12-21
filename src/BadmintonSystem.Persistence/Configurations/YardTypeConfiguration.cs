@@ -13,9 +13,9 @@ internal sealed class YardTypeConfiguration : IEntityTypeConfiguration<YardType>
 
         builder.HasKey(x => x.Id);
 
-        builder.Property(x => x.Name).HasDefaultValue(null);
+        builder.Property(x => x.Name).HasDefaultValue(null).IsRequired();
 
-        builder.Property(x => x.Price).HasDefaultValue(null);
+        builder.Property(x => x.PriceId).HasDefaultValue(null).IsRequired();
 
         builder.HasMany(x => x.Yards)
             .WithOne()

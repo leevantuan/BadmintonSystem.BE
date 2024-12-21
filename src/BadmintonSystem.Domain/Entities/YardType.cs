@@ -6,7 +6,7 @@ public class YardType : EntityAuditBase<Guid>
 {
     public string Name { get; set; }
 
-    public decimal Price { get; set; }
+    public Guid PriceId { get; set; }
 
     public virtual ICollection<Yard>? Yards { get; set; }
 }

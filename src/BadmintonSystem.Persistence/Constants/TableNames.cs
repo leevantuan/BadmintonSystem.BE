@@ -19,12 +19,8 @@ internal static class TableNames
     // ******************* Singular Nouns *******************
     internal const string Category = nameof(Category);
     internal const string Service = nameof(Service);
-    internal const string PaymentType = nameof(PaymentType);
     internal const string PaymentMethod = nameof(PaymentMethod);
-
     internal const string Notification = nameof(Notification);
-
-    //internal const string Gender = nameof(Gender);
     internal const string Address = nameof(Address);
     internal const string UserAddress = nameof(UserAddress);
     internal const string ClubAddress = nameof(ClubAddress);
@@ -40,4 +36,6 @@ internal static class TableNames
     internal const string TimeSlot = nameof(TimeSlot);
     internal const string Booking = nameof(Booking);
     internal const string Sale = nameof(Sale);
+    internal const string Price = nameof(Price);
+    internal const string YardPrice = nameof(YardPrice);
 }

@@ -15,7 +15,7 @@ internal sealed class BookingLineConfiguration : IEntityTypeConfiguration<Bookin
 
         builder.Property(x => x.TotalPrice).HasDefaultValue(null);
 
-        builder.Property(x => x.YardId).HasDefaultValue(null);
+        builder.Property(x => x.YardPriceId).HasDefaultValue(null);
 
         builder.Property(x => x.BookingId).HasDefaultValue(null);
 

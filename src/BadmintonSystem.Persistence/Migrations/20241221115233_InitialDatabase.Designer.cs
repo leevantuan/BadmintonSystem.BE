@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BadmintonSystem.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241213091827_AddFieldProvinceInAddress")]
-    partial class AddFieldProvinceInAddress
+    [Migration("20241221115233_InitialDatabase")]
+    partial class InitialDatabase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -156,14 +156,14 @@ namespace BadmintonSystem.Persistence.Migrations
                     b.Property<decimal>("TotalPrice")
                         .HasColumnType("numeric");
 
-                    b.Property<Guid>("YardId")
+                    b.Property<Guid>("YardPriceId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
                     b.HasIndex("BookingId");
 
-                    b.HasIndex("YardId");
+                    b.HasIndex("YardPriceId");
 
                     b.ToTable("BookingLine", (string)null);
                 });
@@ -277,6 +277,44 @@ namespace BadmintonSystem.Persistence.Migrations
                     b.HasIndex("ClubId");
 
                     b.ToTable("ClubAddress", (string)null);
+                });
+
+            modelBuilder.Entity("BadmintonSystem.Domain.Entities.ClubImage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ClubId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("ImageLink")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid?>("ModifiedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClubId");
+
+                    b.ToTable("ClubImage", (string)null);
                 });
 
             modelBuilder.Entity("BadmintonSystem.Domain.Entities.ClubInformation", b =>
@@ -550,44 +588,6 @@ namespace BadmintonSystem.Persistence.Migrations
                     b.ToTable("AppUserRoles", (string)null);
                 });
 
-            modelBuilder.Entity("BadmintonSystem.Domain.Entities.Identity.ClubImage", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ClubId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("ImageLink")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<Guid?>("ModifiedBy")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("ModifiedDate")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ClubId");
-
-                    b.ToTable("ClubImage", (string)null);
-                });
-
             modelBuilder.Entity("BadmintonSystem.Domain.Entities.Identity.Function", b =>
                 {
                     b.Property<int>("Id")
@@ -676,6 +676,9 @@ namespace BadmintonSystem.Persistence.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
+                    b.Property<int>("IsRead")
+                        .HasColumnType("integer");
+
                     b.Property<Guid?>("ModifiedBy")
                         .HasColumnType("uuid");
 
@@ -725,9 +728,6 @@ namespace BadmintonSystem.Persistence.Migrations
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<Guid?>("PaymentTypeId")
-                        .HasColumnType("uuid");
-
                     b.Property<string>("Provider")
                         .IsRequired()
                         .HasColumnType("text");
@@ -737,14 +737,12 @@ namespace BadmintonSystem.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PaymentTypeId");
-
                     b.HasIndex("UserId");
 
                     b.ToTable("PaymentMethod", (string)null);
                 });
 
-            modelBuilder.Entity("BadmintonSystem.Domain.Entities.PaymentType", b =>
+            modelBuilder.Entity("BadmintonSystem.Domain.Entities.Price", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -759,6 +757,9 @@ namespace BadmintonSystem.Persistence.Migrations
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<int>("IsDefault")
+                        .HasColumnType("integer");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
@@ -768,19 +769,21 @@ namespace BadmintonSystem.Persistence.Migrations
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<decimal>("YardPrice")
+                        .HasColumnType("numeric");
 
                     b.HasKey("Id");
 
-                    b.ToTable("PaymentType", (string)null);
+                    b.ToTable("Price", (string)null);
                 });
 
             modelBuilder.Entity("BadmintonSystem.Domain.Entities.Review", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ClubId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Comment")
@@ -812,6 +815,8 @@ namespace BadmintonSystem.Persistence.Migrations
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ClubId");
 
                     b.HasIndex("UserId");
 
@@ -1020,6 +1025,9 @@ namespace BadmintonSystem.Persistence.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
+                    b.Property<int>("IsStatus")
+                        .HasColumnType("integer");
+
                     b.Property<Guid?>("ModifiedBy")
                         .HasColumnType("uuid");
 
@@ -1038,6 +1046,56 @@ namespace BadmintonSystem.Persistence.Migrations
                     b.HasIndex("YardTypeId");
 
                     b.ToTable("Yard", (string)null);
+                });
+
+            modelBuilder.Entity("BadmintonSystem.Domain.Entities.YardPrice", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime>("EffectiveDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("IsBooking")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid?>("ModifiedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<Guid?>("PriceId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("TimeSlotId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("YardId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PriceId");
+
+                    b.HasIndex("TimeSlotId");
+
+                    b.HasIndex("YardId");
+
+                    b.ToTable("YardPrice", (string)null);
                 });
 
             modelBuilder.Entity("BadmintonSystem.Domain.Entities.YardType", b =>
@@ -1068,10 +1126,12 @@ namespace BadmintonSystem.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<decimal>("Price")
-                        .HasColumnType("numeric");
+                    b.Property<Guid>("PriceId")
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("PriceId");
 
                     b.ToTable("YardType", (string)null);
                 });
@@ -1188,9 +1248,9 @@ namespace BadmintonSystem.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BadmintonSystem.Domain.Entities.Yard", null)
+                    b.HasOne("BadmintonSystem.Domain.Entities.YardPrice", null)
                         .WithMany("BookingLines")
-                        .HasForeignKey("YardId")
+                        .HasForeignKey("YardPriceId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
@@ -1225,6 +1285,15 @@ namespace BadmintonSystem.Persistence.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("BadmintonSystem.Domain.Entities.ClubImage", b =>
+                {
+                    b.HasOne("BadmintonSystem.Domain.Entities.Club", null)
+                        .WithMany("ClubImages")
+                        .HasForeignKey("ClubId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("BadmintonSystem.Domain.Entities.ClubInformation", b =>
                 {
                     b.HasOne("BadmintonSystem.Domain.Entities.Club", null)
@@ -1249,15 +1318,6 @@ namespace BadmintonSystem.Persistence.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("BadmintonSystem.Domain.Entities.Identity.ClubImage", b =>
-                {
-                    b.HasOne("BadmintonSystem.Domain.Entities.Club", null)
-                        .WithMany("ClubImages")
-                        .HasForeignKey("ClubId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("BadmintonSystem.Domain.Entities.Notification", b =>
                 {
                     b.HasOne("BadmintonSystem.Domain.Entities.Identity.AppUser", null)
@@ -1269,10 +1329,6 @@ namespace BadmintonSystem.Persistence.Migrations
 
             modelBuilder.Entity("BadmintonSystem.Domain.Entities.PaymentMethod", b =>
                 {
-                    b.HasOne("BadmintonSystem.Domain.Entities.PaymentType", null)
-                        .WithMany("PaymentMethods")
-                        .HasForeignKey("PaymentTypeId");
-
                     b.HasOne("BadmintonSystem.Domain.Entities.Identity.AppUser", null)
                         .WithMany("PaymentMethods")
                         .HasForeignKey("UserId")
@@ -1282,6 +1338,12 @@ namespace BadmintonSystem.Persistence.Migrations
 
             modelBuilder.Entity("BadmintonSystem.Domain.Entities.Review", b =>
                 {
+                    b.HasOne("BadmintonSystem.Domain.Entities.Club", null)
+                        .WithMany("Reviews")
+                        .HasForeignKey("ClubId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("BadmintonSystem.Domain.Entities.Identity.AppUser", null)
                         .WithMany("Reviews")
                         .HasForeignKey("UserId")
@@ -1328,6 +1390,35 @@ namespace BadmintonSystem.Persistence.Migrations
                         .WithMany("Yards")
                         .HasForeignKey("YardTypeId")
                         .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("BadmintonSystem.Domain.Entities.YardPrice", b =>
+                {
+                    b.HasOne("BadmintonSystem.Domain.Entities.Price", null)
+                        .WithMany("YardPrices")
+                        .HasForeignKey("PriceId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("BadmintonSystem.Domain.Entities.TimeSlot", null)
+                        .WithMany("YardPrices")
+                        .HasForeignKey("TimeSlotId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("BadmintonSystem.Domain.Entities.Yard", null)
+                        .WithMany("YardPrices")
+                        .HasForeignKey("YardId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("BadmintonSystem.Domain.Entities.YardType", b =>
+                {
+                    b.HasOne("BadmintonSystem.Domain.Entities.Price", null)
+                        .WithMany("YardTypes")
+                        .HasForeignKey("PriceId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
@@ -1396,6 +1487,8 @@ namespace BadmintonSystem.Persistence.Migrations
                     b.Navigation("ClubImages");
 
                     b.Navigation("ClubInformation");
+
+                    b.Navigation("Reviews");
                 });
 
             modelBuilder.Entity("BadmintonSystem.Domain.Entities.Identity.AppRole", b =>
@@ -1426,9 +1519,11 @@ namespace BadmintonSystem.Persistence.Migrations
                     b.Navigation("UserRoles");
                 });
 
-            modelBuilder.Entity("BadmintonSystem.Domain.Entities.PaymentType", b =>
+            modelBuilder.Entity("BadmintonSystem.Domain.Entities.Price", b =>
                 {
-                    b.Navigation("PaymentMethods");
+                    b.Navigation("YardPrices");
+
+                    b.Navigation("YardTypes");
                 });
 
             modelBuilder.Entity("BadmintonSystem.Domain.Entities.Review", b =>
@@ -1444,9 +1539,16 @@ namespace BadmintonSystem.Persistence.Migrations
             modelBuilder.Entity("BadmintonSystem.Domain.Entities.TimeSlot", b =>
                 {
                     b.Navigation("BookingTimes");
+
+                    b.Navigation("YardPrices");
                 });
 
             modelBuilder.Entity("BadmintonSystem.Domain.Entities.Yard", b =>
+                {
+                    b.Navigation("YardPrices");
+                });
+
+            modelBuilder.Entity("BadmintonSystem.Domain.Entities.YardPrice", b =>
                 {
                     b.Navigation("BookingLines");
                 });

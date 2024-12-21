@@ -6,13 +6,4 @@ public static class Response
         Guid AddressId,
         Guid ClubId,
         string Branch);
-
-    public class ClubAddressDetailResponse
-    {
-        public Guid AddressId { get; set; }
-
-        public Guid? ClubId { get; set; }
-
-        public string? Branch { get; set; }
-    }
 }
