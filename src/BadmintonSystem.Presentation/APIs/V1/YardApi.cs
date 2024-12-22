@@ -28,8 +28,6 @@ public class YardApi : ApiEndpoint, ICarterModule
         group1.MapPost(string.Empty, CreateYardV1)
             .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.CREATE);
 
-        group1.MapGet(string.Empty, GetYardsV1)
-            .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.READ);
         group1.MapGet("filter-and-sort-value", GetYardsFilterAndSortValueV1)
             .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.READ);
 
@@ -72,18 +70,6 @@ public class YardApi : ApiEndpoint, ICarterModule
     {
         updateYard.Id = id;
         Result<Response.YardResponse> result = await sender.Send(new Command.UpdateYardCommand(updateYard));
-
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
-    }
-
-    private static async Task<IResult> GetYardsV1
-    (
-        ISender sender,
-        [AsParameters] Contract.Abstractions.Shared.Request.PagedRequest request)
-    {
-        var pagedQueryRequest = new Contract.Abstractions.Shared.Request.PagedQueryRequest(request);
-        Result<PagedResult<Response.YardResponse>> result =
-            await sender.Send(new Query.GetYardsQuery(pagedQueryRequest));
 
         return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
     }

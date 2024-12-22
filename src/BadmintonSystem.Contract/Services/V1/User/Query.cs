@@ -26,4 +26,9 @@ public static class Query
         Guid UserId,
         Abstractions.Shared.Request.PagedFilterAndSortQueryRequest Data)
         : IQuery<PagedResult<Response.ReviewByUserResponse>>;
+
+    public record GetChatMessagesByUserIdWithFilterAndSortQuery(
+        Guid UserId,
+        Abstractions.Shared.Request.PagedFilterAndSortQueryRequest Data)
+        : IQuery<PagedResult<Response.GetChatMessageByUserIdResponse>>;
 }

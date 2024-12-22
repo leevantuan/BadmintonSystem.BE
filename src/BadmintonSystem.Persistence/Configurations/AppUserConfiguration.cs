@@ -1,4 +1,5 @@
 ﻿using BadmintonSystem.Contract.Constants;
+using BadmintonSystem.Domain.Entities;
 using BadmintonSystem.Domain.Entities.Identity;
 using BadmintonSystem.Persistence.Constants;
 using Microsoft.EntityFrameworkCore;
@@ -67,6 +68,12 @@ internal sealed class AppUserConfiguration : IEntityTypeConfiguration<AppUser>
         builder.HasMany(x => x.Bookings)
             .WithOne()
             .HasForeignKey(x => x.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // User - ChatRoom
+        builder.HasOne(e => e.ChatRoom)
+            .WithOne(c => c.User)
+            .HasForeignKey<ChatRoom>(c => c.UserId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

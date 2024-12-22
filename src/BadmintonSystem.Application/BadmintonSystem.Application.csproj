@@ -25,7 +25,6 @@
 
     <ItemGroup>
         <Folder Include="DependencyInjection\Options\"/>
-        <Folder Include="UseCases\V1\Commands\YardType\"/>
     </ItemGroup>
 
 </Project>

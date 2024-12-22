@@ -2,7 +2,7 @@
 
 public static class Request
 {
-    public record CreateYardTypeRequest(string Name, decimal Price);
+    public record CreateYardTypeRequest(string Name, Guid PriceId);
 
     public class UpdateYardTypeRequest
     {
@@ -10,6 +10,6 @@ public static class Request
 
         public string? Name { get; set; }
 
-        public decimal Price { get; set; }
+        public Guid? PriceId { get; set; }
     }
 }

@@ -40,4 +40,12 @@ public static class Response
     {
         public List<ReviewImage.Response.ReviewImageDetailResponse>? ReviewImages { get; set; }
     }
+
+    public class GetChatMessageByUserIdResponse : ChatMessage.Response.GetChatMessageByIdResponse
+    {
+    }
+
+    public class GetChatMessageByUserIdSqlResponse : ChatMessage.Response.GetChatMessageByIdSqlResponse
+    {
+    }
 }

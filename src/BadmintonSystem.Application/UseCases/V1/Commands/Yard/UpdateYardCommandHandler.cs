@@ -3,6 +3,7 @@ using BadmintonSystem.Contract.Abstractions.Message;
 using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.V1.Yard;
 using BadmintonSystem.Domain.Abstractions.Repositories;
+using BadmintonSystem.Domain.Enumerations;
 using BadmintonSystem.Domain.Exceptions;
 using BadmintonSystem.Persistence;
 
@@ -22,6 +23,7 @@ public sealed class UpdateYardCommandHandler(
 
         yard.Name = request.Data.Name ?? yard.Name;
         yard.YardTypeId = request.Data.YardTypeId;
+        yard.IsStatus = (StatusEnum)request.Data.IsStatus;
 
         Response.YardResponse? result = mapper.Map<Response.YardResponse>(yard);
 

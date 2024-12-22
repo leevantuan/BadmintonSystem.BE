@@ -63,6 +63,24 @@ public class ServiceV1Profile : Profile
             .ForMember(dest => dest.Items, opt
                 => opt.MapFrom(src => src.Items)).ReverseMap();
 
+        // Price
+        CreateMap<Price, V1.Price.Response.PriceResponse>().ReverseMap();
+        CreateMap<Price, V1.Price.Request.CreatePriceRequest>().ReverseMap();
+        CreateMap<PagedResult<Price>, PagedResult<V1.Price.Response.PriceResponse>>().ReverseMap();
+        CreateMap<Price, V1.Price.Response.PriceDetailResponse>().ReverseMap();
+        CreateMap<PagedResult<Price>, PagedResult<V1.Price.Response.PriceDetailResponse>>()
+            .ForMember(dest => dest.Items, opt
+                => opt.MapFrom(src => src.Items)).ReverseMap();
+
+        // Yard Price
+        CreateMap<YardPrice, V1.YardPrice.Response.YardPriceResponse>().ReverseMap();
+        CreateMap<YardPrice, V1.YardPrice.Request.CreateYardPriceRequest>().ReverseMap();
+        CreateMap<PagedResult<YardPrice>, PagedResult<V1.YardPrice.Response.YardPriceResponse>>().ReverseMap();
+        CreateMap<YardPrice, V1.YardPrice.Response.YardPriceDetailResponse>().ReverseMap();
+        CreateMap<PagedResult<YardPrice>, PagedResult<V1.YardPrice.Response.YardPriceDetailResponse>>()
+            .ForMember(dest => dest.Items, opt
+                => opt.MapFrom(src => src.Items)).ReverseMap();
+
         // Yard Type
         CreateMap<YardType, V1.YardType.Response.YardTypeResponse>().ReverseMap();
         CreateMap<YardType, V1.YardType.Request.CreateYardTypeRequest>().ReverseMap();

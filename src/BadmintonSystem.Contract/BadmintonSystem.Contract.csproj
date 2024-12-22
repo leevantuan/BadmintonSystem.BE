@@ -19,9 +19,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="Services\V1\Price\" />
         <Folder Include="Services\V1\Review\Validators\"/>
-        <Folder Include="Services\V1\YardPrice\" />
     </ItemGroup>
 
 </Project>

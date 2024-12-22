@@ -44,6 +44,8 @@ public class AppUser : IdentityUser<Guid>, IAuditable
 
     public virtual ICollection<Booking>? Bookings { get; set; }
 
+    public virtual ChatRoom? ChatRoom { get; set; }
+
     public GenderEnum? Gender { get; set; }
 
     public DateTime CreatedDate { get; set; }

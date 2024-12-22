@@ -2,7 +2,7 @@
 
 public static class Request
 {
-    public record CreateYardRequest(string Name, Guid YardTypeId);
+    public record CreateYardRequest(string Name, Guid YardTypeId, int IsStatus);
 
     public class UpdateYardRequest
     {
@@ -11,5 +11,7 @@ public static class Request
         public string? Name { get; set; }
 
         public Guid YardTypeId { get; set; }
+
+        public int IsStatus { get; set; }
     }
 }

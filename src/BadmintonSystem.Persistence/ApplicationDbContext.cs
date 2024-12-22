@@ -70,6 +70,10 @@ public sealed class ApplicationDbContext
 
     public DbSet<YardPrice> YardPrice { get; set; }
 
+    public DbSet<ChatRoom> ChatRoom { get; set; }
+
+    public DbSet<ChatMessage> ChatMessage { get; set; }
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         IEnumerable<Type> softDeleteEntities = Domain.AssemblyReference.Assembly.GetTypes()
