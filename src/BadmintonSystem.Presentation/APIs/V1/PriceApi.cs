@@ -76,7 +76,7 @@ public class PriceApi : ApiEndpoint, ICarterModule
 
     private static async Task<IResult> GetPriceByIdV1(ISender sender, Guid priceId)
     {
-        Result<Response.PriceResponse> result = await sender.Send(new Query.GetPriceByIdQuery(priceId));
+        Result<Response.PriceDetailResponse> result = await sender.Send(new Query.GetPriceByIdQuery(priceId));
 
         return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
     }

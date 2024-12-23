@@ -2,9 +2,14 @@
 
 public static class Response
 {
-    public record TimeSlotResponse(
-        TimeSpan StartTime,
-        TimeSpan EndTime);
+    public class TimeSlotResponse
+    {
+        public Guid Id { get; set; }
+
+        public TimeSpan StartTime { get; set; }
+
+        public TimeSpan EndTime { get; set; }
+    }
 
     public class TimeSlotDetailResponse
     {

@@ -6,7 +6,7 @@ namespace BadmintonSystem.Contract.Services.V1.YardPrice;
 public static class Query
 {
     public record GetYardPriceByIdQuery(Guid Id)
-        : IQuery<Response.YardPriceResponse>;
+        : IQuery<Response.YardPriceDetailResponse>;
 
     public record GetYardPricesWithFilterAndSortValueQuery(
         Abstractions.Shared.Request.PagedFilterAndSortQueryRequest Data)

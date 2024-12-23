@@ -1,4 +1,6 @@
-﻿using BadmintonSystem.Contract.Abstractions.Message;
+﻿using System.Reflection;
+using BadmintonSystem.Contract.Abstractions.Message;
+using BadmintonSystem.Domain;
 using FluentAssertions;
 using NetArchTest.Rules;
 
@@ -20,10 +22,10 @@ public class ArchitectureTests
     {
         // Arrage
         // Take all Assembly in project
-        var assembly = Domain.AssemblyReference.Assembly;
+        Assembly assembly = AssemblyReference.Assembly;
 
         // Những project can't reference
-        var otherProjects = new[]
+        string[] otherProjects = new[]
         {
             ApplicationNamespace,
             InfrastructureNamespace,
@@ -33,10 +35,11 @@ public class ArchitectureTests
         };
 
         // Act
-        var testResult = Types.InAssembly(assembly) // Take all Assembly
-                              .ShouldNot() // Should not Reference != Should Reference
-                              .HaveDependencyOnAny(otherProjects) // Have Dependency On Any == Just Reference "otherProject" => Cancel, All => Phải Reference đến tất cả thì mới Cancel
-                              .GetResult();
+        TestResult? testResult = Types.InAssembly(assembly) // Take all Assembly
+            .ShouldNot() // Should not Reference != Should Reference
+            .HaveDependencyOnAny(
+                otherProjects) // Have Dependency On Any == Just Reference "otherProject" => Cancel, All => Phải Reference đến tất cả thì mới Cancel
+            .GetResult();
 
         // Assert => Nó phải đúng
         testResult.IsSuccessful.Should().BeTrue();
@@ -47,10 +50,10 @@ public class ArchitectureTests
     {
         // Arrage
         // Lấy hết các Assembly trong project
-        var assembly = Application.AssemblyReference.Assembly;
+        Assembly assembly = Application.AssemblyReference.Assembly;
 
         // Những project không reference tới
-        var otherProjects = new[]
+        string[] otherProjects = new[]
         {
             InfrastructureNamespace,
             PresentationNamespace,
@@ -59,10 +62,11 @@ public class ArchitectureTests
         };
 
         // Act
-        var testResult = Types.InAssembly(assembly) // Lấy tất cả các Assembly
-                              .ShouldNot() // Should not Không Reference != Should nên Reference
-                              .HaveDependencyOnAny(otherProjects) // Không dêpendency Any => chỉ cần Reference 1 là sẽ cancel, All => Phải Reference đến tất cả thì mới Cancel
-                              .GetResult();
+        TestResult? testResult = Types.InAssembly(assembly) // Lấy tất cả các Assembly
+            .ShouldNot() // Should not Không Reference != Should nên Reference
+            .HaveDependencyOnAny(
+                otherProjects) // Không dêpendency Any => chỉ cần Reference 1 là sẽ cancel, All => Phải Reference đến tất cả thì mới Cancel
+            .GetResult();
 
         // Assert => Nó phải đúng
         testResult.IsSuccessful.Should().BeTrue();
@@ -73,20 +77,21 @@ public class ArchitectureTests
     {
         // Arrage
         // Lấy hết các Assembly trong project
-        var assembly = Domain.AssemblyReference.Assembly;
+        Assembly assembly = AssemblyReference.Assembly;
 
         // Những project không reference tới
-        var otherProjects = new[]
+        string[] otherProjects = new[]
         {
             PresentationNamespace,
             ApiNamespace
         };
 
         // Act
-        var testResult = Types.InAssembly(assembly) // Lấy tất cả các Assembly
-                              .ShouldNot() // Should not Không Reference != Should nên Reference
-                              .HaveDependencyOnAny(otherProjects) // Không dêpendency Any => chỉ cần Reference 1 là sẽ cancel, All => Phải Reference đến tất cả thì mới Cancel
-                              .GetResult();
+        TestResult? testResult = Types.InAssembly(assembly) // Lấy tất cả các Assembly
+            .ShouldNot() // Should not Không Reference != Should nên Reference
+            .HaveDependencyOnAny(
+                otherProjects) // Không dêpendency Any => chỉ cần Reference 1 là sẽ cancel, All => Phải Reference đến tất cả thì mới Cancel
+            .GetResult();
 
         // Assert => Nó phải đúng
         testResult.IsSuccessful.Should().BeTrue();
@@ -97,10 +102,10 @@ public class ArchitectureTests
     {
         // Arrage
         // Lấy hết các Assembly trong project
-        var assembly = Domain.AssemblyReference.Assembly;
+        Assembly assembly = AssemblyReference.Assembly;
 
         // Những project không reference tới
-        var otherProjects = new[]
+        string[] otherProjects = new[]
         {
             ApplicationNamespace,
             InfrastructureNamespace,
@@ -109,10 +114,11 @@ public class ArchitectureTests
         };
 
         // Act
-        var testResult = Types.InAssembly(assembly) // Lấy tất cả các Assembly
-                              .ShouldNot() // Should not Không Reference != Should nên Reference
-                              .HaveDependencyOnAny(otherProjects) // Không dêpendency Any => chỉ cần Reference 1 là sẽ cancel, All => Phải Reference đến tất cả thì mới Cancel
-                              .GetResult();
+        TestResult? testResult = Types.InAssembly(assembly) // Lấy tất cả các Assembly
+            .ShouldNot() // Should not Không Reference != Should nên Reference
+            .HaveDependencyOnAny(
+                otherProjects) // Không dêpendency Any => chỉ cần Reference 1 là sẽ cancel, All => Phải Reference đến tất cả thì mới Cancel
+            .GetResult();
 
         // Assert => Nó phải đúng
         testResult.IsSuccessful.Should().BeTrue();
@@ -123,20 +129,21 @@ public class ArchitectureTests
     {
         // Arrage
         // Lấy hết các Assembly trong project
-        var assembly = Domain.AssemblyReference.Assembly;
+        Assembly assembly = AssemblyReference.Assembly;
 
         // Những project không reference tới
-        var otherProjects = new[]
+        string[] otherProjects = new[]
         {
             InfrastructureNamespace,
             ApiNamespace
         };
 
         // Act
-        var testResult = Types.InAssembly(assembly) // Lấy tất cả các Assembly
-                              .ShouldNot() // Should not Không Reference != Should nên Reference
-                              .HaveDependencyOnAny(otherProjects) // Không dêpendency Any => chỉ cần Reference 1 là sẽ cancel, All => Phải Reference đến tất cả thì mới Cancel
-                              .GetResult();
+        TestResult? testResult = Types.InAssembly(assembly) // Lấy tất cả các Assembly
+            .ShouldNot() // Should not Không Reference != Should nên Reference
+            .HaveDependencyOnAny(
+                otherProjects) // Không dêpendency Any => chỉ cần Reference 1 là sẽ cancel, All => Phải Reference đến tất cả thì mới Cancel
+            .GetResult();
 
         // Assert => Nó phải đúng
         testResult.IsSuccessful.Should().BeTrue();
@@ -151,15 +158,16 @@ public class ArchitectureTests
     {
         // Arrange
         // Takes all reference assembly of Application
-        var assembly = Application.AssemblyReference.Assembly;
+        Assembly assembly = Application.AssemblyReference.Assembly;
 
         // Act
-        var testResult = Types.InAssembly(assembly) // Check all in assembly
-                            .That() // Confirm type check
-                            .ImplementInterface(typeof(ICommandHandler<>)) // This is filter, If it using Generic Interface "ICommandHandler"
-                            .Should()
-                            .HaveNameEndingWith("CommandHandler") // Name End must have "CommandHandler"
-                            .GetResult();
+        TestResult? testResult = Types.InAssembly(assembly) // Check all in assembly
+            .That() // Confirm type check
+            .ImplementInterface(
+                typeof(ICommandHandler<>)) // This is filter, If it using Generic Interface "ICommandHandler"
+            .Should()
+            .HaveNameEndingWith("CommandHandler") // Name End must have "CommandHandler"
+            .GetResult();
 
         // Assert
         testResult.IsSuccessful.Should().BeTrue();
@@ -168,14 +176,14 @@ public class ArchitectureTests
     [Fact]
     public void CommandT_Should_Have_NamingConventionEndingCommandHandler()
     {
-        var assembly = Application.AssemblyReference.Assembly;
+        Assembly assembly = Application.AssemblyReference.Assembly;
 
-        var testResult = Types
-                        .InAssembly(assembly)
-                        .That() // Lấy các cái có trong nó ra 
-                        .ImplementInterface(typeof(ICommandHandler<,>)) // Lấy những cái Implement được kế thừa từ ICommandHandler
-                        .Should().NotHaveNameEndingWith("CommandHandler") // Check string cuối phải là CommandHandler
-                        .GetResult();
+        TestResult? testResult = Types
+            .InAssembly(assembly)
+            .That() // Lấy các cái có trong nó ra 
+            .ImplementInterface(typeof(ICommandHandler<,>)) // Lấy những cái Implement được kế thừa từ ICommandHandler
+            .Should().HaveNameEndingWith("CommandHandler") // Check string cuối phải là CommandHandler
+            .GetResult();
 
         testResult.IsSuccessful.Should().BeTrue();
     }
@@ -184,14 +192,14 @@ public class ArchitectureTests
     [Fact]
     public void CommandHandler_Should_Have_BeSealed()
     {
-        var assembly = Application.AssemblyReference.Assembly;
+        Assembly assembly = Application.AssemblyReference.Assembly;
 
-        var testResult = Types
-                        .InAssembly(assembly)
-                        .That() // Lấy các cái có trong nó ra
-                        .ImplementInterface(typeof(ICommandHandler<>)) // Lấy những cái Implement được kế thừa từ ICommandHandler
-                        .Should().BeSealed() // Check có Sealed không
-                        .GetResult();
+        TestResult? testResult = Types
+            .InAssembly(assembly)
+            .That() // Lấy các cái có trong nó ra
+            .ImplementInterface(typeof(ICommandHandler<>)) // Lấy những cái Implement được kế thừa từ ICommandHandler
+            .Should().BeSealed() // Check có Sealed không
+            .GetResult();
 
         testResult.IsSuccessful.Should().BeTrue();
     }
@@ -199,14 +207,14 @@ public class ArchitectureTests
     [Fact]
     public void CommandHandlerT_Should_Have_BeSealed()
     {
-        var assembly = Application.AssemblyReference.Assembly;
+        Assembly assembly = Application.AssemblyReference.Assembly;
 
-        var testResult = Types
-                        .InAssembly(assembly)
-                        .That() // Lấy các cái có trong nó ra 
-                        .ImplementInterface(typeof(ICommandHandler<,>)) // Lấy những cái Implement được kế thừa từ ICommandHandler
-                        .Should().BeSealed() // Check có Sealed không
-                        .GetResult();
+        TestResult? testResult = Types
+            .InAssembly(assembly)
+            .That() // Lấy các cái có trong nó ra 
+            .ImplementInterface(typeof(ICommandHandler<,>)) // Lấy những cái Implement được kế thừa từ ICommandHandler
+            .Should().BeSealed() // Check có Sealed không
+            .GetResult();
 
         testResult.IsSuccessful.Should().BeTrue();
     }
@@ -218,14 +226,15 @@ public class ArchitectureTests
     [Fact]
     public void QueryT_Should_Have_NamingConventionEndingQueryHandler()
     {
-        var assembly = Application.AssemblyReference.Assembly;
+        Assembly assembly = Application.AssemblyReference.Assembly;
 
-        var testResult = Types.InAssembly(assembly) // Check all in assembly
-                            .That() // Confirm type check
-                            .ImplementInterface(typeof(IQueryHandler<,>)) // This is filter, If it using Generic Interface "ICommandHandler"
-                            .Should()
-                            .HaveNameEndingWith("QueryHandler") // Name End must have "CommandHandler"
-                            .GetResult();
+        TestResult? testResult = Types.InAssembly(assembly) // Check all in assembly
+            .That() // Confirm type check
+            .ImplementInterface(
+                typeof(IQueryHandler<,>)) // This is filter, If it using Generic Interface "ICommandHandler"
+            .Should()
+            .HaveNameEndingWith("QueryHandler") // Name End must have "CommandHandler"
+            .GetResult();
 
         testResult.IsSuccessful.Should().BeTrue();
     }
@@ -234,17 +243,16 @@ public class ArchitectureTests
     [Fact]
     public void QueryHandlerT_Should_Have_BeSealed()
     {
-        var assembly = Application.AssemblyReference.Assembly;
+        Assembly assembly = Application.AssemblyReference.Assembly;
 
-        var testResult = Types.InAssembly(assembly)
-                        .That() // Lấy các cái có trong nó ra
-                        .ImplementInterface(typeof(IQueryHandler<,>)) // Lấy những cái Implement được kế thừa từ IQueryHandler
-                        .Should().BeSealed() // Check có Sealed không
-                        .GetResult();
+        TestResult? testResult = Types.InAssembly(assembly)
+            .That() // Lấy các cái có trong nó ra
+            .ImplementInterface(typeof(IQueryHandler<,>)) // Lấy những cái Implement được kế thừa từ IQueryHandler
+            .Should().BeSealed() // Check có Sealed không
+            .GetResult();
 
         testResult.IsSuccessful.Should().BeTrue();
     }
 
     #endregion ================================= Test Naming Command ===================================
-
 }

@@ -69,14 +69,16 @@ public class YardPriceApi : ApiEndpoint, ICarterModule
     )
     {
         updateYardPrice.Id = id;
-        Result<Response.YardPriceResponse> result = await sender.Send(new Command.UpdateYardPriceCommand(updateYardPrice));
+        Result<Response.YardPriceResponse> result =
+            await sender.Send(new Command.UpdateYardPriceCommand(updateYardPrice));
 
         return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> GetYardPriceByIdV1(ISender sender, Guid yardPriceId)
     {
-        Result<Response.YardPriceResponse> result = await sender.Send(new Query.GetYardPriceByIdQuery(yardPriceId));
+        Result<Response.YardPriceDetailResponse> result =
+            await sender.Send(new Query.GetYardPriceByIdQuery(yardPriceId));
 
         return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
     }
