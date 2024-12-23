@@ -31,6 +31,9 @@ public class YardPriceApi : ApiEndpoint, ICarterModule
         group1.MapGet("filter-and-sort-value", GetYardPricesFilterAndSortValueV1)
             .RequireJwtAuthorize(FunctionEnum.YARDPRICE.ToString(), (int)ActionEnum.READ);
 
+        group1.MapPost("filter-by-date", GetYardPricesFilterByDateV1)
+            .RequireJwtAuthorize(FunctionEnum.YARDPRICE.ToString(), (int)ActionEnum.READ);
+
         group1.MapGet("{yardPriceId}", GetYardPriceByIdV1)
             .RequireJwtAuthorize(FunctionEnum.YARDPRICE.ToString(), (int)ActionEnum.READ);
 
@@ -92,6 +95,17 @@ public class YardPriceApi : ApiEndpoint, ICarterModule
             new Contract.Abstractions.Shared.Request.PagedFilterAndSortQueryRequest(request);
         Result<PagedResult<Response.YardPriceDetailResponse>> result =
             await sender.Send(new Query.GetYardPricesWithFilterAndSortValueQuery(pagedQueryRequest));
+
+        return Results.Ok(result);
+    }
+
+    private static async Task<IResult> GetYardPricesFilterByDateV1
+    (
+        ISender sender,
+        [FromBody] DateTime date)
+    {
+        Result<List<Response.YardPriceDetailResponse>> result =
+            await sender.Send(new Query.GetYardPricesByDateQuery(date));
 
         return Results.Ok(result);
     }

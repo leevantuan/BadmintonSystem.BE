@@ -11,4 +11,8 @@ public static class Query
     public record GetYardPricesWithFilterAndSortValueQuery(
         Abstractions.Shared.Request.PagedFilterAndSortQueryRequest Data)
         : IQuery<PagedResult<Response.YardPriceDetailResponse>>;
+
+    public record GetYardPricesByDateQuery(
+        DateTime Date)
+        : IQuery<List<Response.YardPriceDetailResponse>>;
 }
