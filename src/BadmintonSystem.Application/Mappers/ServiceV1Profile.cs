@@ -5,6 +5,7 @@ using BadmintonSystem.Domain.Entities;
 using BadmintonSystem.Domain.Entities.Identity;
 using BadmintonSystem.Domain.Enumerations;
 using static BadmintonSystem.Contract.Services.V1.Category.Response;
+using DayOfWeek = BadmintonSystem.Domain.Entities.DayOfWeek;
 using Request = BadmintonSystem.Contract.Services.V1.Category.Request;
 using V1 = BadmintonSystem.Contract.Services.V1;
 
@@ -146,6 +147,34 @@ public class ServiceV1Profile : Profile
         CreateMap<PagedResult<Booking>, PagedResult<V1.Booking.Response.BookingResponse>>().ReverseMap();
         CreateMap<Booking, V1.Booking.Response.BookingDetailResponse>().ReverseMap();
         CreateMap<PagedResult<Booking>, PagedResult<V1.Booking.Response.BookingDetailResponse>>()
+            .ForMember(dest => dest.Items, opt
+                => opt.MapFrom(src => src.Items)).ReverseMap();
+
+        // Day Off
+        CreateMap<DayOff, V1.DayOff.Response.DayOffResponse>().ReverseMap();
+        CreateMap<DayOff, V1.DayOff.Request.CreateDayOffRequest>().ReverseMap();
+        CreateMap<PagedResult<DayOff>, PagedResult<V1.DayOff.Response.DayOffResponse>>().ReverseMap();
+        CreateMap<DayOff, V1.DayOff.Response.DayOffDetailResponse>().ReverseMap();
+        CreateMap<PagedResult<DayOff>, PagedResult<V1.DayOff.Response.DayOffDetailResponse>>()
+            .ForMember(dest => dest.Items, opt
+                => opt.MapFrom(src => src.Items)).ReverseMap();
+
+        // Day of week
+        CreateMap<DayOfWeek, V1.DayOfWeek.Response.DayOfWeekResponse>().ReverseMap();
+        CreateMap<DayOfWeek, V1.DayOfWeek.Request.CreateDayOfWeekRequest>().ReverseMap();
+        CreateMap<PagedResult<DayOfWeek>, PagedResult<V1.DayOfWeek.Response.DayOfWeekResponse>>().ReverseMap();
+        CreateMap<DayOfWeek, V1.DayOfWeek.Response.DayOfWeekDetailResponse>().ReverseMap();
+        CreateMap<PagedResult<DayOfWeek>, PagedResult<V1.DayOfWeek.Response.DayOfWeekDetailResponse>>()
+            .ForMember(dest => dest.Items, opt
+                => opt.MapFrom(src => src.Items)).ReverseMap();
+
+        // Fixed Schedule
+        CreateMap<FixedSchedule, V1.FixedSchedule.Response.FixedScheduleResponse>().ReverseMap();
+        CreateMap<FixedSchedule, V1.FixedSchedule.Request.CreateFixedScheduleRequest>().ReverseMap();
+        CreateMap<PagedResult<FixedSchedule>, PagedResult<V1.FixedSchedule.Response.FixedScheduleResponse>>()
+            .ReverseMap();
+        CreateMap<FixedSchedule, V1.FixedSchedule.Response.FixedScheduleDetailResponse>().ReverseMap();
+        CreateMap<PagedResult<FixedSchedule>, PagedResult<V1.FixedSchedule.Response.FixedScheduleDetailResponse>>()
             .ForMember(dest => dest.Items, opt
                 => opt.MapFrom(src => src.Items)).ReverseMap();
     }

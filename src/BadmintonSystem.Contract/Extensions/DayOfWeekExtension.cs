@@ -1,12 +1,12 @@
 ﻿namespace BadmintonSystem.Contract.Extensions;
 
-public static class ReviewImageExtension
+public static class DayOfWeekExtension
 {
-    public static string GetSortReviewImageProperty(string sortColumn)
+    public static string GetSortDayOfWeekProperty(string sortColumn)
     {
         return sortColumn.ToLower() switch
         {
-            "imagelink" => "ImageLink",
+            "weekname" => "WeekName",
             _ => "Id"
         };
     }

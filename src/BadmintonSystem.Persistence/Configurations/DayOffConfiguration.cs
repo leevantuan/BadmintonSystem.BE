@@ -14,5 +14,7 @@ internal sealed class DayOffConfiguration : IEntityTypeConfiguration<DayOff>
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.Date).HasDefaultValue(null).IsRequired();
+
+        builder.Property(x => x.Content).HasDefaultValue(null);
     }
 }

@@ -5,4 +5,6 @@ namespace BadmintonSystem.Domain.Entities;
 public class DayOff : EntityAuditBase<Guid>
 {
     public DateTime Date { get; set; }
+
+    public string? Content { get; set; }
 }
