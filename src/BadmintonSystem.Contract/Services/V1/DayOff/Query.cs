@@ -12,6 +12,6 @@ public static class Query
         Abstractions.Shared.Request.PagedFilterAndSortQueryRequest Data)
         : IQuery<PagedResult<Response.DayOffDetailResponse>>;
 
-    public record GetDayOffByDate(DateTime Date)
+    public record GetDayOffByDateQuery(DateTime Date)
         : IQuery<Response.DayOffDetailResponse>;
 }

@@ -28,11 +28,8 @@ public class DayOffApi : ApiEndpoint, ICarterModule
         group1.MapPost(string.Empty, CreateDayOffV1)
             .RequireJwtAuthorize(FunctionEnum.PRICE.ToString(), (int)ActionEnum.CREATE);
 
-        // group1.MapGet("filter-and-sort-value", GetDayOffsFilterAndSortValueV1)
-        //     .RequireJwtAuthorize(FunctionEnum.PRICE.ToString(), (int)ActionEnum.READ);
-
-        // group1.MapGet("{dayOffId}", GetDayOffByIdV1)
-        //     .RequireJwtAuthorize(FunctionEnum.PRICE.ToString(), (int)ActionEnum.READ);
+        group1.MapPost("find-by-date", GetDayOffByDateV1)
+            .RequireJwtAuthorize(FunctionEnum.PRICE.ToString(), (int)ActionEnum.READ);
 
         group1.MapPut("{dayOffId}", UpdateDayOffV1)
             .RequireJwtAuthorize(FunctionEnum.PRICE.ToString(), (int)ActionEnum.UPDATE);
@@ -74,23 +71,10 @@ public class DayOffApi : ApiEndpoint, ICarterModule
         return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
     }
 
-    private static async Task<IResult> GetDayOffByIdV1(ISender sender, Guid dayOffId)
+    private static async Task<IResult> GetDayOffByDateV1(ISender sender, [FromBody] DateTime date)
     {
-        Result<Response.DayOffDetailResponse> result = await sender.Send(new Query.GetDayOffByIdQuery(dayOffId));
+        Result<Response.DayOffDetailResponse> result = await sender.Send(new Query.GetDayOffByDateQuery(date));
 
         return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
-    }
-
-    private static async Task<IResult> GetDayOffsFilterAndSortValueV1
-    (
-        ISender sender,
-        [AsParameters] Contract.Abstractions.Shared.Request.PagedFilterAndSortRequest request)
-    {
-        var pagedQueryRequest =
-            new Contract.Abstractions.Shared.Request.PagedFilterAndSortQueryRequest(request);
-        Result<PagedResult<Response.DayOffDetailResponse>> result =
-            await sender.Send(new Query.GetDayOffsWithFilterAndSortValueQuery(pagedQueryRequest));
-
-        return Results.Ok(result);
     }
 }
