@@ -38,6 +38,10 @@ internal static class TableNames
     internal const string Sale = nameof(Sale);
     internal const string Price = nameof(Price);
     internal const string YardPrice = nameof(YardPrice);
+    internal const string DayOff = nameof(DayOff);
+    internal const string DayOfWeek = nameof(DayOfWeek);
+    internal const string FixedSchedule = nameof(FixedSchedule);
+    internal const string TimeSlotOfWeek = nameof(TimeSlotOfWeek);
     internal const string ChatRoom = nameof(ChatRoom);
     internal const string ChatMessage = nameof(ChatMessage);
 }

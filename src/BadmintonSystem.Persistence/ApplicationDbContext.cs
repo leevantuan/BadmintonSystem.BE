@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Action = BadmintonSystem.Domain.Entities.Identity.Action;
+using DayOfWeek = BadmintonSystem.Domain.Entities.DayOfWeek;
 
 namespace BadmintonSystem.Persistence;
 
@@ -69,6 +70,14 @@ public sealed class ApplicationDbContext
     public DbSet<Price> Price { get; set; }
 
     public DbSet<YardPrice> YardPrice { get; set; }
+
+    public DbSet<DayOff> DayOff { get; set; }
+
+    public DbSet<DayOfWeek> DayOfWeek { get; set; }
+
+    public DbSet<FixedSchedule> FixedSchedule { get; set; }
+
+    public DbSet<TimeSlotOfWeek> TimeSlotOfWeek { get; set; }
 
     public DbSet<ChatRoom> ChatRoom { get; set; }
 

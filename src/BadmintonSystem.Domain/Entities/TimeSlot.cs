@@ -11,4 +11,6 @@ public class TimeSlot : EntityAuditBase<Guid>
     public virtual ICollection<BookingTime>? BookingTimes { get; set; }
 
     public virtual ICollection<YardPrice>? YardPrices { get; set; }
+
+    public virtual ICollection<TimeSlotOfWeek>? TimeSlotOfWeeks { get; set; }
 }
