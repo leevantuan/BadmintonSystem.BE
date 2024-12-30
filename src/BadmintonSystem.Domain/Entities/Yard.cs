@@ -12,4 +12,6 @@ public class Yard : EntityAuditBase<Guid>
     public StatusEnum IsStatus { get; set; }
 
     public virtual ICollection<YardPrice>? YardPrices { get; set; }
+
+    public virtual ICollection<FixedSchedule>? FixedSchedules { get; set; }
 }

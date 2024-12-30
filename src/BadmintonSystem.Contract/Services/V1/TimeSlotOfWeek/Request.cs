@@ -2,9 +2,12 @@
 
 public static class Request
 {
-    public record CreateTimeSlotOfWeekRequest(
-        Guid TimeSlotId,
-        Guid TimeSlotOfWeekId);
+    public class CreateTimeSlotOfWeekRequest
+    {
+        public Guid TimeSlotId { get; set; }
+
+        public Guid TimeSlotOfWeekId { get; set; }
+    }
 
     public class UpdateTimeSlotOfWeekRequest
     {

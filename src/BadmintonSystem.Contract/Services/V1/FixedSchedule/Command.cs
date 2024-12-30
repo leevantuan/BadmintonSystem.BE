@@ -4,7 +4,7 @@ namespace BadmintonSystem.Contract.Services.V1.FixedSchedule;
 
 public static class Command
 {
-    public record CreateFixedScheduleCommand(Guid UserId, Request.CreateFixedScheduleRequest Data)
+    public record CreateFixedScheduleCommand(Guid UserId, Request.CreateFixedScheduleDetailRequest Data)
         : ICommand<Response.FixedScheduleResponse>;
 
     public record UpdateFixedScheduleCommand(Request.UpdateFixedScheduleRequest Data)

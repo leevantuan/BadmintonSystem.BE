@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BadmintonSystem.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241224061602_AddFixed")]
-    partial class AddFixed
+    [Migration("20241224140824_InitialDatabase")]
+    partial class InitialDatabase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -472,6 +472,9 @@ namespace BadmintonSystem.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<string>("Content")
+                        .HasColumnType("text");
+
                     b.Property<Guid>("CreatedBy")
                         .HasColumnType("uuid");
 
@@ -531,7 +534,12 @@ namespace BadmintonSystem.Persistence.Migrations
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid>("YardId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("YardId");
 
                     b.ToTable("FixedSchedule", (string)null);
                 });
@@ -1522,6 +1530,15 @@ namespace BadmintonSystem.Persistence.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("BadmintonSystem.Domain.Entities.FixedSchedule", b =>
+                {
+                    b.HasOne("BadmintonSystem.Domain.Entities.Yard", null)
+                        .WithMany("FixedSchedules")
+                        .HasForeignKey("YardId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("BadmintonSystem.Domain.Entities.Identity.AppUserRole", b =>
                 {
                     b.HasOne("BadmintonSystem.Domain.Entities.Identity.AppRole", null)
@@ -1798,6 +1815,8 @@ namespace BadmintonSystem.Persistence.Migrations
 
             modelBuilder.Entity("BadmintonSystem.Domain.Entities.Yard", b =>
                 {
+                    b.Navigation("FixedSchedules");
+
                     b.Navigation("YardPrices");
                 });
 

@@ -161,6 +161,25 @@ namespace BadmintonSystem.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "DayOff",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Date = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    Content = table.Column<string>(type: "text", nullable: true),
+                    CreatedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    CreatedBy = table.Column<Guid>(type: "uuid", nullable: false),
+                    ModifiedBy = table.Column<Guid>(type: "uuid", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DayOff", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Functions",
                 columns: table => new
                 {
@@ -347,6 +366,24 @@ namespace BadmintonSystem.Persistence.Migrations
                     table.PrimaryKey("PK_AppUserTokens", x => x.UserId);
                     table.ForeignKey(
                         name: "FK_AppUserTokens_AppUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AppUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ChatRoom",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ChatRoom", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ChatRoom_AppUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AppUsers",
                         principalColumn: "Id",
@@ -631,6 +668,34 @@ namespace BadmintonSystem.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ChatMessage",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    ImageUrl = table.Column<string>(type: "text", nullable: true),
+                    Content = table.Column<string>(type: "text", nullable: true),
+                    IsAdmin = table.Column<bool>(type: "boolean", nullable: false),
+                    IsRead = table.Column<bool>(type: "boolean", nullable: false),
+                    ReadDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    ChatRoomId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    CreatedBy = table.Column<Guid>(type: "uuid", nullable: false),
+                    ModifiedBy = table.Column<Guid>(type: "uuid", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ChatMessage", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ChatMessage_ChatRoom_ChatRoomId",
+                        column: x => x.ChatRoomId,
+                        principalTable: "ChatRoom",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ReviewImage",
                 columns: table => new
                 {
@@ -682,6 +747,32 @@ namespace BadmintonSystem.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "FixedSchedule",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    StartDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    EndDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    YardId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    CreatedBy = table.Column<Guid>(type: "uuid", nullable: false),
+                    ModifiedBy = table.Column<Guid>(type: "uuid", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FixedSchedule", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_FixedSchedule_Yard_YardId",
+                        column: x => x.YardId,
+                        principalTable: "Yard",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "YardPrice",
                 columns: table => new
                 {
@@ -720,6 +811,31 @@ namespace BadmintonSystem.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "DayOfWeek",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    FixedScheduleId = table.Column<Guid>(type: "uuid", nullable: false),
+                    WeekName = table.Column<string>(type: "text", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    CreatedBy = table.Column<Guid>(type: "uuid", nullable: false),
+                    ModifiedBy = table.Column<Guid>(type: "uuid", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DayOfWeek", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_DayOfWeek_FixedSchedule_FixedScheduleId",
+                        column: x => x.FixedScheduleId,
+                        principalTable: "FixedSchedule",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "BookingLine",
                 columns: table => new
                 {
@@ -748,6 +864,30 @@ namespace BadmintonSystem.Persistence.Migrations
                         column: x => x.YardPriceId,
                         principalTable: "YardPrice",
                         principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TimeSlotOfWeek",
+                columns: table => new
+                {
+                    DayOfWeekId = table.Column<Guid>(type: "uuid", nullable: false),
+                    TimeSlotId = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TimeSlotOfWeek", x => new { x.DayOfWeekId, x.TimeSlotId });
+                    table.ForeignKey(
+                        name: "FK_TimeSlotOfWeek_DayOfWeek_DayOfWeekId",
+                        column: x => x.DayOfWeekId,
+                        principalTable: "DayOfWeek",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_TimeSlotOfWeek_TimeSlot_TimeSlotId",
+                        column: x => x.TimeSlotId,
+                        principalTable: "TimeSlot",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -815,6 +955,17 @@ namespace BadmintonSystem.Persistence.Migrations
                 column: "TimeSlotId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ChatMessage_ChatRoomId",
+                table: "ChatMessage",
+                column: "ChatRoomId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ChatRoom_UserId",
+                table: "ChatRoom",
+                column: "UserId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ClubAddress_ClubId",
                 table: "ClubAddress",
                 column: "ClubId");
@@ -829,6 +980,16 @@ namespace BadmintonSystem.Persistence.Migrations
                 table: "ClubInformation",
                 column: "ClubId",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DayOfWeek_FixedScheduleId",
+                table: "DayOfWeek",
+                column: "FixedScheduleId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FixedSchedule_YardId",
+                table: "FixedSchedule",
+                column: "YardId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Notification_UserId",
@@ -859,6 +1020,11 @@ namespace BadmintonSystem.Persistence.Migrations
                 name: "IX_Service_CategoryId",
                 table: "Service",
                 column: "CategoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TimeSlotOfWeek_TimeSlotId",
+                table: "TimeSlotOfWeek",
+                column: "TimeSlotId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserAddress_UserId",
@@ -916,6 +1082,9 @@ namespace BadmintonSystem.Persistence.Migrations
                 name: "BookingTime");
 
             migrationBuilder.DropTable(
+                name: "ChatMessage");
+
+            migrationBuilder.DropTable(
                 name: "ClubAddress");
 
             migrationBuilder.DropTable(
@@ -923,6 +1092,9 @@ namespace BadmintonSystem.Persistence.Migrations
 
             migrationBuilder.DropTable(
                 name: "ClubInformation");
+
+            migrationBuilder.DropTable(
+                name: "DayOff");
 
             migrationBuilder.DropTable(
                 name: "Functions");
@@ -940,6 +1112,9 @@ namespace BadmintonSystem.Persistence.Migrations
                 name: "Service");
 
             migrationBuilder.DropTable(
+                name: "TimeSlotOfWeek");
+
+            migrationBuilder.DropTable(
                 name: "UserAddress");
 
             migrationBuilder.DropTable(
@@ -949,10 +1124,16 @@ namespace BadmintonSystem.Persistence.Migrations
                 name: "BookingLine");
 
             migrationBuilder.DropTable(
+                name: "ChatRoom");
+
+            migrationBuilder.DropTable(
                 name: "Review");
 
             migrationBuilder.DropTable(
                 name: "Category");
+
+            migrationBuilder.DropTable(
+                name: "DayOfWeek");
 
             migrationBuilder.DropTable(
                 name: "Address");
@@ -965,6 +1146,9 @@ namespace BadmintonSystem.Persistence.Migrations
 
             migrationBuilder.DropTable(
                 name: "Club");
+
+            migrationBuilder.DropTable(
+                name: "FixedSchedule");
 
             migrationBuilder.DropTable(
                 name: "AppUsers");

@@ -531,7 +531,12 @@ namespace BadmintonSystem.Persistence.Migrations
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid>("YardId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("YardId");
 
                     b.ToTable("FixedSchedule", (string)null);
                 });
@@ -1522,6 +1527,15 @@ namespace BadmintonSystem.Persistence.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("BadmintonSystem.Domain.Entities.FixedSchedule", b =>
+                {
+                    b.HasOne("BadmintonSystem.Domain.Entities.Yard", null)
+                        .WithMany("FixedSchedules")
+                        .HasForeignKey("YardId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("BadmintonSystem.Domain.Entities.Identity.AppUserRole", b =>
                 {
                     b.HasOne("BadmintonSystem.Domain.Entities.Identity.AppRole", null)
@@ -1798,6 +1812,8 @@ namespace BadmintonSystem.Persistence.Migrations
 
             modelBuilder.Entity("BadmintonSystem.Domain.Entities.Yard", b =>
                 {
+                    b.Navigation("FixedSchedules");
+
                     b.Navigation("YardPrices");
                 });
 

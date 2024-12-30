@@ -44,7 +44,7 @@ public class FixedScheduleApi : ApiEndpoint, ICarterModule
     private static async Task<IResult> CreateFixedScheduleV1
     (
         ISender sender,
-        [FromBody] Request.CreateFixedScheduleRequest createFixedSchedule,
+        [FromBody] Request.CreateFixedScheduleDetailRequest createFixedSchedule,
         IHttpContextAccessor httpContextAccessor)
     {
         Guid? userId = httpContextAccessor.HttpContext?.GetCurrentUserId();

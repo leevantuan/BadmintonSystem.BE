@@ -27,6 +27,7 @@ public sealed class UpdateFixedScheduleCommandHandler(
         fixedSchedule.UserId = request.Data.UserId ?? fixedSchedule.UserId;
         fixedSchedule.StartDate = request.Data.StartDate ?? fixedSchedule.StartDate;
         fixedSchedule.EndDate = request.Data.EndDate ?? fixedSchedule.EndDate;
+        fixedSchedule.YardId = request.Data.YardId ?? fixedSchedule.YardId;
 
         Response.FixedScheduleResponse? result = mapper.Map<Response.FixedScheduleResponse>(fixedSchedule);
 

@@ -2,9 +2,12 @@
 
 public static class Request
 {
-    public record CreateTimeSlotRequest(
-        TimeSpan StartTime,
-        TimeSpan EndTime);
+    public class CreateTimeSlotRequest
+    {
+        public TimeSpan StartTime { get; set; }
+
+        public TimeSpan EndTime { get; set; }
+    }
 
     public class UpdateTimeSlotRequest
     {

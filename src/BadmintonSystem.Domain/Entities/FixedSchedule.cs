@@ -10,5 +10,7 @@ public class FixedSchedule : EntityAuditBase<Guid>
 
     public DateTime EndDate { get; set; }
 
+    public Guid YardId { get; set; }
+
     public virtual ICollection<DayOfWeek>? DaysOfWeeks { get; set; }
 }

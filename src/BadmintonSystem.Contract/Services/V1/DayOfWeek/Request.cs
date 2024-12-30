@@ -2,9 +2,12 @@
 
 public static class Request
 {
-    public record CreateDayOfWeekRequest(
-        Guid FixedScheduleId,
-        string WeekName);
+    public class CreateDayOfWeekRequest
+    {
+        public Guid? FixedScheduleId { get; set; }
+
+        public string? WeekName { get; set; }
+    }
 
     public class UpdateDayOfWeekRequest
     {

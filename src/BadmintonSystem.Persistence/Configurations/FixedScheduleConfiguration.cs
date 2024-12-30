@@ -19,6 +19,8 @@ internal sealed class FixedScheduleConfiguration : IEntityTypeConfiguration<Fixe
 
         builder.Property(x => x.EndDate).HasDefaultValue(null).IsRequired();
 
+        builder.Property(x => x.YardId).HasDefaultValue(null).IsRequired();
+
         builder.HasMany(x => x.DaysOfWeeks)
             .WithOne()
             .HasForeignKey(x => x.FixedScheduleId)
