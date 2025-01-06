@@ -42,6 +42,12 @@ internal static class TableNames
     internal const string DayOfWeek = nameof(DayOfWeek);
     internal const string FixedSchedule = nameof(FixedSchedule);
     internal const string TimeSlotOfWeek = nameof(TimeSlotOfWeek);
+    internal const string ServiceLine = nameof(ServiceLine);
+    internal const string ComboFixed = nameof(ComboFixed);
+    internal const string Bill = nameof(Bill);
+    internal const string BillLine = nameof(BillLine);
+    internal const string Provider = nameof(Provider);
+    internal const string InventoryReceipt = nameof(InventoryReceipt);
     internal const string ChatRoom = nameof(ChatRoom);
     internal const string ChatMessage = nameof(ChatMessage);
 }

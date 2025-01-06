@@ -79,6 +79,18 @@ public sealed class ApplicationDbContext
 
     public DbSet<TimeSlotOfWeek> TimeSlotOfWeek { get; set; }
 
+    public DbSet<ComboFixed> ComboFixed { get; set; }
+
+    public DbSet<ServiceLine> ServiceLine { get; set; }
+
+    public DbSet<Bill> Bill { get; set; }
+
+    public DbSet<BillLine> BillLine { get; set; }
+
+    public DbSet<Provider> Provider { get; set; }
+
+    public DbSet<InventoryReceipt> InventoryReceipt { get; set; }
+
     public DbSet<ChatRoom> ChatRoom { get; set; }
 
     public DbSet<ChatMessage> ChatMessage { get; set; }

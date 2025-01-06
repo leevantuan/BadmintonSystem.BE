@@ -27,5 +27,10 @@ internal sealed class YardPriceConfiguration : IEntityTypeConfiguration<YardPric
             .WithOne()
             .HasForeignKey(x => x.YardPriceId)
             .OnDelete(DeleteBehavior.NoAction);
+
+        builder.HasMany(x => x.BillLines)
+            .WithOne()
+            .HasForeignKey(x => x.BillId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

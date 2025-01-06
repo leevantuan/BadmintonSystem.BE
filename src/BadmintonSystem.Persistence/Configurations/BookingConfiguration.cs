@@ -25,6 +25,8 @@ internal sealed class BookingConfiguration : IEntityTypeConfiguration<Booking>
 
         builder.Property(x => x.SaleId).HasDefaultValue(null);
 
+        builder.Property(x => x.BillId).HasDefaultValue(null);
+
         builder.HasMany(x => x.BookingLines)
             .WithOne()
             .HasForeignKey(x => x.BookingId)
