@@ -2,6 +2,7 @@
 using BadmintonSystem.API.Middleware;
 using BadmintonSystem.Application.DependencyInjection.Extensions;
 using BadmintonSystem.Infrastructure.DependencyInjection.Extensions;
+using BadmintonSystem.Infrastructure.Seed;
 using BadmintonSystem.Persistence.DependencyInjection.Extensions;
 using BadmintonSystem.Persistence.DependencyInjection.Options;
 using Carter;
@@ -93,6 +94,13 @@ builder.Services.AddAutoMapperConfigurationApplication();
 // Configure App and Build
 WebApplication app = builder.Build();
 
+// Seed data
+using (IServiceScope scope = app.Services.CreateScope())
+{
+    IDbSeeder databaseSeeder = scope.ServiceProvider.GetRequiredService<IDbSeeder>();
+    await databaseSeeder.SeedAsync();
+}
+
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 // Map Carter
@@ -112,8 +120,8 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-// Initialize and seed the database
-await app.AddInitialiserConfigurationPersistence();
+// // Initialize and seed the database
+// await app.AddInitialiserConfigurationPersistence();
 
 try
 {

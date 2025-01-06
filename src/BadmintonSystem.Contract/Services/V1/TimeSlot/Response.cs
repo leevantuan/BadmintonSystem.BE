@@ -9,8 +9,6 @@ public static class Response
         public TimeSpan StartTime { get; set; }
 
         public TimeSpan EndTime { get; set; }
-
-        public Guid YardId { get; set; }
     }
 
     public class TimeSlotDetailResponse
@@ -20,7 +18,5 @@ public static class Response
         public TimeSpan? StartTime { get; set; }
 
         public TimeSpan? EndTime { get; set; }
-
-        public Guid? YardId { get; set; }
     }
 }

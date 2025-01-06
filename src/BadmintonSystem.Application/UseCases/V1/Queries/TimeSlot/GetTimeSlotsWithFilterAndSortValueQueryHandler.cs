@@ -41,7 +41,7 @@ public sealed class GetTimeSlotsWithFilterAndSortValueQueryHandler(
             foreach (KeyValuePair<string, List<string>> item in request.Data.FilterColumnAndMultipleValue)
             {
                 string key = TimeSlotExtension.GetSortTimeSlotProperty(item.Key);
-                timeSlotsQuery.Append($@"AND ""{nameof(Domain.Entities.TimeSlot)}"".""{key}""::TEXT ILIKE ANY (ARRAY[");
+                timeSlotsQuery.Append($@"AND ""{key}""::TEXT ILIKE ANY (ARRAY[");
 
                 foreach (string value in item.Value)
                 {
@@ -59,10 +59,10 @@ public sealed class GetTimeSlotsWithFilterAndSortValueQueryHandler(
             timeSlotsQuery.Append("ORDER BY ");
             foreach (KeyValuePair<string, SortOrder> item in request.Data.SortColumnAndOrder)
             {
-                string key = ReviewExtension.GetSortReviewProperty(item.Key);
+                string key = TimeSlotExtension.GetSortTimeSlotProperty(item.Key);
                 timeSlotsQuery.Append(item.Value == SortOrder.Descending
-                    ? $@" ""{nameof(Domain.Entities.TimeSlot)}"".""{key}"" DESC, "
-                    : $@" ""{nameof(Domain.Entities.TimeSlot)}"".""{key}"" ASC, ");
+                    ? $@" ""{key}"" DESC, "
+                    : $@" ""{key}"" ASC, ");
             }
 
             timeSlotsQuery.Length -= 2;

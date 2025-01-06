@@ -1,17 +1,67 @@
 ﻿using System.Security.Claims;
+using BadmintonSystem.Application.Extensions;
 using BadmintonSystem.Contract.Extensions;
+using BadmintonSystem.Domain.Entities;
+using BadmintonSystem.Domain.Entities.Identity;
 using BadmintonSystem.Domain.Enumerations;
 using BadmintonSystem.Domain.Exceptions;
+using BadmintonSystem.Persistence;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Logging;
-using Entities = BadmintonSystem.Domain.Entities.Identity;
+using Action = BadmintonSystem.Domain.Entities.Identity.Action;
 
-namespace BadmintonSystem.Persistence.Constants;
+namespace BadmintonSystem.Infrastructure.Seed;
 
-public static class DatabaseSeeder
+public sealed class DbSeeder(
+    ApplicationDbContext context,
+    RoleManager<AppRole> roleManager,
+    UserManager<AppUser> userManager)
+    : IDbSeeder
 {
+    public async Task SeedAsync()
+    {
+        // entity
+        await TimeSlotSeeder();
+
+        // identity
+        await ActionSeeder();
+        await AppRoleSeeder();
+        await FunctionSeeder();
+        await AppUserSeeder();
+
+        // Set role
+        await AppRoleClaimWithAdminSeeder();
+        await AppRoleClaimWithManagerSeeder();
+        await AppRoleClaimWithCustomerSeeder();
+        await AppUserClaimsSeeder();
+    }
+
+    // Seeder Time Slot
+    private async Task TimeSlotSeeder()
+    {
+        if (!context.TimeSlot.Any())
+        {
+            var timeSlotEntities = new List<TimeSlot>();
+
+            foreach (TimeSlotEnum timeSlotEnum in Enum.GetValues(typeof(TimeSlotEnum)))
+            {
+                (TimeSpan StartTime, TimeSpan EndTime) timeSlot = TimeSlotEnumExtension.GetTimeSlotTimes(timeSlotEnum);
+                var timeSlotEntity = new TimeSlot
+                {
+                    Id = Guid.NewGuid(),
+                    StartTime = timeSlot.StartTime,
+                    EndTime = timeSlot.EndTime
+                };
+
+                timeSlotEntities.Add(timeSlotEntity);
+            }
+
+            context.TimeSlot.AddRange(timeSlotEntities);
+            await context.SaveChangesAsync();
+        }
+    }
+
     // Seeder Action
-    public static async Task ActionSeeder(ApplicationDbContext context, ILogger logger)
+    private async Task ActionSeeder()
     {
         if (!context.Actions.Any())
         {
@@ -20,7 +70,7 @@ public static class DatabaseSeeder
                 string actionName = actionEnum.ToString();
                 int actionValue = (int)actionEnum;
 
-                var newAction = new Entities.Action
+                var newAction = new Action
                 {
                     Name = actionName,
                     SortOrder = actionValue,
@@ -31,14 +81,11 @@ public static class DatabaseSeeder
             }
 
             await context.SaveChangesAsync();
-            logger.LogInformation("Seeded default data for Action.");
         }
     }
 
     // Seeder AppRole
-    public static async Task AppRoleSeeder
-    (RoleManager<Entities.AppRole> roleManager, ApplicationDbContext context,
-        ILogger logger)
+    private async Task AppRoleSeeder()
     {
         if (!roleManager.Roles.Any())
         {
@@ -46,7 +93,7 @@ public static class DatabaseSeeder
             {
                 string roleName = roleEnum.ToString();
 
-                var role = new Entities.AppRole
+                var role = new AppRole
                 {
                     Name = StringExtension.CapitalizeFirstLetter(roleName),
                     RoleCode = roleName,
@@ -57,12 +104,11 @@ public static class DatabaseSeeder
             }
 
             await context.SaveChangesAsync();
-            logger.LogInformation("Seeded default data for Role.");
         }
     }
 
     // Seeder Function
-    public static async Task FunctionSeeder(ApplicationDbContext context, ILogger logger)
+    private async Task FunctionSeeder()
     {
         if (!context.Functions.Any())
         {
@@ -70,7 +116,7 @@ public static class DatabaseSeeder
             {
                 string functionName = functionEnum.ToString();
 
-                var newFunction = new Entities.Function
+                var newFunction = new Function
                 {
                     Name = functionName,
                     Status = FunctionStatus.Active,
@@ -84,18 +130,15 @@ public static class DatabaseSeeder
             }
 
             await context.SaveChangesAsync();
-            logger.LogInformation("Seeded default data for Function.");
         }
     }
 
     // Seeder AppUser
-    public static async Task AppUserSeeder
-    (UserManager<Entities.AppUser> userManager, ApplicationDbContext context,
-        ILogger logger)
+    private async Task AppUserSeeder()
     {
         if (!userManager.Users.Any())
         {
-            var newUser = new Entities.AppUser
+            var newUser = new AppUser
             {
                 UserName = "Admin",
                 Email = "admin@gmail.com",
@@ -116,23 +159,20 @@ public static class DatabaseSeeder
                 await userManager.AddToRoleAsync(newUser, roleName);
 
                 await context.SaveChangesAsync(); // Lưu các thay đổi vào cơ sở dữ liệu
-                logger.LogInformation("Seeded default data for user.");
             }
             else
             {
-                logger.LogError("Failed to create user: {Errors}",
-                    string.Join(", ", createResult.Errors.Select(e => e.Description)));
+                string.Join(", ", createResult.Errors.Select(e => e.Description));
             }
         }
     }
 
     // Seeder RoleClaims Admin
-    public static async Task AppRoleClaimWithAdminSeeder
-    (RoleManager<Entities.AppRole> roleManager,
-        ApplicationDbContext context)
+    private async Task AppRoleClaimWithAdminSeeder()
     {
-        Entities.AppRole role = await roleManager.FindByNameAsync(AppRoleEnum.ADMIN.ToString())
-                                ?? throw new IdentityException.AppUserNotFoundException(AppRoleEnum.ADMIN.ToString());
+        AppRole role = await roleManager.FindByNameAsync(AppRoleEnum.ADMIN.ToString())
+                       ?? throw new IdentityException.AppUserNotFoundException(
+                           AppRoleEnum.ADMIN.ToString());
 
         IList<Claim> roleClaims = await roleManager.GetClaimsAsync(role);
         if (!roleClaims.Any())
@@ -141,18 +181,17 @@ public static class DatabaseSeeder
             {
                 string functionName = functionEnum.ToString().Trim().ToUpper();
 
-                await AddAppRoleClaim(functionName, "63", role, context, roleManager);
+                await AddAppRoleClaim(functionName, "63", role);
             }
         }
     }
 
     // Seeder RoleClaims Manager
-    public static async Task AppRoleClaimWithManagerSeeder
-    (RoleManager<Entities.AppRole> roleManager,
-        ApplicationDbContext context)
+    private async Task AppRoleClaimWithManagerSeeder()
     {
-        Entities.AppRole role = await roleManager.FindByNameAsync(AppRoleEnum.MANAGER.ToString())
-                                ?? throw new IdentityException.AppUserNotFoundException(AppRoleEnum.ADMIN.ToString());
+        AppRole role = await roleManager.FindByNameAsync(AppRoleEnum.MANAGER.ToString())
+                       ?? throw new IdentityException.AppUserNotFoundException(
+                           AppRoleEnum.ADMIN.ToString());
 
         IList<Claim> roleClaims = await roleManager.GetClaimsAsync(role);
         if (!roleClaims.Any())
@@ -161,18 +200,17 @@ public static class DatabaseSeeder
             {
                 string functionName = functionEnum.ToString().Trim().ToUpper();
 
-                await AddAppRoleClaim(functionName, "63", role, context, roleManager);
+                await AddAppRoleClaim(functionName, "63", role);
             }
         }
     }
 
     // Seeder RoleClaims Customer
-    public static async Task AppRoleClaimWithCustomerSeeder
-    (RoleManager<Entities.AppRole> roleManager,
-        ApplicationDbContext context)
+    private async Task AppRoleClaimWithCustomerSeeder()
     {
-        Entities.AppRole role = await roleManager.FindByNameAsync(AppRoleEnum.CUSTOMER.ToString())
-                                ?? throw new IdentityException.AppUserNotFoundException(AppRoleEnum.ADMIN.ToString());
+        AppRole role = await roleManager.FindByNameAsync(AppRoleEnum.CUSTOMER.ToString())
+                       ?? throw new IdentityException.AppUserNotFoundException(
+                           AppRoleEnum.ADMIN.ToString());
 
         IList<Claim> roleClaims = await roleManager.GetClaimsAsync(role);
 
@@ -184,43 +222,43 @@ public static class DatabaseSeeder
                 switch (functionName)
                 {
                     case "ADMINISTRATOR":
-                        await AddAppRoleClaim(functionName, "0", role, context, roleManager);
+                        await AddAppRoleClaim(functionName, "0", role);
                         break;
                     case "ADDRESS":
-                        await AddAppRoleClaim(functionName, "15", role, context, roleManager);
+                        await AddAppRoleClaim(functionName, "15", role);
                         break;
                     case "APPUSER":
-                        await AddAppRoleClaim(functionName, "15", role, context, roleManager);
+                        await AddAppRoleClaim(functionName, "15", role);
                         break;
                     case "BOOKING":
-                        await AddAppRoleClaim(functionName, "15", role, context, roleManager);
+                        await AddAppRoleClaim(functionName, "15", role);
                         break;
                     case "CATEGORY":
-                        await AddAppRoleClaim(functionName, "15", role, context, roleManager);
+                        await AddAppRoleClaim(functionName, "15", role);
                         break;
                     case "CLUB":
-                        await AddAppRoleClaim(functionName, "15", role, context, roleManager);
+                        await AddAppRoleClaim(functionName, "15", role);
                         break;
                     case "NOFITICATION":
-                        await AddAppRoleClaim(functionName, "15", role, context, roleManager);
+                        await AddAppRoleClaim(functionName, "15", role);
                         break;
                     case "REVIEW":
-                        await AddAppRoleClaim(functionName, "15", role, context, roleManager);
+                        await AddAppRoleClaim(functionName, "15", role);
                         break;
                     case "SALE":
-                        await AddAppRoleClaim(functionName, "15", role, context, roleManager);
+                        await AddAppRoleClaim(functionName, "15", role);
                         break;
                     case "SERVICE":
-                        await AddAppRoleClaim(functionName, "15", role, context, roleManager);
+                        await AddAppRoleClaim(functionName, "15", role);
                         break;
                     case "TIMESLOT":
-                        await AddAppRoleClaim(functionName, "15", role, context, roleManager);
+                        await AddAppRoleClaim(functionName, "15", role);
                         break;
                     case "YARD":
-                        await AddAppRoleClaim(functionName, "15", role, context, roleManager);
+                        await AddAppRoleClaim(functionName, "15", role);
                         break;
                     case "YARDTYPE":
-                        await AddAppRoleClaim(functionName, "15", role, context, roleManager);
+                        await AddAppRoleClaim(functionName, "15", role);
                         break;
                 }
             }
@@ -228,13 +266,11 @@ public static class DatabaseSeeder
     }
 
     // Seeder UserClaims
-    public static async Task AppUserClaimsSeeder
-    (UserManager<Entities.AppUser> userManager,
-        ApplicationDbContext context, ILogger logger)
+    private async Task AppUserClaimsSeeder()
     {
         string userEmail = "admin@gmail.com";
-        Entities.AppUser user = await userManager.FindByEmailAsync(userEmail)
-                                ?? throw new IdentityException.AppUserNotFoundException(userEmail);
+        AppUser user = await userManager.FindByEmailAsync(userEmail)
+                       ?? throw new IdentityException.AppUserNotFoundException(userEmail);
 
         IList<Claim> userClaims = await userManager.GetClaimsAsync(user);
         if (!userClaims.Any())
@@ -252,19 +288,12 @@ public static class DatabaseSeeder
                 {
                     await userManager.AddClaimAsync(user, claim);
                     await context.SaveChangesAsync();
-                    logger.LogInformation("Seeded default data for User Claims.");
-                }
-                else
-                {
-                    logger.LogInformation("Claim already exists for user {UserEmail}.", userEmail);
                 }
             }
         }
     }
 
-    private static async Task AddAppRoleClaim
-    (string functionName, string value,
-        Entities.AppRole role, ApplicationDbContext context, RoleManager<Entities.AppRole> roleManager)
+    private async Task AddAppRoleClaim(string functionName, string value, AppRole role)
     {
         var claim = new Claim(functionName, value);
 

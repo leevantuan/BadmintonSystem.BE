@@ -4,7 +4,7 @@ namespace BadmintonSystem.Application.Extensions;
 
 public static class TimeSlotEnumExtension
 {
-    public static string GetTimeSlot(this TimeSlotEnum slot)
+    private static string GetTimeSlot(this TimeSlotEnum slot)
     {
         return slot switch
         {
@@ -33,5 +33,16 @@ public static class TimeSlotEnumExtension
             TimeSlotEnum.TimeSlot22 => "23:10:00 - 00:10:00",
             _ => throw new ArgumentOutOfRangeException(nameof(slot), slot, null)
         };
+    }
+
+    public static (TimeSpan StartTime, TimeSpan EndTime) GetTimeSlotTimes(TimeSlotEnum slot)
+    {
+        string timeSlotString = GetTimeSlot(slot);
+        string[] times = timeSlotString.Split(" - ");
+
+        var startTime = TimeSpan.Parse(times[0]);
+        var endTime = TimeSpan.Parse(times[1]);
+
+        return (startTime, endTime);
     }
 }

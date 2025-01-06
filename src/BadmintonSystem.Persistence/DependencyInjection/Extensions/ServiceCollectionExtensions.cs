@@ -3,7 +3,6 @@ using BadmintonSystem.Domain.Entities.Identity;
 using BadmintonSystem.Persistence.DependencyInjection.Options;
 using BadmintonSystem.Persistence.Interceptors;
 using BadmintonSystem.Persistence.Repositories;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -152,20 +151,5 @@ public static class ServiceCollectionExtensions
     {
         services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
         services.AddSingleton<UpdateAuditableEntitiesInterceptor>();
-        services.AddScoped<ApplicationDbContextInitialiser>();
-    }
-
-    public static async Task<IApplicationBuilder> AddInitialiserConfigurationPersistence
-    (
-        this IApplicationBuilder app)
-    {
-        // Add scoped service in Program.cs instead
-        using IServiceScope scope = app.ApplicationServices.CreateScope();
-        ApplicationDbContextInitialiser initialiser =
-            scope.ServiceProvider.GetRequiredService<ApplicationDbContextInitialiser>();
-        await initialiser.InitialiseAsync();
-        await initialiser.SeedAsync();
-
-        return app;
     }
 }

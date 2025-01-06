@@ -121,6 +121,30 @@ namespace BadmintonSystem.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Bill",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    TotalPrice = table.Column<decimal>(type: "numeric", nullable: false),
+                    TotalPayment = table.Column<decimal>(type: "numeric", nullable: true),
+                    Content = table.Column<string>(type: "text", nullable: true),
+                    Name = table.Column<string>(type: "text", nullable: true),
+                    UserId = table.Column<Guid>(type: "uuid", nullable: true),
+                    BookingId = table.Column<Guid>(type: "uuid", nullable: false),
+                    SaleId = table.Column<Guid>(type: "uuid", nullable: true),
+                    CreatedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    CreatedBy = table.Column<Guid>(type: "uuid", nullable: false),
+                    ModifiedBy = table.Column<Guid>(type: "uuid", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Bill", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Category",
                 columns: table => new
                 {
@@ -158,6 +182,25 @@ namespace BadmintonSystem.Persistence.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Club", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ComboFixed",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Price = table.Column<decimal>(type: "numeric", nullable: false),
+                    Content = table.Column<string>(type: "text", nullable: true),
+                    CreatedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    CreatedBy = table.Column<Guid>(type: "uuid", nullable: false),
+                    ModifiedBy = table.Column<Guid>(type: "uuid", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ComboFixed", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -222,6 +265,26 @@ namespace BadmintonSystem.Persistence.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Price", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Provider",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    PhoneNumber = table.Column<string>(type: "text", nullable: false),
+                    Address = table.Column<string>(type: "text", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    CreatedBy = table.Column<Guid>(type: "uuid", nullable: false),
+                    ModifiedBy = table.Column<Guid>(type: "uuid", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Provider", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -477,6 +540,7 @@ namespace BadmintonSystem.Persistence.Migrations
                     Name = table.Column<string>(type: "text", nullable: false),
                     PurchasePrice = table.Column<decimal>(type: "numeric", nullable: false),
                     SellingPrice = table.Column<decimal>(type: "numeric", nullable: false),
+                    QuantityInStock = table.Column<decimal>(type: "numeric", nullable: false),
                     CategoryId = table.Column<Guid>(type: "uuid", nullable: false),
                     ClubId = table.Column<Guid>(type: "uuid", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -642,6 +706,7 @@ namespace BadmintonSystem.Persistence.Migrations
                     BookingStatus = table.Column<int>(type: "integer", nullable: false),
                     PaymentStatus = table.Column<int>(type: "integer", nullable: false),
                     UserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    BillId = table.Column<Guid>(type: "uuid", nullable: false),
                     SaleId = table.Column<Guid>(type: "uuid", nullable: true),
                     CreatedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
@@ -657,6 +722,12 @@ namespace BadmintonSystem.Persistence.Migrations
                         name: "FK_Booking_AppUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AppUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Booking_Bill_BillId",
+                        column: x => x.BillId,
+                        principalTable: "Bill",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -693,6 +764,78 @@ namespace BadmintonSystem.Persistence.Migrations
                         column: x => x.ChatRoomId,
                         principalTable: "ChatRoom",
                         principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "InventoryReceipt",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Quantity = table.Column<decimal>(type: "numeric", nullable: true),
+                    Price = table.Column<decimal>(type: "numeric", nullable: false),
+                    ServiceId = table.Column<Guid>(type: "uuid", nullable: true),
+                    ProviderId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    CreatedBy = table.Column<Guid>(type: "uuid", nullable: false),
+                    ModifiedBy = table.Column<Guid>(type: "uuid", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_InventoryReceipt", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_InventoryReceipt_Provider_ProviderId",
+                        column: x => x.ProviderId,
+                        principalTable: "Provider",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_InventoryReceipt_Service_ServiceId",
+                        column: x => x.ServiceId,
+                        principalTable: "Service",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ServiceLine",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    ServiceId = table.Column<Guid>(type: "uuid", nullable: true),
+                    ComboFixedId = table.Column<Guid>(type: "uuid", nullable: true),
+                    Quantity = table.Column<int>(type: "integer", nullable: false),
+                    BillId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    CreatedBy = table.Column<Guid>(type: "uuid", nullable: false),
+                    ModifiedBy = table.Column<Guid>(type: "uuid", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ServiceLine", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ServiceLine_Bill_BillId",
+                        column: x => x.BillId,
+                        principalTable: "Bill",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ServiceLine_ComboFixed_ComboFixedId",
+                        column: x => x.ComboFixedId,
+                        principalTable: "ComboFixed",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ServiceLine_Service_ServiceId",
+                        column: x => x.ServiceId,
+                        principalTable: "Service",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -836,6 +979,30 @@ namespace BadmintonSystem.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "BillLine",
+                columns: table => new
+                {
+                    BillId = table.Column<Guid>(type: "uuid", nullable: false),
+                    YardPriceId = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BillLine", x => new { x.BillId, x.YardPriceId });
+                    table.ForeignKey(
+                        name: "FK_BillLine_Bill_BillId",
+                        column: x => x.BillId,
+                        principalTable: "Bill",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_BillLine_YardPrice_BillId",
+                        column: x => x.BillId,
+                        principalTable: "YardPrice",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "BookingLine",
                 columns: table => new
                 {
@@ -930,6 +1097,12 @@ namespace BadmintonSystem.Persistence.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Booking_BillId",
+                table: "Booking",
+                column: "BillId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Booking_SaleId",
                 table: "Booking",
                 column: "SaleId");
@@ -992,6 +1165,16 @@ namespace BadmintonSystem.Persistence.Migrations
                 column: "YardId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_InventoryReceipt_ProviderId",
+                table: "InventoryReceipt",
+                column: "ProviderId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_InventoryReceipt_ServiceId",
+                table: "InventoryReceipt",
+                column: "ServiceId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Notification_UserId",
                 table: "Notification",
                 column: "UserId");
@@ -1020,6 +1203,21 @@ namespace BadmintonSystem.Persistence.Migrations
                 name: "IX_Service_CategoryId",
                 table: "Service",
                 column: "CategoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ServiceLine_BillId",
+                table: "ServiceLine",
+                column: "BillId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ServiceLine_ComboFixedId",
+                table: "ServiceLine",
+                column: "ComboFixedId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ServiceLine_ServiceId",
+                table: "ServiceLine",
+                column: "ServiceId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TimeSlotOfWeek_TimeSlotId",
@@ -1079,6 +1277,9 @@ namespace BadmintonSystem.Persistence.Migrations
                 name: "AppUserTokens");
 
             migrationBuilder.DropTable(
+                name: "BillLine");
+
+            migrationBuilder.DropTable(
                 name: "BookingTime");
 
             migrationBuilder.DropTable(
@@ -1100,6 +1301,9 @@ namespace BadmintonSystem.Persistence.Migrations
                 name: "Functions");
 
             migrationBuilder.DropTable(
+                name: "InventoryReceipt");
+
+            migrationBuilder.DropTable(
                 name: "Notification");
 
             migrationBuilder.DropTable(
@@ -1109,7 +1313,7 @@ namespace BadmintonSystem.Persistence.Migrations
                 name: "ReviewImage");
 
             migrationBuilder.DropTable(
-                name: "Service");
+                name: "ServiceLine");
 
             migrationBuilder.DropTable(
                 name: "TimeSlotOfWeek");
@@ -1127,10 +1331,16 @@ namespace BadmintonSystem.Persistence.Migrations
                 name: "ChatRoom");
 
             migrationBuilder.DropTable(
+                name: "Provider");
+
+            migrationBuilder.DropTable(
                 name: "Review");
 
             migrationBuilder.DropTable(
-                name: "Category");
+                name: "ComboFixed");
+
+            migrationBuilder.DropTable(
+                name: "Service");
 
             migrationBuilder.DropTable(
                 name: "DayOfWeek");
@@ -1148,10 +1358,16 @@ namespace BadmintonSystem.Persistence.Migrations
                 name: "Club");
 
             migrationBuilder.DropTable(
+                name: "Category");
+
+            migrationBuilder.DropTable(
                 name: "FixedSchedule");
 
             migrationBuilder.DropTable(
                 name: "AppUsers");
+
+            migrationBuilder.DropTable(
+                name: "Bill");
 
             migrationBuilder.DropTable(
                 name: "Sale");
