@@ -13,7 +13,9 @@ internal sealed class FixedScheduleConfiguration : IEntityTypeConfiguration<Fixe
 
         builder.HasKey(x => x.Id);
 
-        builder.Property(x => x.UserId).HasDefaultValue(null).IsRequired();
+        builder.Property(x => x.UserId).HasDefaultValue(null);
+
+        builder.Property(x => x.PhoneNumber).HasDefaultValue(null);
 
         builder.Property(x => x.StartDate).HasDefaultValue(null).IsRequired();
 

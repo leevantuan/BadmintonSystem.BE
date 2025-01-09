@@ -21,7 +21,6 @@ public sealed class UpdateYardTypeCommandHandler(
                                             ?? throw new YardTypeException.YardTypeNotFoundException(request.Data.Id);
 
         yardType.Name = request.Data.Name ?? yardType.Name;
-        yardType.PriceId = request.Data.PriceId ?? yardType.PriceId;
 
         Response.YardTypeResponse? result = mapper.Map<Response.YardTypeResponse>(yardType);
 

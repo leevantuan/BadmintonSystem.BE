@@ -2,14 +2,12 @@
 
 public static class Request
 {
-    public record CreateYardTypeRequest(string Name, Guid PriceId);
+    public record CreateYardTypeRequest(string Name);
 
     public class UpdateYardTypeRequest
     {
         public Guid Id { get; set; }
 
         public string? Name { get; set; }
-
-        public Guid? PriceId { get; set; }
     }
 }

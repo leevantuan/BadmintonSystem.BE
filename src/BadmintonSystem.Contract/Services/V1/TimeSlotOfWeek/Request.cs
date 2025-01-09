@@ -6,13 +6,13 @@ public static class Request
     {
         public Guid TimeSlotId { get; set; }
 
-        public Guid TimeSlotOfWeekId { get; set; }
+        public Guid DayOfWeekId { get; set; }
     }
 
     public class UpdateTimeSlotOfWeekRequest
     {
         public Guid TimeSlotId { get; set; }
 
-        public Guid TimeSlotOfWeekId { get; set; }
+        public Guid DayOfWeekId { get; set; }
     }
 }

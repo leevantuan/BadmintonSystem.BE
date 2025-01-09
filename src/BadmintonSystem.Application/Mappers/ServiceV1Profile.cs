@@ -168,6 +168,16 @@ public class ServiceV1Profile : Profile
             .ForMember(dest => dest.Items, opt
                 => opt.MapFrom(src => src.Items)).ReverseMap();
 
+        // Time Slot Of Week
+        CreateMap<TimeSlotOfWeek, V1.TimeSlotOfWeek.Response.TimeSlotOfWeekResponse>().ReverseMap();
+        CreateMap<TimeSlotOfWeek, V1.TimeSlotOfWeek.Request.CreateTimeSlotOfWeekRequest>().ReverseMap();
+        CreateMap<PagedResult<TimeSlotOfWeek>, PagedResult<V1.TimeSlotOfWeek.Response.TimeSlotOfWeekResponse>>()
+            .ReverseMap();
+        CreateMap<TimeSlotOfWeek, V1.TimeSlotOfWeek.Response.TimeSlotOfWeekDetailResponse>().ReverseMap();
+        CreateMap<PagedResult<TimeSlotOfWeek>, PagedResult<V1.TimeSlotOfWeek.Response.TimeSlotOfWeekDetailResponse>>()
+            .ForMember(dest => dest.Items, opt
+                => opt.MapFrom(src => src.Items)).ReverseMap();
+
         // Fixed Schedule
         CreateMap<FixedSchedule, V1.FixedSchedule.Response.FixedScheduleResponse>().ReverseMap();
         CreateMap<FixedSchedule, V1.FixedSchedule.Request.CreateFixedScheduleRequest>().ReverseMap();

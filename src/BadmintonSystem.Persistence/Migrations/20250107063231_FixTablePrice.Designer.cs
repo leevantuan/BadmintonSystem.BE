@@ -3,6 +3,7 @@ using System;
 using BadmintonSystem.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BadmintonSystem.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250107063231_FixTablePrice")]
+    partial class FixTablePrice
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -629,13 +632,10 @@ namespace BadmintonSystem.Persistence.Migrations
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("text");
-
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<Guid?>("UserId")
+                    b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("YardId")
@@ -1116,12 +1116,7 @@ namespace BadmintonSystem.Persistence.Migrations
                     b.Property<decimal>("YardPrice")
                         .HasColumnType("numeric");
 
-                    b.Property<Guid?>("YardTypeId")
-                        .HasColumnType("uuid");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("YardTypeId");
 
                     b.ToTable("Price", (string)null);
                 });
@@ -1581,7 +1576,12 @@ namespace BadmintonSystem.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<Guid>("PriceId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("PriceId");
 
                     b.ToTable("YardType", (string)null);
                 });
@@ -1859,14 +1859,6 @@ namespace BadmintonSystem.Persistence.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("BadmintonSystem.Domain.Entities.Price", b =>
-                {
-                    b.HasOne("BadmintonSystem.Domain.Entities.YardType", null)
-                        .WithMany("Prices")
-                        .HasForeignKey("YardTypeId")
-                        .OnDelete(DeleteBehavior.Restrict);
-                });
-
             modelBuilder.Entity("BadmintonSystem.Domain.Entities.Review", b =>
                 {
                     b.HasOne("BadmintonSystem.Domain.Entities.Club", null)
@@ -1975,6 +1967,15 @@ namespace BadmintonSystem.Persistence.Migrations
                         .WithMany("YardPrices")
                         .HasForeignKey("YardId")
                         .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("BadmintonSystem.Domain.Entities.YardType", b =>
+                {
+                    b.HasOne("BadmintonSystem.Domain.Entities.Price", null)
+                        .WithMany("YardTypes")
+                        .HasForeignKey("PriceId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
@@ -2109,6 +2110,8 @@ namespace BadmintonSystem.Persistence.Migrations
             modelBuilder.Entity("BadmintonSystem.Domain.Entities.Price", b =>
                 {
                     b.Navigation("YardPrices");
+
+                    b.Navigation("YardTypes");
                 });
 
             modelBuilder.Entity("BadmintonSystem.Domain.Entities.Provider", b =>
@@ -2158,8 +2161,6 @@ namespace BadmintonSystem.Persistence.Migrations
 
             modelBuilder.Entity("BadmintonSystem.Domain.Entities.YardType", b =>
                 {
-                    b.Navigation("Prices");
-
                     b.Navigation("Yards");
                 });
 #pragma warning restore 612, 618

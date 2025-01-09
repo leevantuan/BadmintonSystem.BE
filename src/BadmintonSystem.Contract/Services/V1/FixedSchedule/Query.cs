@@ -10,5 +10,5 @@ public static class Query
 
     public record GetFixedSchedulesWithFilterAndSortValueQuery(
         Abstractions.Shared.Request.PagedFilterAndSortQueryRequest Data)
-        : IQuery<PagedResult<Response.FixedScheduleDetailResponse>>;
+        : IQuery<PagedResult<Response.GetFixedScheduleDetailResponse>>;
 }

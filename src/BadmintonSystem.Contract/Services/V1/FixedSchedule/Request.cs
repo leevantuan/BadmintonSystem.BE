@@ -4,7 +4,11 @@ public static class Request
 {
     public class CreateFixedScheduleRequest
     {
-        public Guid UserId { get; set; }
+        public Guid? UserId { get; set; }
+
+        public Guid YardId { get; set; }
+
+        public string PhoneNumber { get; set; }
 
         public DateTime StartDate { get; set; }
 
@@ -22,6 +26,8 @@ public static class Request
         public DateTime? EndDate { get; set; }
 
         public Guid? YardId { get; set; }
+
+        public string? PhoneNumber { get; set; }
     }
 
     public class CreateFixedScheduleDetailRequest : CreateFixedScheduleRequest

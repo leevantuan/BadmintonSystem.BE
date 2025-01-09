@@ -7,7 +7,5 @@ public sealed class CreateYardTypeValidator : AbstractValidator<Command.CreateYa
     public CreateYardTypeValidator()
     {
         RuleFor(x => x.Data.Name).NotEmpty().WithMessage("Name not null");
-
-        RuleFor(x => x.Data.PriceId).NotEmpty().WithMessage("Price Id not null");
     }
 }

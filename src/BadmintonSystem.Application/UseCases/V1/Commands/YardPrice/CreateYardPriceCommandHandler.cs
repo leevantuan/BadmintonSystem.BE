@@ -21,13 +21,13 @@ public sealed class CreateYardPriceCommandHandler(
 
         yardPrice.IsBooking = (BookingEnum)request.Data.IsBooking;
 
-        Guid query = (from yard in context.Yard
-            join yardType in context.YardType on yard.YardTypeId equals yardType.Id
-            join price in context.Price on yardType.PriceId equals price.Id
-            where yard.Id == request.Data.YardId
-            select price.Id).FirstOrDefault();
-
-        yardPrice.PriceId = query;
+        // Guid query = (from yard in context.Yard
+        //     join yardType in context.YardType on yard.YardTypeId equals yardType.Id
+        //     join price in context.Price on yardType.PriceId equals price.Id
+        //     where yard.Id == request.Data.YardId
+        //     select price.Id).FirstOrDefault();
+        //
+        // yardPrice.PriceId = query;
 
         yardPriceRepository.Add(yardPrice);
 

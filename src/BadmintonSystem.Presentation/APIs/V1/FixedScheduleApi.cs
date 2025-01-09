@@ -28,8 +28,8 @@ public class FixedScheduleApi : ApiEndpoint, ICarterModule
         group1.MapPost(string.Empty, CreateFixedScheduleV1)
             .RequireJwtAuthorize(FunctionEnum.PRICE.ToString(), (int)ActionEnum.CREATE);
 
-        // group1.MapGet("filter-and-sort-value", GetFixedSchedulesFilterAndSortValueV1)
-        //     .RequireJwtAuthorize(FunctionEnum.PRICE.ToString(), (int)ActionEnum.READ);
+        group1.MapGet("filter-and-sort-value", GetFixedSchedulesFilterAndSortValueV1)
+            .RequireJwtAuthorize(FunctionEnum.PRICE.ToString(), (int)ActionEnum.READ);
 
         // group1.MapGet("{fixedScheduleId}", GetFixedScheduleByIdV1)
         //     .RequireJwtAuthorize(FunctionEnum.PRICE.ToString(), (int)ActionEnum.READ);
@@ -90,7 +90,7 @@ public class FixedScheduleApi : ApiEndpoint, ICarterModule
     {
         var pagedQueryRequest =
             new Contract.Abstractions.Shared.Request.PagedFilterAndSortQueryRequest(request);
-        Result<PagedResult<Response.FixedScheduleDetailResponse>> result =
+        Result<PagedResult<Response.GetFixedScheduleDetailResponse>> result =
             await sender.Send(new Query.GetFixedSchedulesWithFilterAndSortValueQuery(pagedQueryRequest));
 
         return Results.Ok(result);

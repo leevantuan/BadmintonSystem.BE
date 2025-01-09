@@ -4,11 +4,13 @@ namespace BadmintonSystem.Domain.Entities;
 
 public class FixedSchedule : EntityAuditBase<Guid>
 {
-    public Guid UserId { get; set; }
+    public Guid? UserId { get; set; }
 
     public DateTime StartDate { get; set; }
 
     public DateTime EndDate { get; set; }
+
+    public string? PhoneNumber { get; set; }
 
     public Guid YardId { get; set; }
 

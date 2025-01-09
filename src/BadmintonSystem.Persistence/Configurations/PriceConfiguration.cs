@@ -15,7 +15,17 @@ internal sealed class PriceConfiguration : IEntityTypeConfiguration<Price>
 
         builder.Property(x => x.YardPrice).HasDefaultValue(null).IsRequired();
 
-        builder.Property(x => x.IsDefault).HasDefaultValue(null).IsRequired();
+        builder.Property(x => x.IsDefault).IsRequired();
+
+        builder.Property(x => x.Detail).HasDefaultValue(null);
+
+        builder.Property(x => x.StartTime).HasDefaultValue(null);
+
+        builder.Property(x => x.EndTime).HasDefaultValue(null);
+
+        builder.Property(x => x.DayOfWeek).HasDefaultValue(null);
+
+        builder.Property(x => x.YardTypeId).HasDefaultValue(null);
 
         builder.HasMany(x => x.YardPrices)
             .WithOne()

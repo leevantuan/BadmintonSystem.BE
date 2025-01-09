@@ -26,10 +26,7 @@ public sealed class CreateFixedScheduleCommandHandler(
         Domain.Entities.FixedSchedule fixedSchedule = mapper.Map<Domain.Entities.FixedSchedule>(request.Data);
 
         fixedScheduleRepository.Add(fixedSchedule);
-
         await context.SaveChangesAsync(cancellationToken);
-
-        var dayOfWeeks = new List<DayOfWeek>();
 
         var timeSlotOfWeeks = new List<TimeSlotOfWeek>();
 
@@ -44,14 +41,15 @@ public sealed class CreateFixedScheduleCommandHandler(
 
             DayOfWeek? dayOfWeekResult = mapper.Map<DayOfWeek>(dayOfWeek);
 
-            dayOfWeeks.Add(dayOfWeekResult);
+            context.DayOfWeek.Add(dayOfWeekResult);
+            await context.SaveChangesAsync(cancellationToken);
 
             foreach (Guid timeSlotId in dayOfWeekRequest.TimeSlotIds)
             {
                 var timeSlot = new Contract.Services.V1.TimeSlotOfWeek.Request.CreateTimeSlotOfWeekRequest
                 {
                     TimeSlotId = timeSlotId,
-                    TimeSlotOfWeekId = dayOfWeekResult.Id
+                    DayOfWeekId = dayOfWeekResult.Id
                 };
 
                 TimeSlotOfWeek? timeSlotResult = mapper.Map<TimeSlotOfWeek>(timeSlot);
@@ -59,6 +57,9 @@ public sealed class CreateFixedScheduleCommandHandler(
                 timeSlotOfWeeks.Add(timeSlotResult);
             }
         }
+
+        context.TimeSlotOfWeek.AddRange(timeSlotOfWeeks);
+        await context.SaveChangesAsync(cancellationToken);
 
         Response.FixedScheduleResponse? result = mapper.Map<Response.FixedScheduleResponse>(fixedSchedule);
 

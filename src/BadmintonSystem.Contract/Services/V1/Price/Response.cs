@@ -10,12 +10,32 @@ public static class Response
 
         public decimal YardPrice { get; set; }
 
+        public string? Detail { get; set; }
+
+        public string? DayOfWeek { get; set; }
+
+        public TimeSpan? StartTime { get; set; }
+
+        public TimeSpan? EndTime { get; set; }
+
+        public Guid? YardTypeId { get; set; }
+
         public int IsDefault { get; set; }
     }
 
     public class PriceDetailResponse : EntityBase<Guid>
     {
         public decimal YardPrice { get; set; }
+
+        public string? Detail { get; set; }
+
+        public string? DayOfWeek { get; set; }
+
+        public TimeSpan? StartTime { get; set; }
+
+        public TimeSpan? EndTime { get; set; }
+
+        public Guid? YardTypeId { get; set; }
 
         public int IsDefault { get; set; }
     }
