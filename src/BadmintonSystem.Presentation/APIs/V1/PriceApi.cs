@@ -31,6 +31,9 @@ public class PriceApi : ApiEndpoint, ICarterModule
         group1.MapGet("filter-and-sort-value", GetPricesFilterAndSortValueV1)
             .RequireJwtAuthorize(FunctionEnum.PRICE.ToString(), (int)ActionEnum.READ);
 
+        group1.MapGet("show-prices", GetShowPricesValueV1)
+            .RequireJwtAuthorize(FunctionEnum.PRICE.ToString(), (int)ActionEnum.READ);
+
         group1.MapGet("{priceId}", GetPriceByIdV1)
             .RequireJwtAuthorize(FunctionEnum.PRICE.ToString(), (int)ActionEnum.READ);
 
@@ -90,6 +93,17 @@ public class PriceApi : ApiEndpoint, ICarterModule
             new Contract.Abstractions.Shared.Request.PagedFilterAndSortQueryRequest(request);
         Result<PagedResult<Response.PriceDetailResponse>> result =
             await sender.Send(new Query.GetPricesWithFilterAndSortValueQuery(pagedQueryRequest));
+
+        return Results.Ok(result);
+    }
+
+    private static async Task<IResult> GetShowPricesValueV1
+    (
+        ISender sender
+    )
+    {
+        Result<List<Response.GetListPriceResponse>> result =
+            await sender.Send(new Query.GetPricesWithDayOfWeekQuery());
 
         return Results.Ok(result);
     }

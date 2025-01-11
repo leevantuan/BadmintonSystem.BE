@@ -11,4 +11,7 @@ public static class Query
     public record GetPricesWithFilterAndSortValueQuery(
         Abstractions.Shared.Request.PagedFilterAndSortQueryRequest Data)
         : IQuery<PagedResult<Response.PriceDetailResponse>>;
+
+    public record GetPricesWithDayOfWeekQuery
+        : IQuery<List<Response.GetListPriceResponse>>;
 }
