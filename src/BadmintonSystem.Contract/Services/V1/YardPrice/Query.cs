@@ -13,6 +13,7 @@ public static class Query
         : IQuery<PagedResult<Response.YardPriceDetailResponse>>;
 
     public record GetYardPricesByDateQuery(
+        Guid UserId,
         DateTime Date)
         : IQuery<List<Response.YardPriceDetailResponse>>;
 }

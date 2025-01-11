@@ -1,6 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Text;
 using AutoMapper;
+using BadmintonSystem.Application.UseCases.V1.Services;
 using BadmintonSystem.Contract.Abstractions.Message;
 using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Extensions;
@@ -14,12 +15,21 @@ namespace BadmintonSystem.Application.UseCases.V1.Queries.YardPrice;
 public sealed class GetYardPricesByDateQueryHandler(
     ApplicationDbContext context,
     IMapper mapper,
-    IRepositoryBase<Domain.Entities.YardPrice, Guid> yardPriceRepository)
+    IRepositoryBase<Domain.Entities.YardPrice, Guid> yardPriceRepository,
+    IYardPriceService yardPriceService)
     : IQueryHandler<Query.GetYardPricesByDateQuery, List<Response.YardPriceDetailResponse>>
 {
     public async Task<Result<List<Response.YardPriceDetailResponse>>> Handle
         (Query.GetYardPricesByDateQuery request, CancellationToken cancellationToken)
     {
+        IQueryable<Domain.Entities.YardPrice>? effectiveDateIsExists =
+            yardPriceRepository.FindAll(x => x.EffectiveDate.Date == request.Date.Date);
+
+        if (!effectiveDateIsExists.Any())
+        {
+            yardPriceService.CreateYardPrice(request.Date, request.UserId);
+        }
+
         string yardColumns = StringExtension
             .TransformPropertiesToSqlAliases<Domain.Entities.Yard,
                 Contract.Services.V1.Yard.Response.YardResponse>();
