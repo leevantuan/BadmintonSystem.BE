@@ -13,25 +13,17 @@ public sealed class UpdateBookingCommandHandler(
     ApplicationDbContext context,
     IMapper mapper,
     IRepositoryBase<Domain.Entities.Booking, Guid> bookingRepository)
-    : ICommandHandler<Command.UpdateBookingCommand, Response.BookingResponse>
+    : ICommandHandler<Command.UpdateBookingCommand>
 {
-    public async Task<Result<Response.BookingResponse>> Handle
+    public async Task<Result> Handle
         (Command.UpdateBookingCommand request, CancellationToken cancellationToken)
     {
-        Domain.Entities.Booking booking = await bookingRepository.FindByIdAsync(request.Data.Id, cancellationToken)
-                                          ?? throw new BookingException.BookingNotFoundException(request.Data.Id);
+        Domain.Entities.Booking booking = await bookingRepository.FindByIdAsync(request.BookingId, cancellationToken)
+                                          ?? throw new BookingException.BookingNotFoundException(request.BookingId);
 
-        booking.BookingDate = request.Data.BookingDate ?? booking.BookingDate;
-        booking.BookingTotal = request.Data.BookingTotal ?? booking.BookingTotal;
-        booking.UserId = request.Data.UserId ?? booking.UserId;
-        booking.SaleId = request.Data.SaleId ?? booking.SaleId;
-        booking.BookingStatus =
-            request.Data.BookingStatus == 2 ? BookingStatusEnum.Approved : BookingStatusEnum.Cancelled;
-        booking.PaymentStatus =
-            request.Data.PaymentStatus == 2 ? PaymentStatusEnum.Unpaid : PaymentStatusEnum.Paid;
+        booking.BookingStatus = BookingStatusEnum.Approved;
+        booking.PaymentStatus = PaymentStatusEnum.Paid;
 
-        Response.BookingResponse? result = mapper.Map<Response.BookingResponse>(booking);
-
-        return Result.Success(result);
+        return Result.Success();
     }
 }

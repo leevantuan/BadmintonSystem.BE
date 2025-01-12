@@ -3,6 +3,7 @@ using System;
 using BadmintonSystem.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BadmintonSystem.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250112154512_FixTableBillp10")]
+    partial class FixTableBillp10
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -93,9 +96,6 @@ namespace BadmintonSystem.Persistence.Migrations
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<TimeSpan?>("EndTime")
-                        .HasColumnType("interval");
-
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
@@ -107,9 +107,6 @@ namespace BadmintonSystem.Persistence.Migrations
 
                     b.Property<string>("Name")
                         .HasColumnType("text");
-
-                    b.Property<TimeSpan?>("StartTime")
-                        .HasColumnType("interval");
 
                     b.Property<decimal?>("TotalPayment")
                         .HasColumnType("numeric");

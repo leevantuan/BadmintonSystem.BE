@@ -16,7 +16,9 @@ public class Bill : EntityAuditBase<Guid>
 
     public Guid? BookingId { get; set; }
 
-    public Guid? SaleId { get; set; }
+    public TimeSpan? StartTime { get; set; }
+
+    public TimeSpan? EndTime { get; set; }
 
     public virtual ICollection<ServiceLine>? ServiceLines { get; set; }
 

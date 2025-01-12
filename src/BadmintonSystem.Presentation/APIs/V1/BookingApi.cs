@@ -67,12 +67,10 @@ public class BookingApi : ApiEndpoint, ICarterModule
     private static async Task<IResult> UpdateBookingV1
     (
         ISender sender,
-        Guid id,
-        [FromBody] Request.UpdateBookingRequest updateBooking
+        Guid id
     )
     {
-        updateBooking.Id = id;
-        Result<Response.BookingResponse> result = await sender.Send(new Command.UpdateBookingCommand(updateBooking));
+        Result result = await sender.Send(new Command.UpdateBookingCommand(id));
 
         return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
     }

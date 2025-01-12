@@ -6,7 +6,7 @@ public sealed class UpdateBookingValidator : AbstractValidator<Command.UpdateBoo
 {
     public UpdateBookingValidator()
     {
-        RuleFor(x => x.Data.Id).NotEmpty().WithMessage("Id not null or empty");
+        RuleFor(x => x.BookingId).NotEmpty().WithMessage("Id not null or empty");
 
         // RuleFor(x => x.Data.BookingDate).NotEmpty().WithMessage("BookingDate not null or empty");
         //

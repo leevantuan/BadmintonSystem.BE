@@ -50,6 +50,7 @@ public sealed class CreateBookingCommandHandler(
         {
             Id = billId,
             BookingId = bookingId,
+            UserId = request.UserId,
             TotalPrice = 0
         };
 
@@ -72,6 +73,10 @@ public sealed class CreateBookingCommandHandler(
 
         bookingEntity.BookingTotal = totalPrice;
         bookingEntity.OriginalPrice = originalPrice;
+
+        billEntity.TotalPrice = totalPrice;
+        billEntity.TotalPayment = totalPrice - totalPrice * request.Data.PercentPrePay / 100;
+        billEntity.Name = request.Data.FullName ?? user.FullName;
 
         Response.BookingResponse? result = mapper.Map<Response.BookingResponse>(bookingEntity);
 

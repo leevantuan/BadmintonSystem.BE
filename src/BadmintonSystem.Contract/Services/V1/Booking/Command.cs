@@ -7,8 +7,8 @@ public static class Command
     public record CreateBookingCommand(Guid UserId, Request.CreateBookingRequest Data)
         : ICommand<Response.BookingResponse>;
 
-    public record UpdateBookingCommand(Request.UpdateBookingRequest Data)
-        : ICommand<Response.BookingResponse>;
+    public record UpdateBookingCommand(Guid BookingId)
+        : ICommand;
 
     public record DeleteBookingsCommand(List<string> Ids)
         : ICommand;
