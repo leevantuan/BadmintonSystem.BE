@@ -9,9 +9,7 @@ public static class Response
         DateTime BookingDate,
         decimal BookingTotal,
         int PaymentStatus,
-        int BookingStatus,
-        Guid SaleId,
-        Guid UserId);
+        int BookingStatus);
 
     public class BookingDetailResponse : EntityAuditBase<Guid>
     {

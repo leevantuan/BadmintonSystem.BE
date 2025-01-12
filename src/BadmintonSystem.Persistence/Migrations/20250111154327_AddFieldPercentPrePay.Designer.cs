@@ -3,6 +3,7 @@ using System;
 using BadmintonSystem.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BadmintonSystem.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250111154327_AddFieldPercentPrePay")]
+    partial class AddFieldPercentPrePay
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -78,7 +81,7 @@ namespace BadmintonSystem.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("BookingId")
+                    b.Property<Guid>("BookingId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Content")
@@ -119,9 +122,6 @@ namespace BadmintonSystem.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BookingId")
-                        .IsUnique();
-
                     b.ToTable("Bill", (string)null);
                 });
 
@@ -142,6 +142,9 @@ namespace BadmintonSystem.Persistence.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("BillId")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("BookingDate")
@@ -184,6 +187,9 @@ namespace BadmintonSystem.Persistence.Migrations
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("BillId")
+                        .IsUnique();
 
                     b.HasIndex("SaleId");
 
@@ -1676,15 +1682,6 @@ namespace BadmintonSystem.Persistence.Migrations
                     b.ToTable("AppUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("BadmintonSystem.Domain.Entities.Bill", b =>
-                {
-                    b.HasOne("BadmintonSystem.Domain.Entities.Booking", "Booking")
-                        .WithOne()
-                        .HasForeignKey("BadmintonSystem.Domain.Entities.Bill", "BookingId");
-
-                    b.Navigation("Booking");
-                });
-
             modelBuilder.Entity("BadmintonSystem.Domain.Entities.BillLine", b =>
                 {
                     b.HasOne("BadmintonSystem.Domain.Entities.Bill", null)
@@ -1702,10 +1699,16 @@ namespace BadmintonSystem.Persistence.Migrations
 
             modelBuilder.Entity("BadmintonSystem.Domain.Entities.Booking", b =>
                 {
+                    b.HasOne("BadmintonSystem.Domain.Entities.Bill", null)
+                        .WithOne("Booking")
+                        .HasForeignKey("BadmintonSystem.Domain.Entities.Booking", "BillId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("BadmintonSystem.Domain.Entities.Sale", null)
                         .WithMany("Bookings")
                         .HasForeignKey("SaleId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("BadmintonSystem.Domain.Entities.Identity.AppUser", null)
                         .WithMany("Bookings")
@@ -2027,6 +2030,8 @@ namespace BadmintonSystem.Persistence.Migrations
             modelBuilder.Entity("BadmintonSystem.Domain.Entities.Bill", b =>
                 {
                     b.Navigation("BillLines");
+
+                    b.Navigation("Booking");
 
                     b.Navigation("ServiceLines");
                 });

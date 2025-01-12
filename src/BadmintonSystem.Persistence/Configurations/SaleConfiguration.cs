@@ -26,6 +26,6 @@ internal sealed class SaleConfiguration : IEntityTypeConfiguration<Sale>
         builder.HasMany(x => x.Bookings)
             .WithOne()
             .HasForeignKey(x => x.SaleId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

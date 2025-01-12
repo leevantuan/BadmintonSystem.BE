@@ -15,5 +15,5 @@ public class Sale : EntityAuditBase<Guid>
 
     public ActiveEnum IsActive { get; set; }
 
-    public virtual ICollection<Booking> Bookings { get; set; }
+    public virtual ICollection<Booking>? Bookings { get; set; }
 }

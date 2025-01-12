@@ -3,6 +3,7 @@ using System;
 using BadmintonSystem.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BadmintonSystem.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250111154924_FixTableBooking")]
+    partial class FixTableBooking
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -78,7 +81,7 @@ namespace BadmintonSystem.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("BookingId")
+                    b.Property<Guid>("BookingId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Content")
@@ -142,6 +145,9 @@ namespace BadmintonSystem.Persistence.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("BillId")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("BookingDate")
@@ -1678,11 +1684,11 @@ namespace BadmintonSystem.Persistence.Migrations
 
             modelBuilder.Entity("BadmintonSystem.Domain.Entities.Bill", b =>
                 {
-                    b.HasOne("BadmintonSystem.Domain.Entities.Booking", "Booking")
-                        .WithOne()
-                        .HasForeignKey("BadmintonSystem.Domain.Entities.Bill", "BookingId");
-
-                    b.Navigation("Booking");
+                    b.HasOne("BadmintonSystem.Domain.Entities.Booking", null)
+                        .WithOne("Bill")
+                        .HasForeignKey("BadmintonSystem.Domain.Entities.Bill", "BookingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("BadmintonSystem.Domain.Entities.BillLine", b =>
@@ -1705,7 +1711,7 @@ namespace BadmintonSystem.Persistence.Migrations
                     b.HasOne("BadmintonSystem.Domain.Entities.Sale", null)
                         .WithMany("Bookings")
                         .HasForeignKey("SaleId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("BadmintonSystem.Domain.Entities.Identity.AppUser", null)
                         .WithMany("Bookings")
@@ -2033,6 +2039,8 @@ namespace BadmintonSystem.Persistence.Migrations
 
             modelBuilder.Entity("BadmintonSystem.Domain.Entities.Booking", b =>
                 {
+                    b.Navigation("Bill");
+
                     b.Navigation("BookingLines");
                 });
 

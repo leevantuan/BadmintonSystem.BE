@@ -15,9 +15,9 @@ public class Booking : EntityAuditBase<Guid>
 
     public Guid UserId { get; set; }
 
-    public Guid BillId { get; set; }
-
     public Guid? SaleId { get; set; }
+
+    public int? PercentPrePay { get; set; }
 
     public virtual ICollection<BookingLine> BookingLines { get; set; }
 }

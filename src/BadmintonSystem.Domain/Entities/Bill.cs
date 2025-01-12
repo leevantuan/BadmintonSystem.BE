@@ -14,7 +14,7 @@ public class Bill : EntityAuditBase<Guid>
 
     public Guid? UserId { get; set; }
 
-    public Guid BookingId { get; set; }
+    public Guid? BookingId { get; set; }
 
     public Guid? SaleId { get; set; }
 

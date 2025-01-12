@@ -37,9 +37,14 @@ internal sealed class BillConfiguration : IEntityTypeConfiguration<Bill>
             .HasForeignKey(x => x.BillId)
             .OnDelete(DeleteBehavior.Cascade);
 
+        // builder.HasOne<Booking>()
+        //     .WithOne()
+        //     .HasForeignKey<Bill>(x => x.BookingId)
+        //     .IsRequired(false)
+        //     .OnDelete(DeleteBehavior.Restrict);
+
         builder.HasOne(x => x.Booking)
             .WithOne()
-            .HasForeignKey<Booking>(x => x.BillId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .HasForeignKey<Bill>(x => x.BookingId);
     }
 }
