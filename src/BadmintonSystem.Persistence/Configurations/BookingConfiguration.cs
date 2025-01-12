@@ -17,6 +17,8 @@ internal sealed class BookingConfiguration : IEntityTypeConfiguration<Booking>
 
         builder.Property(x => x.BookingTotal).IsRequired();
 
+        builder.Property(x => x.OriginalPrice).IsRequired();
+
         builder.Property(x => x.BookingStatus).IsRequired();
 
         builder.Property(x => x.PaymentStatus).IsRequired();
@@ -26,6 +28,10 @@ internal sealed class BookingConfiguration : IEntityTypeConfiguration<Booking>
         builder.Property(x => x.SaleId).HasDefaultValue(null);
 
         builder.Property(x => x.PercentPrePay).HasDefaultValue(null);
+
+        builder.Property(x => x.FullName).HasDefaultValue(null);
+
+        builder.Property(x => x.PhoneNumber).HasDefaultValue(null);
 
         builder.HasMany(x => x.BookingLines)
             .WithOne()

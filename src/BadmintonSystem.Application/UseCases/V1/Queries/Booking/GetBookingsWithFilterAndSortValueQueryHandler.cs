@@ -15,9 +15,9 @@ public sealed class GetBookingsWithFilterAndSortValueQueryHandler(
     IMapper mapper,
     ApplicationDbContext context,
     IRepositoryBase<Domain.Entities.Booking, Guid> bookingRepository)
-    : IQueryHandler<Query.GetBookingsWithFilterAndSortValueQuery, PagedResult<Response.BookingDetailResponse>>
+    : IQueryHandler<Query.GetBookingsWithFilterAndSortValueQuery, PagedResult<Response.BookingDetail>>
 {
-    public async Task<Result<PagedResult<Response.BookingDetailResponse>>> Handle
+    public async Task<Result<PagedResult<Response.BookingDetail>>> Handle
         (Query.GetBookingsWithFilterAndSortValueQuery request, CancellationToken cancellationToken)
     {
         // Page Index and Page Size
@@ -77,8 +77,8 @@ public sealed class GetBookingsWithFilterAndSortValueQueryHandler(
 
         var bookingPagedResult = PagedResult<Domain.Entities.Booking>.Create(bookings, PageIndex, PageSize, totalCount);
 
-        PagedResult<Response.BookingDetailResponse>? result =
-            mapper.Map<PagedResult<Response.BookingDetailResponse>>(bookingPagedResult);
+        PagedResult<Response.BookingDetail>? result =
+            mapper.Map<PagedResult<Response.BookingDetail>>(bookingPagedResult);
 
         return Result.Success(result);
     }

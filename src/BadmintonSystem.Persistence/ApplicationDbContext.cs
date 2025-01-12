@@ -57,8 +57,6 @@ public sealed class ApplicationDbContext
 
     public DbSet<ReviewImage> ReviewImage { get; set; }
 
-    public DbSet<BookingTime> BookingTime { get; set; }
-
     public DbSet<BookingLine> BookingLine { get; set; }
 
     public DbSet<TimeSlot> TimeSlot { get; set; }

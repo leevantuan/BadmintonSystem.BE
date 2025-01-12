@@ -18,10 +18,5 @@ internal sealed class BookingLineConfiguration : IEntityTypeConfiguration<Bookin
         builder.Property(x => x.YardPriceId).HasDefaultValue(null);
 
         builder.Property(x => x.BookingId).HasDefaultValue(null);
-
-        builder.HasMany(x => x.BookingTimes)
-            .WithOne()
-            .HasForeignKey(x => x.BookingLineId)
-            .OnDelete(DeleteBehavior.Restrict);
     }
 }

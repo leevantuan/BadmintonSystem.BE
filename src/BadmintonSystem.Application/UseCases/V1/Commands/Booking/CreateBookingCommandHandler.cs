@@ -5,6 +5,7 @@ using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.V1.Booking;
 using BadmintonSystem.Domain.Abstractions.Repositories;
 using BadmintonSystem.Domain.Entities;
+using BadmintonSystem.Domain.Entities.Identity;
 using BadmintonSystem.Domain.Enumerations;
 using BadmintonSystem.Domain.Exceptions;
 using BadmintonSystem.Persistence;
@@ -21,6 +22,9 @@ public sealed class CreateBookingCommandHandler(
     public async Task<Result<Response.BookingResponse>> Handle
         (Command.CreateBookingCommand request, CancellationToken cancellationToken)
     {
+        AppUser user = context.AppUsers.FirstOrDefault(x => x.Id == request.UserId)
+                       ?? throw new IdentityException.AppUserNotFoundException(request.UserId);
+
         var bookingId = Guid.NewGuid();
         var billId = Guid.NewGuid();
 
@@ -32,8 +36,11 @@ public sealed class CreateBookingCommandHandler(
             UserId = request.UserId,
             BookingDate = DateTime.Now,
             BookingTotal = 0,
+            OriginalPrice = 0,
             PercentPrePay = request.Data.PercentPrePay,
-            SaleId = request.Data.SaleId ?? null
+            SaleId = request.Data.SaleId ?? null,
+            FullName = request.Data.FullName ?? user.FullName,
+            PhoneNumber = request.Data.PhoneNumber ?? user.PhoneNumber
         };
 
         context.Booking.Add(bookingEntity);
@@ -49,8 +56,10 @@ public sealed class CreateBookingCommandHandler(
         context.Bill.Add(billEntity);
         await context.SaveChangesAsync(cancellationToken);
 
-        decimal totalPrice =
+        decimal originalPrice =
             await bookingLineService.CreateBookingLines(bookingId, request.Data.YardPriceIds, cancellationToken);
+
+        decimal totalPrice = originalPrice;
 
         if (request.Data.SaleId != null)
         {
@@ -62,6 +71,7 @@ public sealed class CreateBookingCommandHandler(
         }
 
         bookingEntity.BookingTotal = totalPrice;
+        bookingEntity.OriginalPrice = originalPrice;
 
         Response.BookingResponse? result = mapper.Map<Response.BookingResponse>(bookingEntity);
 

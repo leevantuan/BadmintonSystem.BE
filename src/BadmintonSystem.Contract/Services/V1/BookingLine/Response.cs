@@ -5,19 +5,8 @@ public static class Response
     public record BookingLineResponse(
         Guid Id,
         decimal TotalPrice,
-        Guid YardId,
+        Guid YardPriceId,
         Guid BookingId);
-
-    public class BookingLineDetailResponse
-    {
-        public Guid Id { get; set; }
-
-        public Guid BookingId { get; set; }
-
-        public Guid YardPriceId { get; set; }
-
-        public decimal TotalPrice { get; set; }
-    }
 
     public class PriceDetailResponse
     {

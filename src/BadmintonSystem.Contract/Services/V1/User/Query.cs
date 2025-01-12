@@ -27,6 +27,11 @@ public static class Query
         Abstractions.Shared.Request.PagedFilterAndSortQueryRequest Data)
         : IQuery<PagedResult<Response.ReviewByUserResponse>>;
 
+    public record GetBookingsByUserIdWithFilterAndSortQuery(
+        Guid UserId,
+        Abstractions.Shared.Request.PagedFilterAndSortQueryRequest Data)
+        : IQuery<PagedResult<Response.GetBookingByUserIdResponse>>;
+
     public record GetChatMessagesByUserIdWithFilterAndSortQuery(
         Guid UserId,
         Abstractions.Shared.Request.PagedFilterAndSortQueryRequest Data)

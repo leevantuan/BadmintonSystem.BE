@@ -68,7 +68,7 @@ internal sealed class AppUserConfiguration : IEntityTypeConfiguration<AppUser>
         builder.HasMany(x => x.Bookings)
             .WithOne()
             .HasForeignKey(x => x.UserId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.Restrict);
 
         // User - ChatRoom
         builder.HasOne(e => e.ChatRoom)

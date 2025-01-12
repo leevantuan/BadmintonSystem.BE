@@ -10,8 +10,4 @@ public static class Query
 
     public record GetBookingLineByIdQuery(Guid Id)
         : IQuery<Response.BookingLineResponse>;
-
-    public record GetBookingLinesWithFilterAndSortValueQuery(
-        Abstractions.Shared.Request.PagedFilterAndSortQueryRequest Data)
-        : IQuery<PagedResult<Response.BookingLineDetailResponse>>;
 }

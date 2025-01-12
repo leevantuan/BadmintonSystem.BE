@@ -13,5 +13,10 @@ public static class Query
 
     public record GetBookingsWithFilterAndSortValueQuery(
         Abstractions.Shared.Request.PagedFilterAndSortQueryRequest Data)
-        : IQuery<PagedResult<Response.BookingDetailResponse>>;
+        : IQuery<PagedResult<Response.BookingDetail>>;
+
+    public record GetBookingsByDateFilterAndSortValueQuery(
+        DateTime Date,
+        Abstractions.Shared.Request.PagedFilterAndSortQueryRequest Data)
+        : IQuery<PagedResult<Response.GetBookingDetailResponse>>;
 }

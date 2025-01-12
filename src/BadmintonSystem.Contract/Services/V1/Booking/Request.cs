@@ -36,6 +36,10 @@ public static class Request
 
     public class CreateBookingRequest
     {
+        public string? FullName { get; set; }
+
+        public string? PhoneNumber { get; set; }
+
         public Guid? SaleId { get; set; }
 
         public int PercentPrePay { get; set; }

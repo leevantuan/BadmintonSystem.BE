@@ -31,6 +31,9 @@ public class BookingApi : ApiEndpoint, ICarterModule
         group1.MapGet("filter-and-sort-value", GetBookingsFilterAndSortValueV1)
             .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.READ);
 
+        group1.MapPost("filter-and-sort-value-by-date", GetBookingsFilterAndSortValueByDateV1)
+            .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.READ);
+
         group1.MapGet("{bookingId}", GetBookingByIdV1)
             .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.READ);
 
@@ -88,8 +91,22 @@ public class BookingApi : ApiEndpoint, ICarterModule
     {
         var pagedQueryRequest =
             new Contract.Abstractions.Shared.Request.PagedFilterAndSortQueryRequest(request);
-        Result<PagedResult<Response.BookingDetailResponse>> result =
+        Result<PagedResult<Response.BookingDetail>> result =
             await sender.Send(new Query.GetBookingsWithFilterAndSortValueQuery(pagedQueryRequest));
+
+        return Results.Ok(result);
+    }
+
+    private static async Task<IResult> GetBookingsFilterAndSortValueByDateV1
+    (
+        ISender sender,
+        [FromBody] DateTime date,
+        [AsParameters] Contract.Abstractions.Shared.Request.PagedFilterAndSortRequest request)
+    {
+        var pagedQueryRequest =
+            new Contract.Abstractions.Shared.Request.PagedFilterAndSortQueryRequest(request);
+        Result<PagedResult<Response.GetBookingDetailResponse>> result =
+            await sender.Send(new Query.GetBookingsByDateFilterAndSortValueQuery(date, pagedQueryRequest));
 
         return Results.Ok(result);
     }

@@ -48,6 +48,10 @@ public class UserApi : ApiEndpoint, ICarterModule
         // REVIEW
         group1.MapGet("reviews", GetReviewByUserIdWithFilterAndSortV1)
             .RequireJwtAuthorize(FunctionEnum.REVIEW.ToString(), (int)ActionEnum.READ);
+
+        // BOOKING
+        group1.MapGet("bookings", GetBookingByUserIdWithFilterAndSortV1)
+            .RequireJwtAuthorize(FunctionEnum.REVIEW.ToString(), (int)ActionEnum.READ);
     }
 
     private static async Task<IResult> LoginV1(ISender sender, [FromBody] Query.LoginQuery login)
@@ -151,6 +155,25 @@ public class UserApi : ApiEndpoint, ICarterModule
         Result<PagedResult<Contract.Services.V1.User.Response.ReviewByUserResponse>> result =
             await sender.Send(
                 new Contract.Services.V1.User.Query.GetReviewsByUserIdWithFilterAndSortQuery(
+                    userIdCurrent ?? Guid.Empty, pagedQueryRequest));
+
+        return Results.Ok(result);
+    }
+
+    private static async Task<IResult> GetBookingByUserIdWithFilterAndSortV1
+    (
+        ISender sender,
+        [AsParameters] Contract.Abstractions.Shared.Request.PagedFilterAndSortRequest request,
+        IHttpContextAccessor httpContextAccessor)
+    {
+        Guid? userIdCurrent = httpContextAccessor.HttpContext?.GetCurrentUserId();
+
+        var pagedQueryRequest =
+            new Contract.Abstractions.Shared.Request.PagedFilterAndSortQueryRequest(request);
+
+        Result<PagedResult<Contract.Services.V1.User.Response.GetBookingByUserIdResponse>> result =
+            await sender.Send(
+                new Contract.Services.V1.User.Query.GetBookingsByUserIdWithFilterAndSortQuery(
                     userIdCurrent ?? Guid.Empty, pagedQueryRequest));
 
         return Results.Ok(result);

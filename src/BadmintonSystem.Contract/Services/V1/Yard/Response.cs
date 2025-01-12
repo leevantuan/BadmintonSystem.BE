@@ -23,4 +23,9 @@ public static class Response
 
         public int IsStatus { get; set; }
     }
+
+    public class YardDetail : EntityBase<Guid>
+    {
+        public string? Name { get; set; }
+    }
 }

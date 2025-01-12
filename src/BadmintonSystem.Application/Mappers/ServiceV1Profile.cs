@@ -145,8 +145,8 @@ public class ServiceV1Profile : Profile
         CreateMap<Booking, V1.Booking.Response.BookingResponse>().ReverseMap();
         CreateMap<Booking, V1.Booking.Request.CreateBookingRequest>().ReverseMap();
         CreateMap<PagedResult<Booking>, PagedResult<V1.Booking.Response.BookingResponse>>().ReverseMap();
-        CreateMap<Booking, V1.Booking.Response.BookingDetailResponse>().ReverseMap();
-        CreateMap<PagedResult<Booking>, PagedResult<V1.Booking.Response.BookingDetailResponse>>()
+        CreateMap<Booking, V1.Booking.Response.BookingDetail>().ReverseMap();
+        CreateMap<PagedResult<Booking>, PagedResult<V1.Booking.Response.BookingDetail>>()
             .ForMember(dest => dest.Items, opt
                 => opt.MapFrom(src => src.Items)).ReverseMap();
 

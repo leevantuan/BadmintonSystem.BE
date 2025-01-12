@@ -5,6 +5,8 @@ using BadmintonSystem.Contract.Extensions;
 using BadmintonSystem.Contract.Services.V1.Price;
 using BadmintonSystem.Domain.Abstractions.Repositories;
 using BadmintonSystem.Domain.Entities;
+using BadmintonSystem.Domain.Enumerations;
+using BadmintonSystem.Domain.Exceptions;
 using BadmintonSystem.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -64,12 +66,23 @@ public class BookingLineService(
         {
             foreach (Guid yardPriceId in yardPriceIds)
             {
+                YardPrice yardPrice =
+                    await context.YardPrice.FirstOrDefaultAsync(x => x.Id == yardPriceId, cancellationToken)
+                    ?? throw new YardPriceException.YardPriceNotFoundException(yardPriceId);
+
+                if (yardPrice.IsBooking == BookingEnum.BOOKED)
+                {
+                    throw new ApplicationException($"Already booked yard price for {yardPriceId}");
+                }
+
                 var bookingLine = new BookingLine
                 {
                     BookingId = bookingId,
                     YardPriceId = yardPriceId,
                     TotalPrice = pricesDictionary[yardPriceId]
                 };
+
+                yardPrice.IsBooking = BookingEnum.BOOKED;
 
                 BookingLine? bookingLineEntities = mapper.Map<BookingLine>(bookingLine);
 

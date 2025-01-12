@@ -9,6 +9,4 @@ public class BookingLine : EntityAuditBase<Guid>
     public Guid BookingId { get; set; }
 
     public Guid YardPriceId { get; set; }
-
-    public virtual ICollection<BookingTime>? BookingTimes { get; set; }
 }

@@ -45,6 +45,10 @@ public static class Response
     {
     }
 
+    public class GetBookingByUserIdResponse : Booking.Response.GetBookingDetailResponse
+    {
+    }
+
     public class GetChatMessageByUserIdSqlResponse : ChatMessage.Response.GetChatMessageByIdSqlResponse
     {
     }

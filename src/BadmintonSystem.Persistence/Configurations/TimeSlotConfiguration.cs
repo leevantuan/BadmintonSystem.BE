@@ -17,11 +17,6 @@ internal sealed class TimeSlotConfiguration : IEntityTypeConfiguration<TimeSlot>
 
         builder.Property(x => x.EndTime).HasDefaultValue(null);
 
-        builder.HasMany(x => x.BookingTimes)
-            .WithOne()
-            .HasForeignKey(x => x.TimeSlotId)
-            .OnDelete(DeleteBehavior.Restrict);
-
         builder.HasMany(x => x.YardPrices)
             .WithOne()
             .HasForeignKey(x => x.TimeSlotId)
