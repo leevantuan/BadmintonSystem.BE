@@ -15,5 +15,10 @@ public static class Query
     public record GetYardPricesByDateQuery(
         Guid UserId,
         DateTime Date)
-        : IQuery<List<Response.YardPriceDetailResponse>>;
+        : IQuery<List<Response.YardPricesByDateDetailResponse>>;
+
+    public record GetYardPricesByYardIdInTodayQuery(
+        Guid UserId,
+        Guid YardId)
+        : IQuery<Response.YardPricesByDateDetailResponse>;
 }

@@ -1,7 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Text;
 using AutoMapper;
-using BadmintonSystem.Application.UseCases.V1.Services;
 using BadmintonSystem.Contract.Abstractions.Message;
 using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Extensions;
@@ -12,23 +11,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BadmintonSystem.Application.UseCases.V1.Queries.YardPrice;
 
-public sealed class GetYardPricesByDateQueryHandler(
+public sealed class GetYardPricesByYardIdInTodayQueryHandler(
     ApplicationDbContext context,
     IMapper mapper,
-    IRepositoryBase<Domain.Entities.YardPrice, Guid> yardPriceRepository,
-    IYardPriceService yardPriceService)
-    : IQueryHandler<Query.GetYardPricesByDateQuery, List<Response.YardPricesByDateDetailResponse>>
+    IRepositoryBase<Domain.Entities.YardPrice, Guid> yardPriceRepository)
+    : IQueryHandler<Query.GetYardPricesByYardIdInTodayQuery, Response.YardPricesByDateDetailResponse>
 {
-    public async Task<Result<List<Response.YardPricesByDateDetailResponse>>> Handle
-        (Query.GetYardPricesByDateQuery request, CancellationToken cancellationToken)
+    public async Task<Result<Response.YardPricesByDateDetailResponse>> Handle
+        (Query.GetYardPricesByYardIdInTodayQuery request, CancellationToken cancellationToken)
     {
-        IQueryable<Domain.Entities.YardPrice>? effectiveDateIsExists =
-            yardPriceRepository.FindAll(x => x.EffectiveDate.Date == request.Date.Date);
-
-        if (!effectiveDateIsExists.Any())
-        {
-            yardPriceService.CreateYardPrice(request.Date, request.UserId);
-        }
+        DateTime date = DateTime.Now;
 
         string yardColumns = StringExtension
             .TransformPropertiesToSqlAliases<Domain.Entities.Yard,
@@ -50,8 +42,6 @@ public sealed class GetYardPricesByDateQueryHandler(
             .TransformPropertiesToSqlAliases<Domain.Entities.TimeSlot,
                 Contract.Services.V1.TimeSlot.Response.TimeSlotResponse>();
 
-        DateTime filterDate = request.Date.Date;
-
         var baseQueryBuilder = new StringBuilder();
         baseQueryBuilder.Append(
             $@"FROM ""{nameof(Domain.Entities.YardPrice)}"" AS yardPrice
@@ -67,8 +57,9 @@ public sealed class GetYardPricesByDateQueryHandler(
                 JOIN ""{nameof(Domain.Entities.TimeSlot)}"" AS timeSlot
                 ON timeSlot.""{nameof(Domain.Entities.TimeSlot.Id)}"" = yardPrice.""{nameof(Domain.Entities.YardPrice.TimeSlotId)}""
                 AND timeSlot.""{nameof(Domain.Entities.TimeSlot.IsDeleted)}"" = false
-                WHERE yardPrice.""{nameof(Domain.Entities.YardPrice.IsDeleted)}"" = false 
-                AND yardPrice.""{nameof(Domain.Entities.YardPrice.EffectiveDate)}""::DATE = '{filterDate}'");
+                WHERE yardPrice.""{nameof(Domain.Entities.YardPrice.IsDeleted)}"" = false
+                AND yardPrice.""{nameof(Domain.Entities.YardPrice.EffectiveDate)}""::DATE = '{date.Date}'
+                AND yard.""{nameof(Domain.Entities.Yard.Id)}"" = '{request.YardId}' ");
 
         var yardPriceQueryBuilder = new StringBuilder();
         yardPriceQueryBuilder.Append(
@@ -82,7 +73,7 @@ public sealed class GetYardPricesByDateQueryHandler(
             .ToListAsync(cancellationToken);
 
         // Group by
-        var results = queryResult.GroupBy(p => p.Yard_Id)
+        Response.YardPricesByDateDetailResponse? result = queryResult.GroupBy(p => p.Yard_Id)
             .Select(g => new Response.YardPricesByDateDetailResponse
             {
                 Yard = g.Where(x => x.Yard_Id != null)
@@ -92,25 +83,25 @@ public sealed class GetYardPricesByDateQueryHandler(
                         Name = s.Yard_Name ?? string.Empty,
                         YardTypeId = s.Yard_YardTypeId ?? Guid.Empty,
                         IsStatus = s.Yard_IsStatus ?? 0
-                    })
-                    .DistinctBy(s => s.Id).OrderBy(x => x.Name)
+                    }).OrderBy(x => x.Name)
                     .FirstOrDefault(),
 
-                YardPricesDetails = g.Select(x => new Response.YardPricesByDateDetail
-                {
-                    Id = x.YardPrice_Id ?? Guid.Empty,
-                    YardId = x.YardPrice_YardId ?? Guid.Empty,
-                    TimeSlotId = x.YardPrice_TimeSlotId ?? Guid.Empty,
-                    PriceId = x.YardPrice_PriceId,
-                    EffectiveDate = x.YardPrice_EffectiveDate ?? DateTime.Now,
-                    IsBooking = x.YardPrice_IsBooking ?? 0,
-                    Price = x.Price_YardPrice ?? 0,
-                    StartTime = x.TimeSlot_StartTime ?? TimeSpan.Zero,
-                    EndTime = x.TimeSlot_EndTime ?? TimeSpan.Zero
-                }).OrderBy(x => x.StartTime).ToList()
+                YardPricesDetails = g.Select(x =>
+                    new Response.YardPricesByDateDetail
+                    {
+                        Id = x.YardPrice_Id ?? Guid.Empty,
+                        YardId = x.YardPrice_YardId ?? Guid.Empty,
+                        TimeSlotId = x.YardPrice_TimeSlotId ?? Guid.Empty,
+                        PriceId = x.YardPrice_PriceId,
+                        EffectiveDate = x.YardPrice_EffectiveDate ?? DateTime.Now,
+                        IsBooking = x.YardPrice_IsBooking ?? 0,
+                        Price = x.Price_YardPrice ?? 0,
+                        StartTime = x.TimeSlot_StartTime ?? TimeSpan.Zero,
+                        EndTime = x.TimeSlot_EndTime ?? TimeSpan.Zero
+                    }).OrderBy(x => x.StartTime).ToList()
             })
-            .ToList();
+            .FirstOrDefault();
 
-        return Result.Success(results);
+        return Result.Success(result);
     }
 }

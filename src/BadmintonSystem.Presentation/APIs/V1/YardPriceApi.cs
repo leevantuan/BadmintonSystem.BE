@@ -34,6 +34,9 @@ public class YardPriceApi : ApiEndpoint, ICarterModule
         group1.MapPost("filter-by-date", GetYardPricesFilterByDateV1)
             .RequireJwtAuthorize(FunctionEnum.YARDPRICE.ToString(), (int)ActionEnum.READ);
 
+        group1.MapGet("get-by-yard-id-today/{yardId}", GetYardPricesByYardIdInTodayV1)
+            .RequireJwtAuthorize(FunctionEnum.YARDPRICE.ToString(), (int)ActionEnum.READ);
+
         group1.MapGet("{yardPriceId}", GetYardPriceByIdV1)
             .RequireJwtAuthorize(FunctionEnum.YARDPRICE.ToString(), (int)ActionEnum.READ);
 
@@ -106,8 +109,21 @@ public class YardPriceApi : ApiEndpoint, ICarterModule
         IHttpContextAccessor httpContextAccessor)
     {
         Guid? userId = httpContextAccessor.HttpContext?.GetCurrentUserId();
-        Result<List<Response.YardPriceDetailResponse>> result =
+        Result<List<Response.YardPricesByDateDetailResponse>> result =
             await sender.Send(new Query.GetYardPricesByDateQuery(userId ?? Guid.Empty, date));
+
+        return Results.Ok(result);
+    }
+
+    private static async Task<IResult> GetYardPricesByYardIdInTodayV1
+    (
+        ISender sender,
+        Guid yardId,
+        IHttpContextAccessor httpContextAccessor)
+    {
+        Guid? userId = httpContextAccessor.HttpContext?.GetCurrentUserId();
+        Result<Response.YardPricesByDateDetailResponse> result =
+            await sender.Send(new Query.GetYardPricesByYardIdInTodayQuery(userId ?? Guid.Empty, yardId));
 
         return Results.Ok(result);
     }

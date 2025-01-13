@@ -34,6 +34,22 @@ public static class Response
         public Price.Response.PriceResponse? Price { get; set; }
     }
 
+    public class YardPricesByDateDetailResponse
+    {
+        public Yard.Response.YardResponse? Yard { get; set; }
+
+        public List<YardPricesByDateDetail>? YardPricesDetails { get; set; }
+    }
+
+    public class YardPricesByDateDetail : YardPriceDetail
+    {
+        public TimeSpan StartTime { get; set; }
+
+        public TimeSpan EndTime { get; set; }
+
+        public decimal Price { get; set; }
+    }
+
     public class YardPriceDetailSql
     {
         public Guid? YardPrice_Id { get; set; }
