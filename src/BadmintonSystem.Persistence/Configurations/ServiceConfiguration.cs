@@ -15,15 +15,15 @@ internal sealed class ServiceConfiguration : IEntityTypeConfiguration<Service>
 
         builder.Property(x => x.Name).IsRequired();
 
-        builder.Property(x => x.SellingPrice).IsRequired();
+        builder.Property(x => x.SellingPrice).HasDefaultValue(null);
 
-        builder.Property(x => x.PurchasePrice).IsRequired();
+        builder.Property(x => x.Unit).HasDefaultValue(null);
 
-        builder.Property(x => x.QuantityInStock).IsRequired();
+        builder.Property(x => x.PurchasePrice).HasDefaultValue(null);
 
-        builder.Property(x => x.CategoryId).IsRequired();
+        builder.Property(x => x.QuantityInStock).HasDefaultValue(null);
 
-        builder.Property(x => x.ClubId).IsRequired();
+        builder.Property(x => x.CategoryId).HasDefaultValue(null);
 
         builder.HasMany(x => x.ServiceLines)
             .WithOne()

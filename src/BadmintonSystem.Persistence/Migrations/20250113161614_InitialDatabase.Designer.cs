@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BadmintonSystem.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250107071401_FixPrice")]
-    partial class FixPrice
+    [Migration("20250113161614_InitialDatabase")]
+    partial class InitialDatabase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -81,7 +81,7 @@ namespace BadmintonSystem.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("BookingId")
+                    b.Property<Guid?>("BookingId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Content")
@@ -96,6 +96,9 @@ namespace BadmintonSystem.Persistence.Migrations
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<TimeSpan?>("EndTime")
+                        .HasColumnType("interval");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
@@ -108,8 +111,8 @@ namespace BadmintonSystem.Persistence.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("SaleId")
-                        .HasColumnType("uuid");
+                    b.Property<TimeSpan?>("StartTime")
+                        .HasColumnType("interval");
 
                     b.Property<decimal?>("TotalPayment")
                         .HasColumnType("numeric");
@@ -122,18 +125,38 @@ namespace BadmintonSystem.Persistence.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("BookingId")
+                        .IsUnique();
+
                     b.ToTable("Bill", (string)null);
                 });
 
             modelBuilder.Entity("BadmintonSystem.Domain.Entities.BillLine", b =>
                 {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
                     b.Property<Guid>("BillId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("YardPriceId")
+                    b.Property<TimeSpan?>("EndTime")
+                        .HasColumnType("interval");
+
+                    b.Property<TimeSpan?>("StartTime")
+                        .HasColumnType("interval");
+
+                    b.Property<decimal?>("TotalPrice")
+                        .HasColumnType("numeric");
+
+                    b.Property<Guid?>("YardId")
                         .HasColumnType("uuid");
 
-                    b.HasKey("BillId", "YardPriceId");
+                    b.HasKey("Id");
+
+                    b.HasIndex("BillId");
+
+                    b.HasIndex("YardId");
 
                     b.ToTable("BillLine", (string)null);
                 });
@@ -142,9 +165,6 @@ namespace BadmintonSystem.Persistence.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("BillId")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("BookingDate")
@@ -165,6 +185,9 @@ namespace BadmintonSystem.Persistence.Migrations
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<string>("FullName")
+                        .HasColumnType("text");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
@@ -174,19 +197,26 @@ namespace BadmintonSystem.Persistence.Migrations
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<decimal>("OriginalPrice")
+                        .HasColumnType("numeric");
+
                     b.Property<int>("PaymentStatus")
                         .HasColumnType("integer");
+
+                    b.Property<int?>("PercentPrePay")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("text");
 
                     b.Property<Guid?>("SaleId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("UserId")
+                    b.Property<Guid?>("UserId")
+                        .IsRequired()
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("BillId")
-                        .IsUnique();
 
                     b.HasIndex("SaleId");
 
@@ -235,21 +265,6 @@ namespace BadmintonSystem.Persistence.Migrations
                     b.HasIndex("YardPriceId");
 
                     b.ToTable("BookingLine", (string)null);
-                });
-
-            modelBuilder.Entity("BadmintonSystem.Domain.Entities.BookingTime", b =>
-                {
-                    b.Property<Guid>("BookingLineId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("TimeSlotId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("BookingLineId", "TimeSlotId");
-
-                    b.HasIndex("TimeSlotId");
-
-                    b.ToTable("BookingTime", (string)null);
                 });
 
             modelBuilder.Entity("BadmintonSystem.Domain.Entities.Category", b =>
@@ -632,10 +647,13 @@ namespace BadmintonSystem.Persistence.Migrations
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("text");
+
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<Guid>("UserId")
+                    b.Property<Guid?>("UserId")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("YardId")
@@ -977,6 +995,9 @@ namespace BadmintonSystem.Persistence.Migrations
                     b.Property<Guid?>("ServiceId")
                         .HasColumnType("uuid");
 
+                    b.Property<string>("Unit")
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ProviderId");
@@ -1306,9 +1327,6 @@ namespace BadmintonSystem.Persistence.Migrations
                     b.Property<Guid>("CategoryId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("ClubId")
-                        .HasColumnType("uuid");
-
                     b.Property<Guid>("CreatedBy")
                         .HasColumnType("uuid");
 
@@ -1339,6 +1357,9 @@ namespace BadmintonSystem.Persistence.Migrations
 
                     b.Property<decimal>("SellingPrice")
                         .HasColumnType("numeric");
+
+                    b.Property<string>("Unit")
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -1676,6 +1697,15 @@ namespace BadmintonSystem.Persistence.Migrations
                     b.ToTable("AppUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("BadmintonSystem.Domain.Entities.Bill", b =>
+                {
+                    b.HasOne("BadmintonSystem.Domain.Entities.Booking", "Booking")
+                        .WithOne()
+                        .HasForeignKey("BadmintonSystem.Domain.Entities.Bill", "BookingId");
+
+                    b.Navigation("Booking");
+                });
+
             modelBuilder.Entity("BadmintonSystem.Domain.Entities.BillLine", b =>
                 {
                     b.HasOne("BadmintonSystem.Domain.Entities.Bill", null)
@@ -1684,30 +1714,23 @@ namespace BadmintonSystem.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BadmintonSystem.Domain.Entities.YardPrice", null)
+                    b.HasOne("BadmintonSystem.Domain.Entities.Yard", null)
                         .WithMany("BillLines")
-                        .HasForeignKey("BillId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("YardId")
+                        .OnDelete(DeleteBehavior.NoAction);
                 });
 
             modelBuilder.Entity("BadmintonSystem.Domain.Entities.Booking", b =>
                 {
-                    b.HasOne("BadmintonSystem.Domain.Entities.Bill", null)
-                        .WithOne("Booking")
-                        .HasForeignKey("BadmintonSystem.Domain.Entities.Booking", "BillId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("BadmintonSystem.Domain.Entities.Sale", null)
                         .WithMany("Bookings")
                         .HasForeignKey("SaleId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("BadmintonSystem.Domain.Entities.Identity.AppUser", null)
                         .WithMany("Bookings")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
@@ -1723,21 +1746,6 @@ namespace BadmintonSystem.Persistence.Migrations
                         .WithMany("BookingLines")
                         .HasForeignKey("YardPriceId")
                         .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("BadmintonSystem.Domain.Entities.BookingTime", b =>
-                {
-                    b.HasOne("BadmintonSystem.Domain.Entities.BookingLine", null)
-                        .WithMany("BookingTimes")
-                        .HasForeignKey("BookingLineId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("BadmintonSystem.Domain.Entities.TimeSlot", null)
-                        .WithMany("BookingTimes")
-                        .HasForeignKey("TimeSlotId")
-                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
@@ -2025,19 +2033,12 @@ namespace BadmintonSystem.Persistence.Migrations
                 {
                     b.Navigation("BillLines");
 
-                    b.Navigation("Booking");
-
                     b.Navigation("ServiceLines");
                 });
 
             modelBuilder.Entity("BadmintonSystem.Domain.Entities.Booking", b =>
                 {
                     b.Navigation("BookingLines");
-                });
-
-            modelBuilder.Entity("BadmintonSystem.Domain.Entities.BookingLine", b =>
-                {
-                    b.Navigation("BookingTimes");
                 });
 
             modelBuilder.Entity("BadmintonSystem.Domain.Entities.Category", b =>
@@ -2135,8 +2136,6 @@ namespace BadmintonSystem.Persistence.Migrations
 
             modelBuilder.Entity("BadmintonSystem.Domain.Entities.TimeSlot", b =>
                 {
-                    b.Navigation("BookingTimes");
-
                     b.Navigation("TimeSlotOfWeeks");
 
                     b.Navigation("YardPrices");
@@ -2144,6 +2143,8 @@ namespace BadmintonSystem.Persistence.Migrations
 
             modelBuilder.Entity("BadmintonSystem.Domain.Entities.Yard", b =>
                 {
+                    b.Navigation("BillLines");
+
                     b.Navigation("FixedSchedules");
 
                     b.Navigation("YardPrices");
@@ -2151,8 +2152,6 @@ namespace BadmintonSystem.Persistence.Migrations
 
             modelBuilder.Entity("BadmintonSystem.Domain.Entities.YardPrice", b =>
                 {
-                    b.Navigation("BillLines");
-
                     b.Navigation("BookingLines");
                 });
 

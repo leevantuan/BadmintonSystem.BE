@@ -13,5 +13,7 @@ public class Yard : EntityAuditBase<Guid>
 
     public virtual ICollection<YardPrice>? YardPrices { get; set; }
 
+    public virtual ICollection<BillLine>? BillLines { get; set; }
+
     public virtual ICollection<FixedSchedule>? FixedSchedules { get; set; }
 }

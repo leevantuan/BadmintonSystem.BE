@@ -21,6 +21,9 @@ public sealed class DbSeeder(
     {
         // entity
         await TimeSlotSeeder();
+        await YardTypeSeeder();
+        await YardSeeder();
+        await PriceSeeder();
 
         // identity
         await ActionSeeder();
@@ -33,6 +36,106 @@ public sealed class DbSeeder(
         await AppRoleClaimWithManagerSeeder();
         await AppRoleClaimWithCustomerSeeder();
         await AppUserClaimsSeeder();
+    }
+
+    // Seeder Price
+    private async Task PriceSeeder()
+    {
+        if (!context.Price.Any())
+        {
+            Guid yardTypeId = context.YardType.FirstOrDefault(x => x.Name == YardTypeEnum.NORMAL.ToString()).Id;
+
+            var priceEntities = new List<Price>();
+
+            foreach (object? dayOfWeek in Enum.GetValues(typeof(DayOfWeekEnum)))
+            {
+                var priceEntityStart = new Price
+                {
+                    Id = Guid.NewGuid(),
+                    YardTypeId = yardTypeId,
+                    YardPrice = 60000,
+                    Detail = string.Empty,
+                    StartTime = TimeSpan.Parse("00:00:00"),
+                    EndTime = TimeSpan.Parse("16:59:59"),
+                    DayOfWeek = dayOfWeek.ToString(),
+                    IsDefault = DefaultEnum.FALSE
+                };
+
+                priceEntities.Add(priceEntityStart);
+
+                var priceEntityEnd = new Price
+                {
+                    Id = Guid.NewGuid(),
+                    YardTypeId = yardTypeId,
+                    YardPrice = 80000,
+                    Detail = string.Empty,
+                    StartTime = TimeSpan.Parse("17:00:00"),
+                    EndTime = TimeSpan.Parse("23:59:59"),
+                    DayOfWeek = dayOfWeek.ToString(),
+                    IsDefault = DefaultEnum.FALSE
+                };
+
+                priceEntities.Add(priceEntityEnd);
+            }
+
+            context.Price.AddRange(priceEntities);
+
+            await context.SaveChangesAsync();
+        }
+    }
+
+    // Seeder Yard
+    private async Task YardSeeder()
+    {
+        if (!context.Yard.Any())
+        {
+            var yardNames = new List<string>
+            {
+                "Yard 1",
+                "Yard 2",
+                "Yard 3",
+                "Yard 4",
+                "Yard 5"
+            };
+
+            Guid yardTypeId = context.YardType.FirstOrDefault(x => x.Name == YardTypeEnum.NORMAL.ToString()).Id;
+
+            var yardEntities = new List<Yard>();
+
+            foreach (string yardName in yardNames)
+            {
+                var yardEntity = new Yard
+                {
+                    Id = Guid.NewGuid(),
+                    Name = yardName,
+                    YardTypeId = yardTypeId,
+                    IsStatus = StatusEnum.TRUE
+                };
+
+                yardEntities.Add(yardEntity);
+            }
+
+            context.Yard.AddRange(yardEntities);
+
+            await context.SaveChangesAsync();
+        }
+    }
+
+    // Seeder Yard Type
+    private async Task YardTypeSeeder()
+    {
+        if (!context.YardType.Any())
+        {
+            var yardTypeEntities = new YardType
+            {
+                Id = Guid.NewGuid(),
+                Name = YardTypeEnum.NORMAL.ToString()
+            };
+
+            context.YardType.Add(yardTypeEntities);
+
+            await context.SaveChangesAsync();
+        }
     }
 
     // Seeder Time Slot

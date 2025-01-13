@@ -11,6 +11,16 @@ internal sealed class BillLineConfiguration : IEntityTypeConfiguration<BillLine>
     {
         builder.ToTable(TableNames.BillLine);
 
-        builder.HasKey(x => new { x.BillId, x.YardPriceId });
+        builder.HasKey(x => x.Id);
+
+        builder.Property(x => x.BillId).HasDefaultValue(null).IsRequired();
+
+        builder.Property(x => x.YardId).HasDefaultValue(null);
+
+        builder.Property(x => x.StartTime).HasDefaultValue(null);
+
+        builder.Property(x => x.EndTime).HasDefaultValue(null);
+
+        builder.Property(x => x.TotalPrice).HasDefaultValue(null);
     }
 }

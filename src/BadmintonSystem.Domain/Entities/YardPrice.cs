@@ -16,7 +16,4 @@ public class YardPrice : EntityAuditBase<Guid>
     public BookingEnum IsBooking { get; set; }
 
     public virtual ICollection<BookingLine>? BookingLines { get; set; }
-
-
-    public virtual ICollection<BillLine>? BillLines { get; set; }
 }

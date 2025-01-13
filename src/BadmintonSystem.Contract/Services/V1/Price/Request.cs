@@ -27,6 +27,6 @@ public static class Request
 
         public Guid? YardTypeId { get; set; }
 
-        public int IsDefault { get; set; }
+        public int? IsDefault { get; set; }
     }
 }

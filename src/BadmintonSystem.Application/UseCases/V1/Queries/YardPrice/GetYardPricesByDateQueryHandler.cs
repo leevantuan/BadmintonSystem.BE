@@ -108,7 +108,7 @@ public sealed class GetYardPricesByDateQueryHandler(
                     StartTime = x.TimeSlot_StartTime ?? TimeSpan.Zero,
                     EndTime = x.TimeSlot_EndTime ?? TimeSpan.Zero
                 }).OrderBy(x => x.StartTime).ToList()
-            })
+            }).OrderBy(x => x.Yard.Name)
             .ToList();
 
         return Result.Success(results);

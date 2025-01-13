@@ -28,5 +28,10 @@ internal sealed class YardConfiguration : IEntityTypeConfiguration<Yard>
             .WithOne()
             .HasForeignKey(x => x.YardId)
             .OnDelete(DeleteBehavior.NoAction);
+
+        builder.HasMany(x => x.BillLines)
+            .WithOne()
+            .HasForeignKey(x => x.YardId)
+            .OnDelete(DeleteBehavior.NoAction);
     }
 }

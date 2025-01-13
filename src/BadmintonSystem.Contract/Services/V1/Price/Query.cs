@@ -14,4 +14,7 @@ public static class Query
 
     public record GetPricesWithDayOfWeekQuery
         : IQuery<List<Response.GetListPriceResponse>>;
+
+    public record GetPricesByDayOfWeekQuery
+        : IQuery<Response.GetListPriceResponse>;
 }

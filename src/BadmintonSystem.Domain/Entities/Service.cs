@@ -12,9 +12,9 @@ public class Service : EntityAuditBase<Guid>
 
     public decimal QuantityInStock { get; set; }
 
-    public Guid CategoryId { get; set; }
+    public string? Unit { get; set; }
 
-    public Guid ClubId { get; set; }
+    public Guid CategoryId { get; set; }
 
     public virtual ICollection<ServiceLine>? ServiceLines { get; set; }
 

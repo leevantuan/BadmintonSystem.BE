@@ -17,6 +17,8 @@ internal sealed class InventoryReceiptConfiguration : IEntityTypeConfiguration<I
 
         builder.Property(x => x.Quantity).HasDefaultValue(null);
 
+        builder.Property(x => x.Unit).HasDefaultValue(null);
+
         builder.Property(x => x.ServiceId).HasDefaultValue(null);
 
         builder.Property(x => x.ProviderId).HasDefaultValue(null);

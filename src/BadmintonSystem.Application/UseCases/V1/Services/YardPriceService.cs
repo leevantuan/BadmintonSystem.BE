@@ -36,7 +36,7 @@ public sealed class YardPriceService(
 		        ON dayOfWeek.""{nameof(DayOfWeek.FixedScheduleId)}"" = fixedSchedule.""{nameof(FixedSchedule.Id)}""
 	            LEFT JOIN ""{nameof(TimeSlotOfWeek)}"" AS timeSlotOfWeek 
 		        ON timeSlotOfWeek.""{nameof(TimeSlotOfWeek.DayOfWeekId)}"" = dayOfWeek.""Id""
-	            WHERE '2025-01-13'::DATE BETWEEN fixedSchedule.""{nameof(FixedSchedule.StartDate)}"" AND fixedSchedule.""{nameof(FixedSchedule.EndDate)}""
+	            WHERE '{date}'::DATE BETWEEN fixedSchedule.""{nameof(FixedSchedule.StartDate)}"" AND fixedSchedule.""{nameof(FixedSchedule.EndDate)}""
             )");
 
         insertQueryBuilder.Append($@"INSERT INTO ""YardPrice"" (
@@ -77,8 +77,8 @@ public sealed class YardPriceService(
             LEFT JOIN ""{nameof(Price)}"" AS price 
 	        ON price.""{nameof(Price.YardTypeId)}"" = yardType.""{nameof(YardType.Id)}""
 	            AND UPPER(TO_CHAR('{date}'::DATE, 'FMDay')) = price.""{nameof(Price.DayOfWeek)}""
-	            AND timeSlot.""{nameof(TimeSlot.StartTime)}"" >= price.""{nameof(Price.StartTime)}"" 
-	            AND timeSlot.""{nameof(TimeSlot.EndTime)}"" < price.""{nameof(Price.EndTime)}""
+	            AND timeSlot.""{nameof(TimeSlot.StartTime)}"" >= price.""{nameof(Price.StartTime)}""
+	            AND timeSlot.""{nameof(TimeSlot.StartTime)}"" < price.""{nameof(Price.EndTime)}""
             LEFT JOIN FixedScheduleTemp 
 	        ON FixedScheduleTemp.""TimeSlotId"" = timeSlot.""Id""; ");
 
