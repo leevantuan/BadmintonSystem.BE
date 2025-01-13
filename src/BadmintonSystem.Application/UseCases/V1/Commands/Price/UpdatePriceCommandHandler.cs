@@ -27,6 +27,11 @@ public sealed class UpdatePriceCommandHandler(
             ?? throw new PriceException.PriceNotFoundException(request.Data.Id);
 
         price.YardPrice = request.Data.YardPrice;
+        price.Detail = request.Data.Detail;
+        price.DayOfWeek = request.Data.DayOfWeek;
+        price.StartTime = request.Data.StartTime;
+        price.EndTime = request.Data.EndTime;
+        price.YardTypeId = request.Data.YardTypeId;
         price.IsDefault = DefaultEnum.FALSE;
 
         if ((DefaultEnum)request.Data.IsDefault == DefaultEnum.TRUE && priceDefaultCorrect)
