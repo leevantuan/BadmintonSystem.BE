@@ -2,6 +2,7 @@
 using AutoMapper;
 using BadmintonSystem.Domain.Abstractions.Repositories;
 using BadmintonSystem.Domain.Entities;
+using BadmintonSystem.Domain.Enumerations;
 using BadmintonSystem.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
@@ -9,7 +10,7 @@ using DayOfWeek = BadmintonSystem.Domain.Entities.DayOfWeek;
 
 namespace BadmintonSystem.Application.UseCases.V1.Services;
 
-public class YardPriceService(
+public sealed class YardPriceService(
     ApplicationDbContext context,
     IMapper mapper,
     IRepositoryBase<YardPrice, Guid> repository)
@@ -97,5 +98,23 @@ public class YardPriceService(
         await context.SaveChangesAsync();
 
         return true;
+    }
+
+    public async Task UpdateYardPricesByBookingId(Guid bookingId, CancellationToken cancellationToken)
+    {
+        var updateYardPriceQueryBuilder = new StringBuilder();
+        updateYardPriceQueryBuilder.Append($@"WITH yardPriceIds AS (
+	        SELECT ""{nameof(BookingLine.YardPriceId)}"" AS ""Id""
+	            FROM ""{nameof(BookingLine)}"" AS bookingLine
+	            WHERE ""{nameof(BookingLine.BookingId)}"" = '{bookingId}'
+	            AND bookingLine.""{nameof(BookingLine.IsDeleted)}"" = false
+            )
+
+            UPDATE ""{nameof(YardPrice)}"" 
+            SET ""{nameof(YardPrice.IsBooking)}"" = {(int)BookingEnum.UNBOOKED},
+	            ""{nameof(YardPrice.ModifiedDate)}"" = NOW()
+            WHERE ""{nameof(YardPrice.Id)}"" IN (SELECT ""Id"" FROM yardPriceIds)");
+
+        await context.Database.ExecuteSqlRawAsync(updateYardPriceQueryBuilder.ToString(), cancellationToken);
     }
 }

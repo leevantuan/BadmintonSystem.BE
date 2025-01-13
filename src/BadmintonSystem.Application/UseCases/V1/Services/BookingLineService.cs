@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BadmintonSystem.Application.UseCases.V1.Services;
 
-public class BookingLineService(
+public sealed class BookingLineService(
     ApplicationDbContext context,
     IMapper mapper,
     IRepositoryBase<YardPrice, Guid> pricesRepository)
@@ -95,5 +95,14 @@ public class BookingLineService(
         decimal result = prices.Sum(x => x.TotalPrice);
 
         return result;
+    }
+
+    public async Task DeleteBookingLinesByBookingId(Guid bookingId, CancellationToken cancellationToken)
+    {
+        var deleteBookingLineQueryBuilder = new StringBuilder();
+        deleteBookingLineQueryBuilder.Append($@"DELETE FROM ""{nameof(BookingLine)}""
+            WHERE ""{nameof(BookingLine.BookingId)}"" = '{bookingId}'");
+
+        await context.Database.ExecuteSqlRawAsync(deleteBookingLineQueryBuilder.ToString(), cancellationToken);
     }
 }

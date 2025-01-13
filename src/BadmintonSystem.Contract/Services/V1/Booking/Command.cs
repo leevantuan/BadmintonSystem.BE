@@ -10,6 +10,6 @@ public static class Command
     public record UpdateBookingCommand(Guid BookingId)
         : ICommand;
 
-    public record DeleteBookingsCommand(List<string> Ids)
+    public record DeleteBookingByIdCommand(Guid Id)
         : ICommand;
 }

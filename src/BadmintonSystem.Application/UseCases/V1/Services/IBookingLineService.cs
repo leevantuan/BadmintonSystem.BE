@@ -3,4 +3,6 @@
 public interface IBookingLineService
 {
     Task<decimal> CreateBookingLines(Guid bookingId, List<Guid> yardPriceIds, CancellationToken cancellationToken);
+
+    Task DeleteBookingLinesByBookingId(Guid bookingId, CancellationToken cancellationToken);
 }

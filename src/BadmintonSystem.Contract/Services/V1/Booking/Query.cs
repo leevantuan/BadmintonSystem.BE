@@ -9,7 +9,7 @@ public static class Query
         : IQuery<PagedResult<Response.BookingResponse>>;
 
     public record GetBookingByIdQuery(Guid Id)
-        : IQuery<Response.BookingResponse>;
+        : IQuery<Response.GetBookingDetailResponse>;
 
     public record GetBookingsWithFilterAndSortValueQuery(
         Abstractions.Shared.Request.PagedFilterAndSortQueryRequest Data)

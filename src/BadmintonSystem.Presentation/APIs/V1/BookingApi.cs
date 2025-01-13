@@ -40,7 +40,7 @@ public class BookingApi : ApiEndpoint, ICarterModule
         group1.MapPut("{bookingId}", UpdateBookingV1)
             .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.UPDATE);
 
-        group1.MapDelete(string.Empty, DeleteBookingsV1)
+        group1.MapDelete("{bookingId}", DeleteBookingsV1)
             .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.DELETE);
     }
 
@@ -57,9 +57,9 @@ public class BookingApi : ApiEndpoint, ICarterModule
         return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
     }
 
-    private static async Task<IResult> DeleteBookingsV1(ISender sender, [FromBody] List<string> ids)
+    private static async Task<IResult> DeleteBookingsV1(ISender sender, Guid bookingId)
     {
-        Result result = await sender.Send(new Command.DeleteBookingsCommand(ids));
+        Result result = await sender.Send(new Command.DeleteBookingByIdCommand(bookingId));
 
         return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
     }
@@ -77,7 +77,7 @@ public class BookingApi : ApiEndpoint, ICarterModule
 
     private static async Task<IResult> GetBookingByIdV1(ISender sender, Guid bookingId)
     {
-        Result<Response.BookingResponse> result = await sender.Send(new Query.GetBookingByIdQuery(bookingId));
+        Result<Response.GetBookingDetailResponse> result = await sender.Send(new Query.GetBookingByIdQuery(bookingId));
 
         return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
     }
