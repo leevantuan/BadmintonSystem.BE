@@ -4,7 +4,7 @@ public static class Request
 {
     public class CreateInventoryReceiptRequest
     {
-        public decimal? Quantity { get; set; }
+        public decimal Quantity { get; set; }
 
         public string? Unit { get; set; }
 

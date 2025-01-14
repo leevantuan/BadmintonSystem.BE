@@ -177,6 +177,17 @@ public class ServiceV1Profile : Profile
             .ForMember(dest => dest.Items, opt
                 => opt.MapFrom(src => src.Items)).ReverseMap();
 
+        // Inventory Receipt
+        CreateMap<InventoryReceipt, V1.InventoryReceipt.Response.InventoryReceiptResponse>().ReverseMap();
+        CreateMap<InventoryReceipt, V1.InventoryReceipt.Request.CreateInventoryReceiptRequest>().ReverseMap();
+        CreateMap<PagedResult<InventoryReceipt>, PagedResult<V1.InventoryReceipt.Response.InventoryReceiptResponse>>()
+            .ReverseMap();
+        CreateMap<InventoryReceipt, V1.InventoryReceipt.Response.InventoryReceiptDetailResponse>().ReverseMap();
+        CreateMap<PagedResult<InventoryReceipt>,
+                PagedResult<V1.InventoryReceipt.Response.InventoryReceiptDetailResponse>>()
+            .ForMember(dest => dest.Items, opt
+                => opt.MapFrom(src => src.Items)).ReverseMap();
+
         // Time Slot Of Week
         CreateMap<TimeSlotOfWeek, V1.TimeSlotOfWeek.Response.TimeSlotOfWeekResponse>().ReverseMap();
         CreateMap<TimeSlotOfWeek, V1.TimeSlotOfWeek.Request.CreateTimeSlotOfWeekRequest>().ReverseMap();
