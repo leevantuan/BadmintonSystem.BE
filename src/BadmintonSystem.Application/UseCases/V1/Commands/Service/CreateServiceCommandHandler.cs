@@ -42,6 +42,8 @@ public sealed class CreateServiceCommandHandler(
 
         foreach (Request.ServiceDetail service in request.Data.ServiceDetails)
         {
+            decimal newQuantityService = (decimal)(request.Data.QuantityInStock / service.QuantityPrinciple);
+
             Domain.Entities.Service? entities = mapper.Map<Domain.Entities.Service>(request.Data);
 
             entities.OriginalQuantityId = originalQuantityId;
@@ -50,7 +52,7 @@ public sealed class CreateServiceCommandHandler(
             entities.PurchasePrice = service.PurchasePrice;
             entities.SellingPrice = service.SellingPrice;
             entities.Unit = service.Unit;
-            entities.QuantityInStock = (decimal)(request.Data.QuantityInStock / service.QuantityPrinciple);
+            entities.QuantityInStock = Math.Round(newQuantityService, 2);
 
             serviceRepository.Add(entities);
         }

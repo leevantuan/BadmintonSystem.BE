@@ -30,7 +30,6 @@
         <Folder Include="UseCases\V1\Commands\Club\"/>
         <Folder Include="UseCases\V1\Commands\Price\"/>
         <Folder Include="UseCases\V1\Commands\Sale\"/>
-        <Folder Include="UseCases\V1\Commands\Service\"/>
         <Folder Include="UseCases\V1\Commands\TimeSlot\"/>
         <Folder Include="UseCases\V1\Commands\YardPrice\"/>
         <Folder Include="UseCases\V1\Commands\YardType\"/>

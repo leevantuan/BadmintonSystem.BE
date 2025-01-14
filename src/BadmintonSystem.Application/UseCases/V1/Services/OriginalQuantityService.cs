@@ -18,4 +18,24 @@ public class OriginalQuantityService(
         context.OriginalQuantity.Add(originalQuantities);
         await context.SaveChangesAsync(cancellationToken);
     }
+
+    public async Task UpdateOriginalQuantity
+        (Guid id, decimal quantity, decimal quantityPrinciple, CancellationToken cancellationToken)
+    {
+        OriginalQuantity? originalQuantities =
+            await context.OriginalQuantity.FindAsync(new object?[] { id, cancellationToken }, cancellationToken);
+
+        var serviceByOriginal =
+            context.Service.Where(x => x.OriginalQuantityId == originalQuantities.Id).ToList();
+
+        decimal? newQuantity = originalQuantities.TotalQuantity + quantity * quantityPrinciple;
+
+        originalQuantities.TotalQuantity = newQuantity;
+
+        foreach (Service service in serviceByOriginal)
+        {
+            decimal newQuantityService = (decimal)(newQuantity / service.QuantityPrinciple);
+            service.QuantityInStock = Math.Round(newQuantityService, 2);
+        }
+    }
 }

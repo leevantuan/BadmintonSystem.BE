@@ -46,4 +46,11 @@ public static class Request
 
         public Guid? OriginalQuantityId { get; set; }
     }
+
+    public class UpdateServiceQuantityRequest
+    {
+        public Guid Id { get; set; }
+
+        public decimal Quantity { get; set; }
+    }
 }

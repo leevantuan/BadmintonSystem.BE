@@ -10,6 +10,9 @@ public static class Command
     public record UpdateServiceCommand(Request.UpdateServiceRequest Data)
         : ICommand;
 
+    public record UpdateQuantityServiceCommand(Request.UpdateServiceQuantityRequest Data)
+        : ICommand;
+
     public record DeleteServicesCommand(List<string> Ids)
         : ICommand;
 }

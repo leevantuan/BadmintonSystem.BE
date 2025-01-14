@@ -30,6 +30,7 @@ public class ServiceApi : ApiEndpoint, ICarterModule
 
         group1.MapGet(string.Empty, GetServicesV1)
             .RequireJwtAuthorize(FunctionEnum.SERVICE.ToString(), (int)ActionEnum.READ);
+
         group1.MapGet("filter-and-sort-value", GetServicesFilterAndSortValueV1)
             .RequireJwtAuthorize(FunctionEnum.SERVICE.ToString(), (int)ActionEnum.READ);
 
@@ -37,6 +38,9 @@ public class ServiceApi : ApiEndpoint, ICarterModule
             .RequireJwtAuthorize(FunctionEnum.SERVICE.ToString(), (int)ActionEnum.READ);
 
         group1.MapPut("{serviceId}", UpdateServiceV1)
+            .RequireJwtAuthorize(FunctionEnum.SERVICE.ToString(), (int)ActionEnum.UPDATE);
+
+        group1.MapPut("update-quantity", UpdateServiceQuantityV1)
             .RequireJwtAuthorize(FunctionEnum.SERVICE.ToString(), (int)ActionEnum.UPDATE);
 
         group1.MapDelete(string.Empty, DeleteServicesV1)
@@ -69,6 +73,16 @@ public class ServiceApi : ApiEndpoint, ICarterModule
     {
         updateService.Id = id;
         Result result = await sender.Send(new Command.UpdateServiceCommand(updateService));
+
+        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+    }
+
+    private static async Task<IResult> UpdateServiceQuantityV1
+    (
+        ISender sender,
+        [FromBody] Request.UpdateServiceQuantityRequest updateService)
+    {
+        Result result = await sender.Send(new Command.UpdateQuantityServiceCommand(updateService));
 
         return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
     }
