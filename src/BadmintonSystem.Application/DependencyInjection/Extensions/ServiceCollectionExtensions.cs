@@ -17,6 +17,7 @@ public static class ServiceCollectionExtensions
             .AddTransient(typeof(IYardPriceService), typeof(YardPriceService))
             .AddTransient(typeof(IBookingLineService), typeof(BookingLineService))
             .AddTransient(typeof(IBillService), typeof(BillService))
+            .AddTransient(typeof(IOriginalQuantityService), typeof(OriginalQuantityService))
             .AddTransient(typeof(IPipelineBehavior<,>), typeof(TransactionPipelineBehavior<,>));
     }
     //.AddValidatorsFromAssembly(BadmintonSystem.Contract.AssemblyReference.Assembly, includeInternalTypes: true);

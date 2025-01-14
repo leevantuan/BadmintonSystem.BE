@@ -49,8 +49,8 @@ public class ServiceApi : ApiEndpoint, ICarterModule
         [FromBody] Request.CreateServiceRequest createService, IHttpContextAccessor httpContextAccessor)
     {
         Guid? userId = httpContextAccessor.HttpContext?.GetCurrentUserId();
-        Result<Response.ServiceResponse> result =
-            await sender.Send(new Command.CreateServiceCommand(userId ?? Guid.Empty, createService));
+        Result result =
+            await sender.Send(new Command.CreateServicesCommand(userId ?? Guid.Empty, createService));
 
         return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
     }
@@ -68,7 +68,7 @@ public class ServiceApi : ApiEndpoint, ICarterModule
         [FromBody] Request.UpdateServiceRequest updateService)
     {
         updateService.Id = id;
-        Result<Response.ServiceResponse> result = await sender.Send(new Command.UpdateServiceCommand(updateService));
+        Result result = await sender.Send(new Command.UpdateServiceCommand(updateService));
 
         return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
     }

@@ -12,9 +12,9 @@ public sealed class UpdateServiceCommandHandler(
     ApplicationDbContext context,
     IMapper mapper,
     IRepositoryBase<Domain.Entities.Service, Guid> serviceRepository)
-    : ICommandHandler<Command.UpdateServiceCommand, Response.ServiceResponse>
+    : ICommandHandler<Command.UpdateServiceCommand>
 {
-    public async Task<Result<Response.ServiceResponse>> Handle
+    public async Task<Result> Handle
         (Command.UpdateServiceCommand request, CancellationToken cancellationToken)
     {
         Domain.Entities.Service service = await serviceRepository.FindByIdAsync(request.Data.Id)
@@ -23,9 +23,8 @@ public sealed class UpdateServiceCommandHandler(
         service.Name = request.Data.Name ?? service.Name;
         service.SellingPrice = request.Data.SellingPrice ?? service.SellingPrice;
         service.PurchasePrice = request.Data.PurchasePrice ?? service.PurchasePrice;
+        service.Unit = request.Data.Unit ?? service.Unit;
 
-        Response.ServiceResponse? result = mapper.Map<Response.ServiceResponse>(service);
-
-        return Result.Success(result);
+        return Result.Success();
     }
 }
