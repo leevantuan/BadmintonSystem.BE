@@ -89,6 +89,8 @@ public sealed class ApplicationDbContext
 
     public DbSet<InventoryReceipt> InventoryReceipt { get; set; }
 
+    public DbSet<OriginalQuantity> OriginalQuantity { get; set; }
+
     public DbSet<ChatRoom> ChatRoom { get; set; }
 
     public DbSet<ChatMessage> ChatMessage { get; set; }

@@ -16,12 +16,18 @@ public static class Response
     {
         public string Name { get; set; }
 
+        public decimal PurchasePrice { get; set; }
+
         public decimal SellingPrice { get; set; }
 
-        public decimal PurchasePrice { get; set; }
+        public decimal QuantityInStock { get; set; }
+
+        public string? Unit { get; set; }
 
         public Guid CategoryId { get; set; }
 
-        public Guid ClubId { get; set; }
+        public decimal? QuantityPrinciple { get; set; }
+
+        public Guid? OriginalQuantityId { get; set; }
     }
 }

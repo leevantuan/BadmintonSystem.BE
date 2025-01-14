@@ -2,12 +2,24 @@
 
 public static class Request
 {
-    public record CreateServiceRequest(
-        string Name,
-        decimal SellingPrice,
-        decimal PurchasePrice,
-        Guid CategoryId,
-        Guid ClubId);
+    public class CreateServiceRequest
+    {
+        public string Name { get; set; }
+
+        public decimal PurchasePrice { get; set; }
+
+        public decimal SellingPrice { get; set; }
+
+        public decimal QuantityInStock { get; set; }
+
+        public string? Unit { get; set; }
+
+        public Guid CategoryId { get; set; }
+
+        public decimal? QuantityPrinciple { get; set; }
+
+        public Guid? OriginalQuantityId { get; set; }
+    }
 
     public class UpdateServiceRequest
     {
@@ -15,12 +27,18 @@ public static class Request
 
         public string? Name { get; set; }
 
+        public decimal? PurchasePrice { get; set; }
+
         public decimal? SellingPrice { get; set; }
 
-        public decimal? PurchasePrice { get; set; }
+        public decimal? QuantityInStock { get; set; }
+
+        public string? Unit { get; set; }
 
         public Guid? CategoryId { get; set; }
 
-        public Guid? ClubId { get; set; }
+        public decimal? QuantityPrinciple { get; set; }
+
+        public Guid? OriginalQuantityId { get; set; }
     }
 }

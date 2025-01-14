@@ -6,7 +6,7 @@ public class Provider : EntityAuditBase<Guid>
 {
     public string Name { get; set; }
 
-    public string PhoneNumber { get; set; }
+    public string? PhoneNumber { get; set; }
 
     public string Address { get; set; }
 

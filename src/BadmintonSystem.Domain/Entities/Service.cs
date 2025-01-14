@@ -16,6 +16,10 @@ public class Service : EntityAuditBase<Guid>
 
     public Guid CategoryId { get; set; }
 
+    public decimal? QuantityPrinciple { get; set; }
+
+    public Guid? OriginalQuantityId { get; set; }
+
     public virtual ICollection<ServiceLine>? ServiceLines { get; set; }
 
     public virtual ICollection<InventoryReceipt>? InventoryReceipts { get; set; }

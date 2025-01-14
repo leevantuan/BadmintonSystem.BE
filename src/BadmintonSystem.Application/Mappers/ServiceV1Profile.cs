@@ -168,6 +168,15 @@ public class ServiceV1Profile : Profile
             .ForMember(dest => dest.Items, opt
                 => opt.MapFrom(src => src.Items)).ReverseMap();
 
+        // Provider
+        CreateMap<Provider, V1.Provider.Response.ProviderResponse>().ReverseMap();
+        CreateMap<Provider, V1.Provider.Request.CreateProviderRequest>().ReverseMap();
+        CreateMap<PagedResult<Provider>, PagedResult<V1.Provider.Response.ProviderResponse>>().ReverseMap();
+        CreateMap<Provider, V1.Provider.Response.ProviderDetailResponse>().ReverseMap();
+        CreateMap<PagedResult<Provider>, PagedResult<V1.Provider.Response.ProviderDetailResponse>>()
+            .ForMember(dest => dest.Items, opt
+                => opt.MapFrom(src => src.Items)).ReverseMap();
+
         // Time Slot Of Week
         CreateMap<TimeSlotOfWeek, V1.TimeSlotOfWeek.Response.TimeSlotOfWeekResponse>().ReverseMap();
         CreateMap<TimeSlotOfWeek, V1.TimeSlotOfWeek.Request.CreateTimeSlotOfWeekRequest>().ReverseMap();

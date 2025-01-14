@@ -25,6 +25,8 @@ internal sealed class ServiceConfiguration : IEntityTypeConfiguration<Service>
 
         builder.Property(x => x.CategoryId).HasDefaultValue(null);
 
+        builder.Property(x => x.OriginalQuantityId).HasDefaultValue(null);
+
         builder.HasMany(x => x.ServiceLines)
             .WithOne()
             .HasForeignKey(x => x.ServiceId)
