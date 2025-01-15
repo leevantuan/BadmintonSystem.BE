@@ -64,13 +64,20 @@ public sealed class GetServicesByCategoryIdWithFilterAndSortValueQueryHandler(
                             Id = s.Service_Id ?? Guid.Empty,
                             Name = s.Service_Name ?? string.Empty,
                             SellingPrice = s.Service_SellingPrice ?? 0,
-                            PurchasePrice = s.Service_PurchasePrice ?? 0
+                            PurchasePrice = s.Service_PurchasePrice ?? 0,
+                            QuantityInStock = s.Service_QuantityInStock ?? 0,
+                            Unit = s.Service_Unit ?? string.Empty,
+                            QuantityPrinciple = s.Service_QuantityPrinciple ?? 0,
+                            CategoryId = s.Service_CategoryId ?? Guid.Empty,
+                            OriginalQuantityId = s.Service_OriginalQuantityId ?? Guid.Empty
                         }).ToList()
             })
             .ToList();
         int totalCount = categories.Count;
+
         var categoryPagedResult =
             PagedResult<Response.GetServicesByCategoryIdResponse>.Create(categories, pageIndex, pageSize, totalCount);
+
         return Result.Success(categoryPagedResult);
     }
 }

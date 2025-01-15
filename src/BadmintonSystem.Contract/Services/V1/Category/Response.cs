@@ -18,19 +18,11 @@ public static class Response
 
     public class GetServicesByCategoryIdResponse : EntityAuditBase<Guid>
     {
+        public Guid? Id { get; set; }
+
         public string Name { get; set; }
 
-        public virtual ICollection<ServiceDetailResponse>? Services { get; set; }
-
-        public int PageIndex { get; set; }
-
-        public int PageSize { get; set; }
-
-        public int TotalCount { get; set; }
-
-        public bool HasNextPage => PageIndex * PageSize < TotalCount;
-
-        public bool HasPreviousPage => PageIndex > 1;
+        public virtual List<ServiceDetailResponse> Services { get; set; }
     }
 
     public class CategorySqlResponse
@@ -39,6 +31,7 @@ public static class Response
 
         public string Category_Name { get; set; }
 
+        // Service
         public Guid? Service_Id { get; set; }
 
         public string? Service_Name { get; set; }
@@ -46,5 +39,15 @@ public static class Response
         public decimal? Service_PurchasePrice { get; set; }
 
         public decimal? Service_SellingPrice { get; set; }
+
+        public decimal? Service_QuantityInStock { get; set; }
+
+        public string? Service_Unit { get; set; }
+
+        public Guid? Service_CategoryId { get; set; }
+
+        public decimal? Service_QuantityPrinciple { get; set; }
+
+        public Guid? Service_OriginalQuantityId { get; set; }
     }
 }

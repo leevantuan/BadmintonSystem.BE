@@ -8,6 +8,11 @@ public static class Query
     public record GetProviderByIdQuery(Guid Id)
         : IQuery<Response.ProviderDetailResponse>;
 
+    public record GetInventoryReceiptsByProviderIdWithFilterAndSortValueQuery(
+        Guid ProviderId,
+        Abstractions.Shared.Request.PagedFilterAndSortQueryRequest Data)
+        : IQuery<PagedResult<Response.GetInventoryReceiptByProviderIdResponse>>;
+
     public record GetProvidersWithFilterAndSortValueQuery(
         Abstractions.Shared.Request.PagedFilterAndSortQueryRequest Data)
         : IQuery<PagedResult<Response.ProviderDetailResponse>>;

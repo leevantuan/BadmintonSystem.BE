@@ -14,4 +14,9 @@ public static class Query
     public record GetServicesWithFilterAndSortValueQuery(
         Abstractions.Shared.Request.PagedFilterAndSortQueryRequest Data)
         : IQuery<PagedResult<Response.ServiceDetailResponse>>;
+
+    public record GetInventoryReceiptsByServiceIdWithFilterAndSortValueQuery(
+        Guid ServiceId,
+        Abstractions.Shared.Request.PagedFilterAndSortQueryRequest Data)
+        : IQuery<PagedResult<Response.GetInventoryReceiptByServiceIdResponse>>;
 }

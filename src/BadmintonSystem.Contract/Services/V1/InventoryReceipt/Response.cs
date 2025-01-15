@@ -17,7 +17,7 @@ public static class Response
         public Guid? ProviderId { get; set; }
     }
 
-    public class InventoryReceiptDetailResponse : EntityAuditBase<Guid>
+    public class InventoryReceiptDetail : EntityAuditBase<Guid>
     {
         public decimal? Quantity { get; set; }
 
@@ -28,5 +28,12 @@ public static class Response
         public Guid? ServiceId { get; set; }
 
         public Guid? ProviderId { get; set; }
+    }
+
+    public class InventoryReceiptDetailResponse : EntityAuditBase<Guid>
+    {
+        public InventoryReceiptDetail InventoryReceipt { get; set; }
+
+        public Service.Response.ServiceResponse Service { get; set; }
     }
 }

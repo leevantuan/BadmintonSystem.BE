@@ -28,6 +28,10 @@ public class ProviderApi : ApiEndpoint, ICarterModule
         group1.MapPost(string.Empty, CreateProviderV1)
             .RequireJwtAuthorize(FunctionEnum.PRICE.ToString(), (int)ActionEnum.CREATE);
 
+        group1.MapGet("inventory-receipts/{providerId}",
+                GetInventoryReceiptsByProviderIdWithFilterAndSort)
+            .RequireJwtAuthorize(FunctionEnum.PRICE.ToString(), (int)ActionEnum.READ);
+
         group1.MapGet("filter-and-sort-value", GetProvidersFilterAndSortValueV1)
             .RequireJwtAuthorize(FunctionEnum.PRICE.ToString(), (int)ActionEnum.READ);
 
@@ -90,6 +94,21 @@ public class ProviderApi : ApiEndpoint, ICarterModule
             new Contract.Abstractions.Shared.Request.PagedFilterAndSortQueryRequest(request);
         Result<PagedResult<Response.ProviderDetailResponse>> result =
             await sender.Send(new Query.GetProvidersWithFilterAndSortValueQuery(pagedQueryRequest));
+
+        return Results.Ok(result);
+    }
+
+    private static async Task<IResult> GetInventoryReceiptsByProviderIdWithFilterAndSort
+    (
+        ISender sender,
+        Guid providerId,
+        [AsParameters] Contract.Abstractions.Shared.Request.PagedFilterAndSortRequest request)
+    {
+        var pagedQueryRequest =
+            new Contract.Abstractions.Shared.Request.PagedFilterAndSortQueryRequest(request);
+        Result<PagedResult<Response.GetInventoryReceiptByProviderIdResponse>> result =
+            await sender.Send(
+                new Query.GetInventoryReceiptsByProviderIdWithFilterAndSortValueQuery(providerId, pagedQueryRequest));
 
         return Results.Ok(result);
     }
