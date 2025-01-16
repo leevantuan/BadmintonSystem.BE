@@ -29,4 +29,15 @@ public static class Request
 
         public Guid ProviderId { get; set; }
     }
+
+    public class FilterInventoryReceiptRequest
+    {
+        public DateTime StartDate { get; set; }
+
+        public DateTime EndDate { get; set; }
+
+        public List<Guid>? ServiceIds { get; set; }
+
+        public List<Guid>? ProviderIds { get; set; }
+    }
 }

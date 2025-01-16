@@ -32,8 +32,25 @@ public static class Response
 
     public class InventoryReceiptDetailResponse : EntityAuditBase<Guid>
     {
-        public InventoryReceiptDetail InventoryReceipt { get; set; }
+        public InventoryReceiptResponse? InventoryReceipt { get; set; }
 
-        public Service.Response.ServiceResponse Service { get; set; }
+        public Service.Response.ServiceResponse? Service { get; set; }
+
+        public decimal? TotalPrice { get; set; }
+    }
+
+    public class InventoryReceiptDetailSql : Provider.Response.GetInventoryReceiptByProviderIdSql
+    {
+        public DateTime? InventoryReceipt_CreatedDate { get; set; }
+
+        public DateTime? InventoryReceipt_ModifiedDate { get; set; }
+
+        public Guid? InventoryReceipt_CreatedBy { get; set; }
+
+        public Guid? InventoryReceipt_ModifiedBy { get; set; }
+
+        public bool? InventoryReceipt_IsDeleted { get; set; }
+
+        public DateTime? InventoryReceipt_DeletedAt { get; set; }
     }
 }

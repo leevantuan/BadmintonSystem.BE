@@ -7,6 +7,8 @@ public class InventoryReceiptExtension
         return sortColumn.ToLower() switch
         {
             "price" => "Price",
+            "quantity" => "Quantity",
+            "unit" => "Unit",
             "createddate" => "CreatedDate",
             _ => "Id"
         };

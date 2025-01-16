@@ -106,7 +106,7 @@ public sealed class GetInventoryReceiptsByProviderIdWithFilterAndSortValueQueryH
                 InventoryReceipts = g.Select(x => new Response.GetInventoryReceiptResponse
                 {
                     InventoryReceipt = g.Select(x =>
-                        new Contract.Services.V1.InventoryReceipt.Response.InventoryReceiptDetail
+                        new Contract.Services.V1.InventoryReceipt.Response.InventoryReceiptResponse
                         {
                             Id = x.InventoryReceipt_Id ?? Guid.Empty,
                             Quantity = x.InventoryReceipt_Quantity,

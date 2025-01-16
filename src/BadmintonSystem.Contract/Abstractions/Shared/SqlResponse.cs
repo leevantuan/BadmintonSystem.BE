@@ -6,4 +6,9 @@ public static class SqlResponse
     {
         public int TotalCount { get; set; }
     }
+
+    public class TotalPriceSqlResponse
+    {
+        public int TotalPrice { get; set; }
+    }
 }

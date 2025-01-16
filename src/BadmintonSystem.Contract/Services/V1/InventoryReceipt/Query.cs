@@ -9,6 +9,7 @@ public static class Query
         : IQuery<Response.InventoryReceiptDetailResponse>;
 
     public record GetInventoryReceiptsWithFilterAndSortValueQuery(
+        Request.FilterInventoryReceiptRequest Filter,
         Abstractions.Shared.Request.PagedFilterAndSortQueryRequest Data)
         : IQuery<PagedResult<Response.InventoryReceiptDetailResponse>>;
 }

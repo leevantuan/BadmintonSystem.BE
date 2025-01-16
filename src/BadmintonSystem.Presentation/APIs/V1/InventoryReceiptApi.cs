@@ -28,7 +28,7 @@ public class InventoryReceiptApi : ApiEndpoint, ICarterModule
         group1.MapPost(string.Empty, CreateInventoryReceiptV1)
             .RequireJwtAuthorize(FunctionEnum.PRICE.ToString(), (int)ActionEnum.CREATE);
 
-        group1.MapGet("filter-and-sort-value", GetInventoryReceiptsFilterAndSortValueV1)
+        group1.MapPost("filter-and-sort-value", GetInventoryReceiptsFilterAndSortValueV1)
             .RequireJwtAuthorize(FunctionEnum.PRICE.ToString(), (int)ActionEnum.READ);
 
         group1.MapGet("{inventoryReceiptId}", GetInventoryReceiptByIdV1)
@@ -69,12 +69,13 @@ public class InventoryReceiptApi : ApiEndpoint, ICarterModule
     private static async Task<IResult> GetInventoryReceiptsFilterAndSortValueV1
     (
         ISender sender,
+        [FromBody] Request.FilterInventoryReceiptRequest filter,
         [AsParameters] Contract.Abstractions.Shared.Request.PagedFilterAndSortRequest request)
     {
         var pagedQueryRequest =
             new Contract.Abstractions.Shared.Request.PagedFilterAndSortQueryRequest(request);
         Result<PagedResult<Response.InventoryReceiptDetailResponse>> result =
-            await sender.Send(new Query.GetInventoryReceiptsWithFilterAndSortValueQuery(pagedQueryRequest));
+            await sender.Send(new Query.GetInventoryReceiptsWithFilterAndSortValueQuery(filter, pagedQueryRequest));
 
         return Results.Ok(result);
     }
