@@ -22,5 +22,7 @@ internal sealed class BillLineConfiguration : IEntityTypeConfiguration<BillLine>
         builder.Property(x => x.EndTime).HasDefaultValue(null);
 
         builder.Property(x => x.TotalPrice).HasDefaultValue(null);
+
+        builder.Property(x => x.IsActive).HasDefaultValue(null);
     }
 }

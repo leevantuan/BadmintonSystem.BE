@@ -18,18 +18,10 @@ public sealed class UpdateQuantityServiceCommandHandler(
 {
     public async Task<Result> Handle(Command.UpdateQuantityServiceCommand request, CancellationToken cancellationToken)
     {
-        Domain.Entities.Service service = await serviceRepository.FindByIdAsync(request.Data.Id, cancellationToken)
-                                          ?? throw new ServiceException.ServiceNotFoundException(request.Data.Id);
+        _ = await serviceRepository.FindByIdAsync(request.Data.Id, cancellationToken)
+            ?? throw new ServiceException.ServiceNotFoundException(request.Data.Id);
 
-        if (service.OriginalQuantityId != null)
-        {
-            await originalQuantityService.UpdateOriginalQuantity(service.OriginalQuantityId ?? Guid.Empty,
-                request.Data.Quantity, service.QuantityPrinciple ?? 0, cancellationToken);
-
-            return Result.Success();
-        }
-
-        service.QuantityInStock += request.Data.Quantity;
+        await originalQuantityService.UpdateQuantityService(request.Data.Id, request.Data.Quantity, cancellationToken);
 
         return Result.Success();
     }

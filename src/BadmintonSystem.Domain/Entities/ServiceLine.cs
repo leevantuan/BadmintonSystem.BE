@@ -10,5 +10,7 @@ public class ServiceLine : EntityAuditBase<Guid>
 
     public int Quantity { get; set; }
 
+    public decimal TotalPrice { get; set; }
+
     public Guid BillId { get; set; }
 }

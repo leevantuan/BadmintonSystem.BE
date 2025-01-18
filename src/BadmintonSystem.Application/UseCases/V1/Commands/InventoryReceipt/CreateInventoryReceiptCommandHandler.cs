@@ -28,16 +28,8 @@ public sealed class CreateInventoryReceiptCommandHandler(
         _ = context.Provider.FirstOrDefault(x => x.Id == request.Data.ProviderId)
             ?? throw new ProviderException.ProviderNotFoundException(request.Data.ProviderId);
 
-        if (service is { OriginalQuantityId: not null, QuantityPrinciple: not null })
-        {
-            await originalQuantityService.UpdateOriginalQuantity(
-                service.OriginalQuantityId ?? Guid.Empty, request.Data.Quantity,
-                service.QuantityPrinciple ?? 1, cancellationToken);
-        }
-        else
-        {
-            service.QuantityInStock += request.Data.Quantity;
-        }
+        await originalQuantityService.UpdateQuantityService(request.Data.ServiceId ?? Guid.Empty, request.Data.Quantity,
+            cancellationToken);
 
         inventoryReceiptRepository.Add(inventoryReceipt);
 

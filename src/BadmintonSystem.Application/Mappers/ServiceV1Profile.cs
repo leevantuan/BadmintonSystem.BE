@@ -177,6 +177,15 @@ public class ServiceV1Profile : Profile
             .ForMember(dest => dest.Items, opt
                 => opt.MapFrom(src => src.Items)).ReverseMap();
 
+        // Bill
+        CreateMap<Bill, V1.Bill.Response.BillResponse>().ReverseMap();
+        CreateMap<Bill, V1.Bill.Request.CreateBillRequest>().ReverseMap();
+        CreateMap<PagedResult<Bill>, PagedResult<V1.Bill.Response.BillResponse>>().ReverseMap();
+        CreateMap<Bill, V1.Bill.Response.BillDetailResponse>().ReverseMap();
+        CreateMap<PagedResult<Bill>, PagedResult<V1.Bill.Response.BillDetailResponse>>()
+            .ForMember(dest => dest.Items, opt
+                => opt.MapFrom(src => src.Items)).ReverseMap();
+
         // Inventory Receipt
         CreateMap<InventoryReceipt, V1.InventoryReceipt.Response.InventoryReceiptResponse>().ReverseMap();
         CreateMap<InventoryReceipt, V1.InventoryReceipt.Request.CreateInventoryReceiptRequest>().ReverseMap();

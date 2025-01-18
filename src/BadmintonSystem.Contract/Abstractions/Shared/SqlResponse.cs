@@ -11,4 +11,9 @@ public static class SqlResponse
     {
         public int TotalPrice { get; set; }
     }
+
+    public class PriceDecimalSqlResponse
+    {
+        public decimal Price { get; set; }
+    }
 }

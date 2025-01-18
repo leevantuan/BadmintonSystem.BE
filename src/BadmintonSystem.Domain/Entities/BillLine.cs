@@ -1,4 +1,5 @@
 ﻿using BadmintonSystem.Contract.Abstractions.Entities;
+using BadmintonSystem.Domain.Enumerations;
 
 namespace BadmintonSystem.Domain.Entities;
 
@@ -13,4 +14,6 @@ public class BillLine : EntityBase<Guid>
     public TimeSpan? EndTime { get; set; }
 
     public decimal? TotalPrice { get; set; }
+
+    public ActiveEnum? IsActive { get; set; }
 }

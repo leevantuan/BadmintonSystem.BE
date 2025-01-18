@@ -25,9 +25,7 @@ internal sealed class BillConfiguration : IEntityTypeConfiguration<Bill>
 
         builder.Property(x => x.BookingId).HasDefaultValue(null);
 
-        builder.Property(x => x.StartTime).HasDefaultValue(null);
-
-        builder.Property(x => x.EndTime).HasDefaultValue(null);
+        builder.Property(x => x.Status).HasDefaultValue(null);
 
         builder.HasMany(x => x.ServiceLines)
             .WithOne()

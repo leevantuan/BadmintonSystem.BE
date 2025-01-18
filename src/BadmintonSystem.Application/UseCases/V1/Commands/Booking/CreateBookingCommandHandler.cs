@@ -4,7 +4,6 @@ using BadmintonSystem.Contract.Abstractions.Message;
 using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.V1.Booking;
 using BadmintonSystem.Domain.Abstractions.Repositories;
-using BadmintonSystem.Domain.Entities;
 using BadmintonSystem.Domain.Entities.Identity;
 using BadmintonSystem.Domain.Enumerations;
 using BadmintonSystem.Domain.Exceptions;
@@ -46,12 +45,13 @@ public sealed class CreateBookingCommandHandler(
         context.Booking.Add(bookingEntity);
         await context.SaveChangesAsync(cancellationToken);
 
-        var billEntity = new Bill
+        var billEntity = new Domain.Entities.Bill
         {
             Id = billId,
             BookingId = bookingId,
             UserId = request.UserId,
-            TotalPrice = 0
+            TotalPrice = 0,
+            Status = BillStatusEnum.BOOKED
         };
 
         context.Bill.Add(billEntity);

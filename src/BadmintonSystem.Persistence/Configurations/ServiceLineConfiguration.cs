@@ -20,5 +20,7 @@ internal sealed class ServiceLineConfiguration : IEntityTypeConfiguration<Servic
         builder.Property(x => x.BillId).HasDefaultValue(null);
 
         builder.Property(x => x.Quantity).HasDefaultValue(null);
+
+        builder.Property(x => x.TotalPrice).HasDefaultValue(null);
     }
 }

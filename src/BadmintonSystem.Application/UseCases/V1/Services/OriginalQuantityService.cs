@@ -1,4 +1,5 @@
 ﻿using BadmintonSystem.Domain.Entities;
+using BadmintonSystem.Domain.Exceptions;
 using BadmintonSystem.Persistence;
 
 namespace BadmintonSystem.Application.UseCases.V1.Services;
@@ -19,7 +20,24 @@ public class OriginalQuantityService(
         await context.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task UpdateOriginalQuantity
+    public async Task UpdateQuantityService(Guid serviceId, decimal quantity, CancellationToken cancellationToken)
+    {
+        Service serviceEntities = context.Service.FirstOrDefault(x => x.Id == serviceId)
+                                  ?? throw new ServiceException.ServiceNotFoundException(serviceId);
+
+        if (serviceEntities.OriginalQuantityId != null && serviceEntities.QuantityPrinciple != null)
+        {
+            await UpdateOriginalQuantity(serviceEntities.OriginalQuantityId ?? Guid.Empty, quantity,
+                serviceEntities.QuantityPrinciple ?? 0,
+                cancellationToken);
+        }
+        else
+        {
+            serviceEntities.QuantityInStock += quantity;
+        }
+    }
+
+    private async Task UpdateOriginalQuantity
         (Guid id, decimal quantity, decimal quantityPrinciple, CancellationToken cancellationToken)
     {
         OriginalQuantity? originalQuantities =
