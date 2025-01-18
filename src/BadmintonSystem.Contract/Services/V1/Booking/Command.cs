@@ -5,7 +5,7 @@ namespace BadmintonSystem.Contract.Services.V1.Booking;
 public static class Command
 {
     public record CreateBookingCommand(Guid UserId, Request.CreateBookingRequest Data)
-        : ICommand<Response.BookingResponse>;
+        : ICommand;
 
     public record UpdateBookingCommand(Guid BookingId)
         : ICommand;

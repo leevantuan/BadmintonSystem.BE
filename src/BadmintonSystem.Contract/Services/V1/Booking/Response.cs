@@ -59,6 +59,13 @@ public static class Response
         public string PhoneNumber { get; set; }
     }
 
+    public class GetIdsByDate
+    {
+        public DateTime Date { get; set; }
+
+        public List<Guid> Ids { get; set; }
+    }
+
     public class GetBookingDetailSql
     {
         // Booking

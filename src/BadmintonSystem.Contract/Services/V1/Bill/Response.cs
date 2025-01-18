@@ -51,6 +51,8 @@ public static class Response
         public Booking.Response.GetBookingDetailResponse? BookingDetail { get; set; }
 
         public List<BillLine.Response.BillLineDetail>? BillLineDetails { get; set; }
+
+        public List<ServiceLine.Response.ServiceLineDetail>? ServiceLineDetails { get; set; }
     }
 
     public class YardIds

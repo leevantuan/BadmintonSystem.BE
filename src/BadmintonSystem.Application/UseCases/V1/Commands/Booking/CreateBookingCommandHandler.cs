@@ -16,20 +16,18 @@ public sealed class CreateBookingCommandHandler(
     IMapper mapper,
     IBookingLineService bookingLineService,
     IRepositoryBase<Domain.Entities.Booking, Guid> bookingRepository)
-    : ICommandHandler<Command.CreateBookingCommand, Response.BookingResponse>
+    : ICommandHandler<Command.CreateBookingCommand>
 {
-    public async Task<Result<Response.BookingResponse>> Handle
+    public async Task<Result> Handle
         (Command.CreateBookingCommand request, CancellationToken cancellationToken)
     {
         AppUser user = context.AppUsers.FirstOrDefault(x => x.Id == request.UserId)
                        ?? throw new IdentityException.AppUserNotFoundException(request.UserId);
 
-        var bookingId = Guid.NewGuid();
-        var billId = Guid.NewGuid();
+        List<Response.GetIdsByDate> idsByDate = GetIdsByDate(request.Data.YardPriceIds);
 
-        var bookingEntity = new Domain.Entities.Booking
+        var bookingEntities = new Domain.Entities.Booking
         {
-            Id = bookingId,
             BookingStatus = BookingStatusEnum.Pending,
             PaymentStatus = PaymentStatusEnum.Unpaid,
             UserId = request.UserId,
@@ -42,44 +40,78 @@ public sealed class CreateBookingCommandHandler(
             PhoneNumber = request.Data.PhoneNumber ?? user.PhoneNumber
         };
 
-        context.Booking.Add(bookingEntity);
+        if (idsByDate.Count > 0)
+        {
+            foreach (Response.GetIdsByDate idByDate in idsByDate)
+            {
+                await CreateBooking(idByDate, bookingEntities, cancellationToken);
+            }
+        }
+
+        return Result.Success();
+    }
+
+    private List<Response.GetIdsByDate> GetIdsByDate(List<Guid> ids)
+    {
+        var yardPrice = context.YardPrice.Where(x => ids.Contains(x.Id)).ToList();
+
+        var result = yardPrice.GroupBy(x => x.EffectiveDate.Date)
+            .Select(x => new Response.GetIdsByDate
+            {
+                Date = x.Key,
+                Ids = x.Select(y => y.Id).ToList()
+            }).ToList();
+
+        return result;
+    }
+
+    private async Task CreateBooking
+    (Response.GetIdsByDate yardPriceIds, Domain.Entities.Booking bookingEntities,
+        CancellationToken cancellationToken)
+    {
+        var bookingId = Guid.NewGuid();
+        var billId = Guid.NewGuid();
+
+        bookingEntities.Id = bookingId;
+        bookingEntities.BookingDate = yardPriceIds.Date;
+
+        context.Booking.Add(bookingEntities);
         await context.SaveChangesAsync(cancellationToken);
 
-        var billEntity = new Domain.Entities.Bill
+        var billEntities = new Domain.Entities.Bill
         {
             Id = billId,
             BookingId = bookingId,
-            UserId = request.UserId,
+            UserId = bookingEntities.UserId,
             TotalPrice = 0,
             Status = BillStatusEnum.BOOKED
         };
 
-        context.Bill.Add(billEntity);
+        context.Bill.Add(billEntities);
         await context.SaveChangesAsync(cancellationToken);
 
         decimal originalPrice =
-            await bookingLineService.CreateBookingLines(bookingId, request.Data.YardPriceIds, cancellationToken);
+            await bookingLineService.CreateBookingLines(bookingId, yardPriceIds.Ids, cancellationToken);
 
         decimal totalPrice = originalPrice;
 
-        if (request.Data.SaleId != null)
+        if (bookingEntities.SaleId != null)
         {
-            Domain.Entities.Sale? percentSale = context.Sale.FirstOrDefault(s => s.Id == request.Data.SaleId)
-                                                ?? throw new SaleException.SaleNotFoundException(request.Data.SaleId ??
+            Domain.Entities.Sale? percentSale = context.Sale.FirstOrDefault(s => s.Id == bookingEntities.SaleId)
+                                                ?? throw new SaleException.SaleNotFoundException(
+                                                    bookingEntities.SaleId ??
                                                     Guid.Empty);
 
             totalPrice -= totalPrice * percentSale.Percent / 100;
         }
 
-        bookingEntity.BookingTotal = totalPrice;
-        bookingEntity.OriginalPrice = originalPrice;
+        bookingEntities.BookingTotal = totalPrice;
+        bookingEntities.OriginalPrice = originalPrice;
 
-        billEntity.TotalPrice = totalPrice;
-        billEntity.TotalPayment = totalPrice - totalPrice * request.Data.PercentPrePay / 100;
-        billEntity.Name = request.Data.FullName ?? user.FullName;
+        billEntities.TotalPrice = totalPrice;
+        billEntities.TotalPayment = totalPrice * bookingEntities.PercentPrePay / 100;
+        billEntities.Name = bookingEntities.FullName;
 
-        Response.BookingResponse? result = mapper.Map<Response.BookingResponse>(bookingEntity);
-
-        return Result.Success(result);
+        await context.SaveChangesAsync(cancellationToken);
     }
 }

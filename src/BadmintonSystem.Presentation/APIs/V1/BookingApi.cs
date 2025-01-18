@@ -51,7 +51,7 @@ public class BookingApi : ApiEndpoint, ICarterModule
         IHttpContextAccessor httpContextAccessor)
     {
         Guid? userId = httpContextAccessor.HttpContext?.GetCurrentUserId();
-        Result<Response.BookingResponse> result =
+        Result result =
             await sender.Send(new Command.CreateBookingCommand(userId ?? Guid.Empty, createBooking));
 
         return result.IsFailure ? HandleFailure(result) : Results.Ok(result);

@@ -6,9 +6,10 @@ namespace BadmintonSystem.Contract.Services.V1.Bill;
 public static class Query
 {
     public record GetBillByIdQuery(Guid Id)
-        : IQuery<Response.BillResponse>;
+        : IQuery<Response.BillDetailResponse>;
 
     public record GetBillsWithFilterAndSortValueQuery(
+        Request.FilterBillRequest Filter,
         Abstractions.Shared.Request.PagedFilterAndSortQueryRequest Data)
         : IQuery<PagedResult<Response.BillDetailResponse>>;
 }
