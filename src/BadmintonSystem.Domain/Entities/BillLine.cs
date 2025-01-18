@@ -3,7 +3,7 @@ using BadmintonSystem.Domain.Enumerations;
 
 namespace BadmintonSystem.Domain.Entities;
 
-public class BillLine : EntityBase<Guid>
+public class BillLine : EntityAuditBase<Guid>
 {
     public Guid BillId { get; set; }
 

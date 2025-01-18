@@ -32,8 +32,8 @@ public static class Response
 
     public class ServiceLineDetail
     {
-        public ServiceLineResponse ServiceLine { get; set; }
+        public ServiceLineResponse? ServiceLine { get; set; }
 
-        public Service.Response.ServiceResponse Service { get; set; }
+        public Service.Response.ServiceResponse? Service { get; set; }
     }
 }

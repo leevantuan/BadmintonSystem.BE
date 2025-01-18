@@ -34,10 +34,10 @@ public static class Response
 
     public class BillLineDetail
     {
-        public BillLineResponse BillLine { get; set; }
+        public BillLineResponse? BillLine { get; set; }
 
-        public Yard.Response.YardResponse Yard { get; set; }
+        public Yard.Response.YardResponse? Yard { get; set; }
 
-        public Price.Response.PriceResponse Price { get; set; }
+        public Price.Response.PriceResponse? Price { get; set; }
     }
 }

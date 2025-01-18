@@ -12,11 +12,11 @@ public static class Response
 
         public decimal SellingPrice { get; set; }
 
-        public decimal QuantityInStock { get; set; }
+        public decimal? QuantityInStock { get; set; }
 
         public string? Unit { get; set; }
 
-        public Guid CategoryId { get; set; }
+        public Guid? CategoryId { get; set; }
 
         public decimal? QuantityPrinciple { get; set; }
 

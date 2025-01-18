@@ -26,8 +26,8 @@ public class BillApi : ApiEndpoint, ICarterModule
             .RequireAuthorization();
 
         // QUERY
-        // group1.MapGet("filter-and-sort-value", GetBillsFilterAndSortValueV1)
-        //     .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.READ);
+        group1.MapPost("filter-and-sort-value", GetBillsFilterAndSortValueV1)
+            .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.READ);
         //
         // group1.MapPost("filter-and-sort-value-by-date", GetBillsFilterAndSortValueByDateV1)
         //     .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.READ);
@@ -176,18 +176,19 @@ public class BillApi : ApiEndpoint, ICarterModule
     //     return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
     // }
     //
-    // private static async Task<IResult> GetBillsFilterAndSortValueV1
-    // (
-    //     ISender sender,
-    //     [AsParameters] Contract.Abstractions.Shared.Request.PagedFilterAndSortRequest request)
-    // {
-    //     var pagedQueryRequest =
-    //         new Contract.Abstractions.Shared.Request.PagedFilterAndSortQueryRequest(request);
-    //     Result<PagedResult<Response.BillDetail>> result =
-    //         await sender.Send(new Query.GetBillsWithFilterAndSortValueQuery(pagedQueryRequest));
-    //
-    //     return Results.Ok(result);
-    // }
+    private static async Task<IResult> GetBillsFilterAndSortValueV1
+    (
+        ISender sender,
+        [FromBody] Request.FilterBillRequest filter,
+        [AsParameters] Contract.Abstractions.Shared.Request.PagedFilterAndSortRequest request)
+    {
+        var pagedQueryRequest =
+            new Contract.Abstractions.Shared.Request.PagedFilterAndSortQueryRequest(request);
+        Result<PagedResult<Response.BillDetailResponse>> result =
+            await sender.Send(new Query.GetBillsWithFilterAndSortValueQuery(filter, pagedQueryRequest));
+
+        return Results.Ok(result);
+    }
     //
     // private static async Task<IResult> GetBillsFilterAndSortValueByDateV1
     // (

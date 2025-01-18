@@ -10,9 +10,9 @@ public static class Response
 
         public string Name { get; set; }
 
-        public Guid YardTypeId { get; set; }
+        public Guid? YardTypeId { get; set; }
 
-        public int IsStatus { get; set; }
+        public int? IsStatus { get; set; }
     }
 
     public class YardDetailResponse : EntityAuditBase<Guid>

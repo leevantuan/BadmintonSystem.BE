@@ -20,7 +20,7 @@ public static class Response
 
         public Guid? YardTypeId { get; set; }
 
-        public int IsDefault { get; set; }
+        public int? IsDefault { get; set; }
     }
 
     public class PriceDetailResponse : EntityBase<Guid>
