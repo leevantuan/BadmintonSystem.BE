@@ -28,12 +28,9 @@ public class BillApi : ApiEndpoint, ICarterModule
         // QUERY
         group1.MapPost("filter-and-sort-value", GetBillsFilterAndSortValueV1)
             .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.READ);
-        //
-        // group1.MapPost("filter-and-sort-value-by-date", GetBillsFilterAndSortValueByDateV1)
-        //     .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.READ);
-        //
-        // group1.MapGet("{billId}", GetBillByIdV1)
-        //     .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.READ);
+
+        group1.MapGet("{billId}", GetBillByIdV1)
+            .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.READ);
 
         // Command
         group1.MapPost(string.Empty, CreateBillV1)
@@ -169,13 +166,13 @@ public class BillApi : ApiEndpoint, ICarterModule
         return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
     }
 
-    // private static async Task<IResult> GetBillByIdV1(ISender sender, Guid billId)
-    // {
-    //     Result<Response.GetBillDetailResponse> result = await sender.Send(new Query.GetBillByIdQuery(billId));
-    //
-    //     return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
-    // }
-    //
+    private static async Task<IResult> GetBillByIdV1(ISender sender, Guid billId)
+    {
+        Result<Response.BillDetailResponse> result = await sender.Send(new Query.GetBillByIdQuery(billId));
+
+        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+    }
+
     private static async Task<IResult> GetBillsFilterAndSortValueV1
     (
         ISender sender,

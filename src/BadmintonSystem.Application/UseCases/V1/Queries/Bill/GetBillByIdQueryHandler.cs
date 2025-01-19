@@ -2,33 +2,24 @@
 using System.Text;
 using BadmintonSystem.Contract.Abstractions.Message;
 using BadmintonSystem.Contract.Abstractions.Shared;
-using BadmintonSystem.Contract.Enumerations;
 using BadmintonSystem.Contract.Extensions;
 using BadmintonSystem.Contract.Services.V1.Bill;
 using BadmintonSystem.Domain.Abstractions.Repositories;
 using BadmintonSystem.Domain.Entities;
-using BadmintonSystem.Persistence;
+using BadmintonSystem.Domain.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
 namespace BadmintonSystem.Application.UseCases.V1.Queries.Bill;
 
-public sealed class GetBillsWithFilterAndSortValueQueryHandler(
-    ApplicationDbContext context,
+public sealed class GetBillByIdQueryHandler(
     IRepositoryBase<Domain.Entities.Bill, Guid> billRepository)
-    : IQueryHandler<Query.GetBillsWithFilterAndSortValueQuery, PagedResult<Response.BillDetailResponse>>
+    : IQueryHandler<Query.GetBillByIdQuery, Response.BillDetailResponse>
 {
-    public async Task<Result<PagedResult<Response.BillDetailResponse>>> Handle
-        (Query.GetBillsWithFilterAndSortValueQuery request, CancellationToken cancellationToken)
+    public async Task<Result<Response.BillDetailResponse>> Handle
+        (Query.GetBillByIdQuery request, CancellationToken cancellationToken)
     {
-        // Page Index and Page Size
-        int pageIndex = request.Data.PageIndex <= 0
-            ? PagedResult<Domain.Entities.Bill>.DefaultPageIndex
-            : request.Data.PageIndex;
-        int pageSize = request.Data.PageSize <= 0
-            ? PagedResult<Domain.Entities.Bill>.DefaultPageSize
-            : request.Data.PageSize > PagedResult<Domain.Entities.Bill>.UpperPageSize
-                ? PagedResult<Domain.Entities.Bill>.UpperPageSize
-                : request.Data.PageSize;
+        _ = billRepository.FindByIdAsync(request.Id, cancellationToken)
+            ?? throw new BillException.BillNotFoundException(request.Id);
 
         string billColumns = StringExtension
             .TransformPropertiesToSqlAliases<Domain.Entities.Bill,
@@ -58,59 +49,10 @@ public sealed class GetBillsWithFilterAndSortValueQueryHandler(
             .TransformPropertiesToSqlAliases<Domain.Entities.Price,
                 Contract.Services.V1.Price.Response.PriceResponse>();
 
-        var baseQueryBuilder = new StringBuilder();
-        baseQueryBuilder.Append($@"SELECT *
-	            FROM ""{nameof(Domain.Entities.Bill)}"" AS bill
-	            WHERE bill.""{nameof(Domain.Entities.Bill.ModifiedDate)}"" IS NOT NULL
-	            AND bill.""{nameof(Domain.Entities.Bill.ModifiedDate)}""::DATE BETWEEN '{request.Filter.StartDate.Date}' AND '{request.Filter.EndDate.Date}'");
-
-        if (request.Data.FilterColumnAndMultipleValue.Any())
-        {
-            foreach (KeyValuePair<string, List<string>> item in request.Data.FilterColumnAndMultipleValue)
-            {
-                string key = BillExtension.GetSortBillProperty(item.Key);
-                baseQueryBuilder.Append(
-                    $@"AND bill.""{key}""::TEXT ILIKE ANY (ARRAY[");
-
-                foreach (string value in item.Value)
-                {
-                    baseQueryBuilder.Append($@"'%{value}%', ");
-                }
-
-                baseQueryBuilder.Length -= 2;
-
-                baseQueryBuilder.Append("]) ");
-            }
-        }
-
-        if (request.Data.SortColumnAndOrder.Any())
-        {
-            baseQueryBuilder.Append("ORDER BY ");
-            foreach (KeyValuePair<string, SortOrder> item in request.Data.SortColumnAndOrder)
-            {
-                string key = BillExtension.GetSortBillProperty(item.Key);
-                baseQueryBuilder.Append(item.Value == SortOrder.Descending
-                    ? $@" bill.""{key}"" DESC, "
-                    : $@" bill.""{key}"" ASC, ");
-            }
-
-            baseQueryBuilder.Length -= 2;
-        }
-
-        var countQueryBuilder = new StringBuilder();
-        countQueryBuilder.Append(baseQueryBuilder);
-
-        var billCteQueryBuilder = new StringBuilder();
-        billCteQueryBuilder.Append(@"WITH billTemp AS ( ");
-        billCteQueryBuilder.Append(baseQueryBuilder);
-        billCteQueryBuilder.Append($"\nOFFSET {(pageIndex - 1) * pageSize} ROWS FETCH NEXT {pageSize} ROWS ONLY");
-        billCteQueryBuilder.Append("\n )");
-
         var billQueryBuilder = new StringBuilder();
-        billQueryBuilder.Append($"{billCteQueryBuilder}");
         billQueryBuilder.Append(
             $@"SELECT {priceColumns}, {billColumns}, {bookingColumns}, {billLineColumns}, {serviceLineColumns}, {serviceColumns}, {yardColumns}
-            FROM billTemp AS bill
+            FROM ""{nameof(Domain.Entities.Bill)}"" AS bill
             JOIN ""{nameof(Domain.Entities.Booking)}"" AS booking
             ON booking.""{nameof(Domain.Entities.Booking.Id)}"" = bill.""{nameof(Domain.Entities.Bill.BookingId)}"" 
             AND booking.""{nameof(Domain.Entities.Booking.IsDeleted)}"" = false
@@ -131,7 +73,9 @@ public sealed class GetBillsWithFilterAndSortValueQueryHandler(
 			ON price.""{nameof(Domain.Entities.Price.YardTypeId)}"" = yardType.""{nameof(Domain.Entities.YardType.Id)}""
 			AND price.""{nameof(Domain.Entities.Price.IsDeleted)}"" = false 
 			AND billLine.""{nameof(BillLine.StartTime)}"" BETWEEN price.""{nameof(Domain.Entities.Price.StartTime)}"" AND price.""{nameof(Domain.Entities.Price.EndTime)}""
-			AND price.""{nameof(Domain.Entities.Price.DayOfWeek)}"" = UPPER(TO_CHAR(billLine.""{nameof(BillLine.CreatedDate)}"", 'FMDay')) ");
+			AND price.""{nameof(Domain.Entities.Price.DayOfWeek)}"" = UPPER(TO_CHAR(billLine.""{nameof(BillLine.CreatedDate)}"", 'FMDay')) 
+			WHERE bill.""{nameof(Domain.Entities.Bill.Id)}"" = '{request.Id}'
+			AND bill.""{nameof(Domain.Entities.Bill.IsDeleted)}"" = false ");
 
         List<Response.GetBillDetailsSql> bills = await billRepository
             .ExecuteSqlQuery<Response.GetBillDetailsSql>(
@@ -139,7 +83,7 @@ public sealed class GetBillsWithFilterAndSortValueQueryHandler(
             .ToListAsync(cancellationToken);
 
         // GROUP BY
-        var results = bills.GroupBy(p => p.Bill_Id)
+        Response.BillDetailResponse? result = bills.GroupBy(p => p.Bill_Id)
             .Select(g => new Response.BillDetailResponse
             {
                 Id = g.Key ?? Guid.Empty,
@@ -207,15 +151,8 @@ public sealed class GetBillsWithFilterAndSortValueQueryHandler(
                             SellingPrice = x.Service_SellingPrice ?? 0
                         }).FirstOrDefault()
                     }).ToList()
-            }).ToList();
+            }).FirstOrDefault();
 
-        var billPagedResult =
-            PagedResult<Response.BillDetailResponse>.Create(
-                results,
-                pageIndex,
-                pageSize,
-                results.Count());
-
-        return Result.Success(billPagedResult);
+        return Result.Success(result);
     }
 }
