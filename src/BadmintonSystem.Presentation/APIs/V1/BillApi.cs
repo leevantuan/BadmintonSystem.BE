@@ -71,7 +71,7 @@ public class BillApi : ApiEndpoint, ICarterModule
         Result result =
             await sender.Send(new Command.CreateBillCommand(userId ?? Guid.Empty, createBill));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> UpdateBillV1
@@ -84,7 +84,7 @@ public class BillApi : ApiEndpoint, ICarterModule
         updateBill.Id = billId;
         Result result = await sender.Send(new Command.UpdateBillCommand(updateBill));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> CloseBillV1
@@ -95,7 +95,7 @@ public class BillApi : ApiEndpoint, ICarterModule
     {
         Result result = await sender.Send(new Command.CloseBillCommand(billId));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> OpenYardByBillV1
@@ -106,7 +106,7 @@ public class BillApi : ApiEndpoint, ICarterModule
     {
         Result result = await sender.Send(new Command.OpenYardByBillCommand(data));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> CloseYardByBillV1
@@ -117,7 +117,7 @@ public class BillApi : ApiEndpoint, ICarterModule
     {
         Result result = await sender.Send(new Command.CloseYardByBillCommand(data));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> UpdateQuantityServiceV1
@@ -128,7 +128,7 @@ public class BillApi : ApiEndpoint, ICarterModule
     {
         Result result = await sender.Send(new Command.UpdateQuantityServiceByBillCommand(data));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> CreateServiceByBillV1
@@ -140,7 +140,7 @@ public class BillApi : ApiEndpoint, ICarterModule
     {
         Result result = await sender.Send(new Command.CreateServicesByBillCommand(billId, data));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> DeleteServiceBillV1
@@ -151,7 +151,7 @@ public class BillApi : ApiEndpoint, ICarterModule
     {
         Result result = await sender.Send(new Command.DeleteServiceLineByBillCommand(serviceLineId));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
 
@@ -163,14 +163,14 @@ public class BillApi : ApiEndpoint, ICarterModule
     {
         Result result = await sender.Send(new Command.OpenYardByBillInBookingCommand(billId));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> GetBillByIdV1(ISender sender, Guid billId)
     {
         Result<Response.BillDetailResponse> result = await sender.Send(new Query.GetBillByIdQuery(billId));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> GetBillsFilterAndSortValueV1

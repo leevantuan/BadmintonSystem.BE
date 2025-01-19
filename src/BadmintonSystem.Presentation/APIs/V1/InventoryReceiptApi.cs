@@ -48,14 +48,14 @@ public class InventoryReceiptApi : ApiEndpoint, ICarterModule
         Result result =
             await sender.Send(new Command.CreateInventoryReceiptCommand(userId ?? Guid.Empty, createInventoryReceipt));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> DeleteInventoryReceiptsV1(ISender sender, Guid inventoryReceiptId)
     {
         Result result = await sender.Send(new Command.DeleteInventoryReceiptsCommand(inventoryReceiptId));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> GetInventoryReceiptByIdV1(ISender sender, Guid inventoryReceiptId)
@@ -63,7 +63,7 @@ public class InventoryReceiptApi : ApiEndpoint, ICarterModule
         Result<Response.InventoryReceiptDetailResponse> result =
             await sender.Send(new Query.GetInventoryReceiptByIdQuery(inventoryReceiptId));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> GetInventoryReceiptsFilterAndSortValueV1

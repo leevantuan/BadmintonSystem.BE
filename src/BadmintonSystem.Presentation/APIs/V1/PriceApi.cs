@@ -54,14 +54,14 @@ public class PriceApi : ApiEndpoint, ICarterModule
         Result<Response.PriceResponse> result =
             await sender.Send(new Command.CreatePriceCommand(userId ?? Guid.Empty, createPrice));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> DeletePricesV1(ISender sender, [FromBody] List<string> ids)
     {
         Result result = await sender.Send(new Command.DeletePricesCommand(ids));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> UpdatePriceV1
@@ -74,14 +74,14 @@ public class PriceApi : ApiEndpoint, ICarterModule
         updatePrice.Id = id;
         Result<Response.PriceResponse> result = await sender.Send(new Command.UpdatePriceCommand(updatePrice));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> GetPriceByIdV1(ISender sender, Guid priceId)
     {
         Result<Response.PriceDetailResponse> result = await sender.Send(new Query.GetPriceByIdQuery(priceId));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> GetPricesFilterAndSortValueV1

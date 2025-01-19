@@ -49,7 +49,7 @@ public class ReviewApi : ApiEndpoint, ICarterModule
         Result result =
             await sender.Send(new Command.CreateReviewByUserIdCommand(userIdCurrent ?? Guid.Empty, request));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> UpdateReviewByUserIdV1
@@ -63,7 +63,7 @@ public class ReviewApi : ApiEndpoint, ICarterModule
         Result result =
             await sender.Send(new Command.UpdateReviewByUserIdCommand(userIdCurrent ?? Guid.Empty, request));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> DeleteReviewByUserIdV1
@@ -78,13 +78,13 @@ public class ReviewApi : ApiEndpoint, ICarterModule
             await sender.Send(
                 new Command.DeleteReviewByUserIdCommand(userIdCurrent ?? Guid.Empty, reviewId));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> GetReviewByIdV1(ISender sender, Guid reviewId)
     {
         Result<Response.GetReviewDetailResponse> result = await sender.Send(new Query.GetReviewByIdQuery(reviewId));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 }

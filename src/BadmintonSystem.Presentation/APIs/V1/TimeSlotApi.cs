@@ -51,14 +51,14 @@ public class TimeSlotApi : ApiEndpoint, ICarterModule
         Result<Response.TimeSlotResponse> result =
             await sender.Send(new Command.CreateTimeSlotCommand(userId ?? Guid.Empty, createTimeSlot));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> DeleteTimeSlotsV1(ISender sender, [FromBody] List<string> ids)
     {
         Result result = await sender.Send(new Command.DeleteTimeSlotsCommand(ids));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> UpdateTimeSlotV1
@@ -71,14 +71,14 @@ public class TimeSlotApi : ApiEndpoint, ICarterModule
         updateTimeSlot.Id = id;
         Result<Response.TimeSlotResponse> result = await sender.Send(new Command.UpdateTimeSlotCommand(updateTimeSlot));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> GetTimeSlotByIdV1(ISender sender, Guid timeSlotId)
     {
         Result<Response.TimeSlotResponse> result = await sender.Send(new Query.GetTimeSlotByIdQuery(timeSlotId));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> GetTimeSlotsFilterAndSortValueV1

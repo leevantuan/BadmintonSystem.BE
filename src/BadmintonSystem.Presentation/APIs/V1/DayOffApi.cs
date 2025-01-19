@@ -48,14 +48,14 @@ public class DayOffApi : ApiEndpoint, ICarterModule
         Result<Response.DayOffResponse> result =
             await sender.Send(new Command.CreateDayOffCommand(userId ?? Guid.Empty, createDayOff));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> DeleteDayOffsV1(ISender sender, [FromBody] List<string> ids)
     {
         Result result = await sender.Send(new Command.DeleteDayOffsCommand(ids));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> UpdateDayOffV1
@@ -68,13 +68,13 @@ public class DayOffApi : ApiEndpoint, ICarterModule
         updateDayOff.Id = id;
         Result<Response.DayOffResponse> result = await sender.Send(new Command.UpdateDayOffCommand(updateDayOff));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> GetDayOffByDateV1(ISender sender, [FromBody] DateTime date)
     {
         Result<Response.DayOffDetailResponse> result = await sender.Send(new Query.GetDayOffByDateQuery(date));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 }

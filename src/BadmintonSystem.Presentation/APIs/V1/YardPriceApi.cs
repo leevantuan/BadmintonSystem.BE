@@ -57,14 +57,14 @@ public class YardPriceApi : ApiEndpoint, ICarterModule
         Result<Response.YardPriceResponse> result =
             await sender.Send(new Command.CreateYardPriceCommand(userId ?? Guid.Empty, createYardPrice));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> DeleteYardPricesV1(ISender sender, [FromBody] List<string> ids)
     {
         Result result = await sender.Send(new Command.DeleteYardPricesCommand(ids));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> UpdateYardPriceV1
@@ -78,7 +78,7 @@ public class YardPriceApi : ApiEndpoint, ICarterModule
         Result<Response.YardPriceResponse> result =
             await sender.Send(new Command.UpdateYardPriceCommand(updateYardPrice));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> GetYardPriceByIdV1(ISender sender, Guid yardPriceId)
@@ -86,7 +86,7 @@ public class YardPriceApi : ApiEndpoint, ICarterModule
         Result<Response.YardPriceDetailResponse> result =
             await sender.Send(new Query.GetYardPriceByIdQuery(yardPriceId));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> GetYardPricesFilterAndSortValueV1

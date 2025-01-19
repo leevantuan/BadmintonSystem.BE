@@ -59,14 +59,14 @@ public class ServiceApi : ApiEndpoint, ICarterModule
         Result result =
             await sender.Send(new Command.CreateServicesCommand(userId ?? Guid.Empty, createService));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> DeleteServicesV1(ISender sender, [FromBody] List<string> ids)
     {
         Result result = await sender.Send(new Command.DeleteServicesCommand(ids));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> UpdateServiceV1
@@ -77,7 +77,7 @@ public class ServiceApi : ApiEndpoint, ICarterModule
         updateService.Id = id;
         Result result = await sender.Send(new Command.UpdateServiceCommand(updateService));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> UpdateServiceQuantityV1
@@ -87,7 +87,7 @@ public class ServiceApi : ApiEndpoint, ICarterModule
     {
         Result result = await sender.Send(new Command.UpdateQuantityServiceCommand(updateService));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> GetServicesV1
@@ -99,14 +99,14 @@ public class ServiceApi : ApiEndpoint, ICarterModule
         Result<PagedResult<Response.ServiceResponse>> result =
             await sender.Send(new Query.GetServicesQuery(pagedQueryRequest));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> GetServiceByIdV1(ISender sender, Guid serviceId)
     {
         Result<Response.ServiceResponse> result = await sender.Send(new Query.GetServiceByIdQuery(serviceId));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> GetServicesFilterAndSortValueV1

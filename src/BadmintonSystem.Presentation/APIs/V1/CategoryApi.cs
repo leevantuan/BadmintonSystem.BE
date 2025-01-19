@@ -56,14 +56,14 @@ public class CategoryApi : ApiEndpoint, ICarterModule
         Guid? userId = httpContextAccessor.HttpContext?.GetCurrentUserId();
         Result result = await sender.Send(new Command.CreateCategoryCommand(userId ?? Guid.Empty, createCategory));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> DeleteCategoriesV1(ISender sender, [FromBody] List<string> ids)
     {
         Result result = await sender.Send(new Command.DeleteCategoriesCommand(ids));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> UpdateCategoryV1
@@ -74,7 +74,7 @@ public class CategoryApi : ApiEndpoint, ICarterModule
         updateCategory.Id = id;
         Result result = await sender.Send(new Command.UpdateCategoryCommand(updateCategory));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> GetCategoriesV1
@@ -86,7 +86,7 @@ public class CategoryApi : ApiEndpoint, ICarterModule
         Result<PagedResult<Response.CategoryResponse>> result =
             await sender.Send(new Query.GetCategoriesQuery(pagedQueryRequest));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> GetCategoryByIdV1(ISender sender, Guid categoryId)
@@ -94,7 +94,7 @@ public class CategoryApi : ApiEndpoint, ICarterModule
         Result<Response.CategoryResponse> result =
             await sender.Send(new Query.GetCategoryByIdQuery(categoryId));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> GetServicesByCategoryIdFilterAndSortValueV1
@@ -109,7 +109,7 @@ public class CategoryApi : ApiEndpoint, ICarterModule
             await sender.Send(
                 new Query.GetServicesByCategoryIdWithFilterAndSortValueQuery(CategoryId, pagedQueryRequest));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> GetCategoriesFilterAndSortValueV1
@@ -122,6 +122,6 @@ public class CategoryApi : ApiEndpoint, ICarterModule
             await sender.Send(
                 new Query.GetCategoriesWithFilterAndSortValueQuery(pagedQueryRequest));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 }

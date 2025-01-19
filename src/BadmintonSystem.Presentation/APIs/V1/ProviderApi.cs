@@ -55,14 +55,14 @@ public class ProviderApi : ApiEndpoint, ICarterModule
         Result result =
             await sender.Send(new Command.CreateProviderCommand(userId ?? Guid.Empty, createProvider));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> DeleteProvidersV1(ISender sender, [FromBody] List<string> ids)
     {
         Result result = await sender.Send(new Command.DeleteProvidersCommand(ids));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> UpdateProviderV1
@@ -75,14 +75,14 @@ public class ProviderApi : ApiEndpoint, ICarterModule
         updateProvider.Id = id;
         Result result = await sender.Send(new Command.UpdateProviderCommand(updateProvider));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> GetProviderByIdV1(ISender sender, Guid providerId)
     {
         Result<Response.ProviderDetailResponse> result = await sender.Send(new Query.GetProviderByIdQuery(providerId));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> GetProvidersFilterAndSortValueV1

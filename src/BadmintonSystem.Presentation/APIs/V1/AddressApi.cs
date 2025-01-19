@@ -49,7 +49,7 @@ public class AddressApi : ApiEndpoint, ICarterModule
         Result result =
             await sender.Send(new Command.CreateAddressByUserIdCommand(userId ?? Guid.Empty, createAddress));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> UpdateAddressV1
@@ -63,7 +63,7 @@ public class AddressApi : ApiEndpoint, ICarterModule
         Result result =
             await sender.Send(new Command.UpdateAddressByUserIdCommand(userId ?? Guid.Empty, updateAddress));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> GetAddressByIdV1
@@ -74,7 +74,7 @@ public class AddressApi : ApiEndpoint, ICarterModule
         Result<Response.AddressByUserDetailResponse> result =
             await sender.Send(new Query.GetAddressesByIdQuery(userId ?? Guid.Empty, addressId));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
 
@@ -90,6 +90,6 @@ public class AddressApi : ApiEndpoint, ICarterModule
             await sender.Send(
                 new Command.DeleteAddressByUserIdCommand(userIdCurrent ?? Guid.Empty, addressId));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 }

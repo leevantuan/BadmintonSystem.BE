@@ -20,6 +20,7 @@ public sealed class CreateCategoryCommandHandler(
 
         Response.CategoryResponse? result = mapper.Map<Response.CategoryResponse>(category);
 
+        //return Task.FromResult(Result.Success());
         return Task.FromResult(Result.Success(result));
     }
 }

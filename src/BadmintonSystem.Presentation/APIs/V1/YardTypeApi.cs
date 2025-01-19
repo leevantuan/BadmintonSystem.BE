@@ -51,14 +51,14 @@ public class YardTypeApi : ApiEndpoint, ICarterModule
         Result<Response.YardTypeResponse> result =
             await sender.Send(new Command.CreateYardTypeCommand(userId ?? Guid.Empty, createYardType));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> DeleteYardTypesV1(ISender sender, [FromBody] List<string> ids)
     {
         Result result = await sender.Send(new Command.DeleteYardTypesCommand(ids));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> UpdateYardTypeV1
@@ -71,14 +71,14 @@ public class YardTypeApi : ApiEndpoint, ICarterModule
         updateYardType.Id = id;
         Result<Response.YardTypeResponse> result = await sender.Send(new Command.UpdateYardTypeCommand(updateYardType));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> GetYardTypeByIdV1(ISender sender, Guid yardTypeId)
     {
         Result<Response.YardTypeResponse> result = await sender.Send(new Query.GetYardTypeByIdQuery(yardTypeId));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> GetYardTypesFilterAndSortValueV1

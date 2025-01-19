@@ -48,14 +48,14 @@ public class FixedScheduleApi : ApiEndpoint, ICarterModule
         Result<Response.FixedScheduleResponse> result =
             await sender.Send(new Command.CreateFixedScheduleCommand(userId ?? Guid.Empty, createFixedSchedule));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> DeleteFixedSchedulesV1(ISender sender, [FromBody] List<string> ids)
     {
         Result result = await sender.Send(new Command.DeleteFixedSchedulesCommand(ids));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> UpdateFixedScheduleV1
@@ -69,7 +69,7 @@ public class FixedScheduleApi : ApiEndpoint, ICarterModule
         Result<Response.FixedScheduleResponse> result =
             await sender.Send(new Command.UpdateFixedScheduleCommand(updateFixedSchedule));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> GetFixedSchedulesFilterAndSortValueV1

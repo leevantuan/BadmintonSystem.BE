@@ -54,14 +54,14 @@ public class BookingApi : ApiEndpoint, ICarterModule
         Result result =
             await sender.Send(new Command.CreateBookingCommand(userId ?? Guid.Empty, createBooking));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> DeleteBookingsV1(ISender sender, Guid bookingId)
     {
         Result result = await sender.Send(new Command.DeleteBookingByIdCommand(bookingId));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> UpdateBookingV1
@@ -72,14 +72,14 @@ public class BookingApi : ApiEndpoint, ICarterModule
     {
         Result result = await sender.Send(new Command.UpdateBookingCommand(id));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> GetBookingByIdV1(ISender sender, Guid bookingId)
     {
         Result<Response.GetBookingDetailResponse> result = await sender.Send(new Query.GetBookingByIdQuery(bookingId));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> GetBookingsFilterAndSortValueV1

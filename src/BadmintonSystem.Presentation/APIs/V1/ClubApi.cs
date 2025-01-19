@@ -53,14 +53,14 @@ public class ClubApi : ApiEndpoint, ICarterModule
         Result<Response.ClubResponse> result =
             await sender.Send(new Command.CreateClubCommand(userId ?? Guid.Empty, createClub));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> DeleteClubsV1(ISender sender, [FromBody] List<string> ids)
     {
         Result result = await sender.Send(new Command.DeleteClubsCommand(ids));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> UpdateClubV1
@@ -73,7 +73,7 @@ public class ClubApi : ApiEndpoint, ICarterModule
         updateClub.Id = id;
         Result<Response.ClubResponse> result = await sender.Send(new Command.UpdateClubCommand(updateClub));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> GetClubsV1
@@ -85,14 +85,14 @@ public class ClubApi : ApiEndpoint, ICarterModule
         Result<PagedResult<Response.ClubResponse>> result =
             await sender.Send(new Query.GetClubsQuery(pagedQueryRequest));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> GetClubByIdV1(ISender sender, Guid clubId)
     {
         Result<Response.ClubDetailResponse> result = await sender.Send(new Query.GetClubByIdQuery(clubId));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> GetClubsFilterAndSortValueV1

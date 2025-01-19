@@ -53,14 +53,14 @@ public class SaleApi : ApiEndpoint, ICarterModule
         Result<Response.SaleResponse> result =
             await sender.Send(new Command.CreateSaleCommand(userId ?? Guid.Empty, createSale));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> DeleteSalesV1(ISender sender, [FromBody] List<string> ids)
     {
         Result result = await sender.Send(new Command.DeleteSalesCommand(ids));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> UpdateSaleV1
@@ -73,7 +73,7 @@ public class SaleApi : ApiEndpoint, ICarterModule
         updateSale.Id = id;
         Result<Response.SaleResponse> result = await sender.Send(new Command.UpdateSaleCommand(updateSale));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> GetSalesV1
@@ -85,14 +85,14 @@ public class SaleApi : ApiEndpoint, ICarterModule
         Result<PagedResult<Response.SaleResponse>> result =
             await sender.Send(new Query.GetSalesQuery(pagedQueryRequest));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> GetSaleByIdV1(ISender sender, Guid saleId)
     {
         Result<Response.SaleResponse> result = await sender.Send(new Query.GetSaleByIdQuery(saleId));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> GetSalesFilterAndSortValueV1

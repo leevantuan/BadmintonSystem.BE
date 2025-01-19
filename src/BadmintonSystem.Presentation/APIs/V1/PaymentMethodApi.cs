@@ -49,7 +49,7 @@ public class PaymentMethodApi : ApiEndpoint, ICarterModule
         Result result =
             await sender.Send(new Command.CreatePaymentMethodByUserIdCommand(userIdCurrent ?? Guid.Empty, request));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> UpdatePaymentMethodByUserIdV1
@@ -63,7 +63,7 @@ public class PaymentMethodApi : ApiEndpoint, ICarterModule
         Result result =
             await sender.Send(new Command.UpdatePaymentMethodByUserIdCommand(userIdCurrent ?? Guid.Empty, request));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> DeletePaymentMethodByUserIdV1
@@ -78,7 +78,7 @@ public class PaymentMethodApi : ApiEndpoint, ICarterModule
             await sender.Send(
                 new Command.DeletePaymentMethodByUserIdCommand(userIdCurrent ?? Guid.Empty, paymentMethodId));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> GetPaymentMethodByIdV1(ISender sender, Guid paymentMethodId)
@@ -86,6 +86,6 @@ public class PaymentMethodApi : ApiEndpoint, ICarterModule
         Result<Response.PaymentMethodDetailResponse> result =
             await sender.Send(new Query.GetPaymentMethodByIdQuery(paymentMethodId));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 }

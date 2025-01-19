@@ -51,14 +51,14 @@ public class NotificationApi : ApiEndpoint, ICarterModule
         Result<Response.NotificationResponse> result =
             await sender.Send(new Command.CreateNotificationCommand(userId ?? Guid.Empty, createNotification));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> DeleteNotificationsV1(ISender sender, [FromBody] List<string> ids)
     {
         Result result = await sender.Send(new Command.DeleteNotificationsCommand(ids));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> UpdateNotificationV1
@@ -72,7 +72,7 @@ public class NotificationApi : ApiEndpoint, ICarterModule
         Result<Response.NotificationResponse> result =
             await sender.Send(new Command.UpdateNotificationCommand(updateNotification));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> GetNotificationByIdV1
@@ -83,7 +83,7 @@ public class NotificationApi : ApiEndpoint, ICarterModule
         Result<Response.NotificationDetailResponse> result =
             await sender.Send(new Query.GetNotificationsByIdQuery(userIdCurrent ?? Guid.Empty, notificationId));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
 
@@ -99,6 +99,6 @@ public class NotificationApi : ApiEndpoint, ICarterModule
             await sender.Send(
                 new Command.DeleteNotificationByUserIdCommand(userIdCurrent ?? Guid.Empty, notificationId));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 }

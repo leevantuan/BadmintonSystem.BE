@@ -1,6 +1,7 @@
 ﻿using BadmintonSystem.Application.Behaviors;
 using BadmintonSystem.Application.Mappers;
 using BadmintonSystem.Application.UseCases.V1.Services;
+using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -20,7 +21,8 @@ public static class ServiceCollectionExtensions
             .AddTransient(typeof(IBillLineService), typeof(BillLineService))
             .AddTransient(typeof(IServiceLineService), typeof(ServiceLineService))
             .AddTransient(typeof(IOriginalQuantityService), typeof(OriginalQuantityService))
-            .AddTransient(typeof(IPipelineBehavior<,>), typeof(TransactionPipelineBehavior<,>));
+            .AddTransient(typeof(IPipelineBehavior<,>), typeof(TransactionPipelineBehavior<,>))
+            .AddValidatorsFromAssembly(Contract.AssemblyReference.Assembly, includeInternalTypes: true);
     }
     //.AddValidatorsFromAssembly(BadmintonSystem.Contract.AssemblyReference.Assembly, includeInternalTypes: true);
 

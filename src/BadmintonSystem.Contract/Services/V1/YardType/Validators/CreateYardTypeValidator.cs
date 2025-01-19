@@ -6,6 +6,7 @@ public sealed class CreateYardTypeValidator : AbstractValidator<Command.CreateYa
 {
     public CreateYardTypeValidator()
     {
-        RuleFor(x => x.Data.Name).NotEmpty().WithMessage("Name not null");
+        RuleFor(x => x.Data.Name).NotEmpty().WithMessage("Name not null")
+            .MinimumLength(5).WithMessage("Name must be at least 5 characters long");
     }
 }
