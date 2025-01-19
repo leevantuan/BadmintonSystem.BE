@@ -20,7 +20,6 @@ public sealed class GetProvidersWithFilterAndSortValueQueryHandler(
     public async Task<Result<PagedResult<Response.ProviderDetailResponse>>> Handle
         (Query.GetProvidersWithFilterAndSortValueQuery request, CancellationToken cancellationToken)
     {
-        // Page Index and Page Size
         int PageIndex = request.Data.PageIndex <= 0
             ? PagedResult<Domain.Entities.Provider>.DefaultPageIndex
             : request.Data.PageIndex;
@@ -30,7 +29,6 @@ public sealed class GetProvidersWithFilterAndSortValueQueryHandler(
                 ? PagedResult<Domain.Entities.Provider>.UpperPageSize
                 : request.Data.PageSize;
 
-        // Handle Query SQL
         var providersQuery = new StringBuilder();
 
         providersQuery.Append($@"SELECT * FROM ""{nameof(Domain.Entities.Provider)}""

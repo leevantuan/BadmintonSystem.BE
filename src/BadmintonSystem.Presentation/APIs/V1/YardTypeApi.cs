@@ -28,7 +28,7 @@ public class YardTypeApi : ApiEndpoint, ICarterModule
         group1.MapPost(string.Empty, CreateYardTypeV1)
             .RequireJwtAuthorize(FunctionEnum.YARDTYPE.ToString(), (int)ActionEnum.CREATE);
 
-        group1.MapGet("filter-and-sort-value", GetYardTypesFilterAndSortValueV1)
+        group1.MapGet("filter-and-sort", GetYardTypesFilterAndSortValueV1)
             .RequireJwtAuthorize(FunctionEnum.YARDTYPE.ToString(), (int)ActionEnum.READ);
 
         group1.MapGet("{yardTypeId}", GetYardTypeByIdV1)

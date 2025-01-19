@@ -27,7 +27,7 @@ public sealed class GetYardPricesByDateQueryHandler(
 
         if (!effectiveDateIsExists.Any())
         {
-            yardPriceService.CreateYardPrice(request.Date, request.UserId);
+            await yardPriceService.CreateYardPrice(request.Date, request.UserId, cancellationToken);
         }
 
         string yardColumns = StringExtension

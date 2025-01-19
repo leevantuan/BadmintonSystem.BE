@@ -3,12 +3,10 @@ using BadmintonSystem.Contract.Abstractions.Message;
 using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.V1.Category;
 using BadmintonSystem.Domain.Abstractions.Repositories;
-using BadmintonSystem.Persistence;
 
 namespace BadmintonSystem.Application.UseCases.V1.Commands.Category;
 
 public sealed class CreateCategoryCommandHandler(
-    ApplicationDbContext context,
     IMapper mapper,
     IRepositoryBase<Domain.Entities.Category, Guid> categoryRepository)
     : ICommandHandler<Command.CreateCategoryCommand, Response.CategoryResponse>

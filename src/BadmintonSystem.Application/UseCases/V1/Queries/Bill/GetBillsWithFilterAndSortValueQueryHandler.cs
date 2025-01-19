@@ -7,20 +7,17 @@ using BadmintonSystem.Contract.Extensions;
 using BadmintonSystem.Contract.Services.V1.Bill;
 using BadmintonSystem.Domain.Abstractions.Repositories;
 using BadmintonSystem.Domain.Entities;
-using BadmintonSystem.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace BadmintonSystem.Application.UseCases.V1.Queries.Bill;
 
 public sealed class GetBillsWithFilterAndSortValueQueryHandler(
-    ApplicationDbContext context,
     IRepositoryBase<Domain.Entities.Bill, Guid> billRepository)
     : IQueryHandler<Query.GetBillsWithFilterAndSortValueQuery, PagedResult<Response.BillDetailResponse>>
 {
     public async Task<Result<PagedResult<Response.BillDetailResponse>>> Handle
         (Query.GetBillsWithFilterAndSortValueQuery request, CancellationToken cancellationToken)
     {
-        // Page Index and Page Size
         int pageIndex = request.Data.PageIndex <= 0
             ? PagedResult<Domain.Entities.Bill>.DefaultPageIndex
             : request.Data.PageIndex;
@@ -97,8 +94,7 @@ public sealed class GetBillsWithFilterAndSortValueQueryHandler(
             baseQueryBuilder.Length -= 2;
         }
 
-        var countQueryBuilder = new StringBuilder();
-        countQueryBuilder.Append(baseQueryBuilder);
+        int totalCount = await TotalCount(baseQueryBuilder.ToString(), cancellationToken);
 
         var billCteQueryBuilder = new StringBuilder();
         billCteQueryBuilder.Append(@"WITH billTemp AS ( ");
@@ -111,23 +107,23 @@ public sealed class GetBillsWithFilterAndSortValueQueryHandler(
         billQueryBuilder.Append(
             $@"SELECT {priceColumns}, {billColumns}, {bookingColumns}, {billLineColumns}, {serviceLineColumns}, {serviceColumns}, {yardColumns}
             FROM billTemp AS bill
-            JOIN ""{nameof(Domain.Entities.Booking)}"" AS booking
+            LEFT JOIN ""{nameof(Domain.Entities.Booking)}"" AS booking
             ON booking.""{nameof(Domain.Entities.Booking.Id)}"" = bill.""{nameof(Domain.Entities.Bill.BookingId)}"" 
             AND booking.""{nameof(Domain.Entities.Booking.IsDeleted)}"" = false
-            JOIN ""{nameof(BillLine)}"" AS billLine
+            LEFT JOIN ""{nameof(BillLine)}"" AS billLine
             ON billLine.""{nameof(BillLine.BillId)}"" = bill.""{nameof(Domain.Entities.Bill.Id)}""
-            JOIN ""{nameof(Domain.Entities.Yard)}"" AS yard
+            LEFT JOIN ""{nameof(Domain.Entities.Yard)}"" AS yard
             ON yard.""{nameof(Domain.Entities.Yard.Id)}"" = billLine.""{nameof(BillLine.YardId)}""
             AND yard.""{nameof(Domain.Entities.Yard.IsDeleted)}"" = false
-            JOIN ""{nameof(ServiceLine)}"" AS serviceLine
+            LEFT JOIN ""{nameof(ServiceLine)}"" AS serviceLine
             ON serviceLine.""{nameof(ServiceLine.BillId)}"" = bill.""{nameof(Domain.Entities.Bill.Id)}""
-            JOIN ""{nameof(Domain.Entities.Service)}"" AS service
+            LEFT JOIN ""{nameof(Domain.Entities.Service)}"" AS service
             ON service.""{nameof(Domain.Entities.Service.Id)}"" = serviceLine.""{nameof(ServiceLine.ServiceId)}""
             AND service.""{nameof(Domain.Entities.Service.IsDeleted)}"" = false 
-            JOIN ""{nameof(Domain.Entities.YardType)}"" AS yardType
+            LEFT JOIN ""{nameof(Domain.Entities.YardType)}"" AS yardType
 			ON yardType.""{nameof(Domain.Entities.YardType.Id)}"" = yard.""{nameof(Domain.Entities.Yard.YardTypeId)}""
 			AND yardType.""{nameof(Domain.Entities.YardType.IsDeleted)}"" = false 
-			JOIN ""{nameof(Domain.Entities.Price)}"" AS price
+			LEFT JOIN ""{nameof(Domain.Entities.Price)}"" AS price
 			ON price.""{nameof(Domain.Entities.Price.YardTypeId)}"" = yardType.""{nameof(Domain.Entities.YardType.Id)}""
 			AND price.""{nameof(Domain.Entities.Price.IsDeleted)}"" = false 
 			AND billLine.""{nameof(BillLine.StartTime)}"" BETWEEN price.""{nameof(Domain.Entities.Price.StartTime)}"" AND price.""{nameof(Domain.Entities.Price.EndTime)}""
@@ -138,6 +134,18 @@ public sealed class GetBillsWithFilterAndSortValueQueryHandler(
                 FormattableStringFactory.Create(billQueryBuilder.ToString()))
             .ToListAsync(cancellationToken);
 
+        var billPagedResult =
+            PagedResult<Response.BillDetailResponse>.Create(
+                GroupByData(bills),
+                pageIndex,
+                pageSize,
+                totalCount);
+
+        return Result.Success(billPagedResult);
+    }
+
+    private List<Response.BillDetailResponse> GroupByData(List<Response.GetBillDetailsSql> bills)
+    {
         // GROUP BY
         var results = bills.GroupBy(p => p.Bill_Id)
             .Select(g => new Response.BillDetailResponse
@@ -151,71 +159,87 @@ public sealed class GetBillsWithFilterAndSortValueQueryHandler(
                 UserId = g.First().Bill_UserId,
                 BookingId = g.First().Bill_BookingId,
 
-                Booking = g.Select(s => new Contract.Services.V1.Booking.Response.BookingDetail
-                {
-                    BookingDate = g.First().Booking_BookingDate ?? null,
-                    BookingTotal = g.First().Booking_BookingTotal ?? null,
-                    OriginalPrice = g.First().Booking_OriginalPrice ?? null,
-                    FullName = g.First().Booking_FullName ?? string.Empty,
-                    PhoneNumber = g.First().Booking_PhoneNumber ?? string.Empty
-                }).FirstOrDefault(),
-
-                BillLineDetails = g.GroupBy(x => x.BillLine_Id)
-                    .Select(bg => new Contract.Services.V1.BillLine.Response.BillLineDetail
+                Booking = g.First().Booking_Id != null
+                    ? g.Select(s => new Contract.Services.V1.Booking.Response.BookingDetail
                     {
-                        BillLine = bg.Select(x => new Contract.Services.V1.BillLine.Response.BillLineResponse
-                        {
-                            Id = x.BillLine_Id ?? Guid.Empty,
-                            BillId = x.BillLine_BillId ?? Guid.Empty,
-                            YardId = x.BillLine_YardId ?? Guid.Empty,
-                            StartTime = x.BillLine_StartTime ?? TimeSpan.Zero,
-                            EndTime = x.BillLine_EndTime ?? TimeSpan.Zero,
-                            TotalPrice = x.BillLine_TotalPrice ?? 0
-                        }).FirstOrDefault(),
+                        BookingDate = g.First().Booking_BookingDate ?? null,
+                        BookingTotal = g.First().Booking_BookingTotal ?? null,
+                        OriginalPrice = g.First().Booking_OriginalPrice ?? null,
+                        FullName = g.First().Booking_FullName ?? string.Empty,
+                        PhoneNumber = g.First().Booking_PhoneNumber ?? string.Empty
+                    }).FirstOrDefault()
+                    : null,
 
-                        Yard = bg.Select(x => new Contract.Services.V1.Yard.Response.YardResponse
+                BillLineDetails = g.First().BillLine_Id != null
+                    ? g.GroupBy(x => x.BillLine_Id)
+                        .Select(bg => new Contract.Services.V1.BillLine.Response.BillLineDetail
                         {
-                            Id = x.Yard_Id ?? Guid.Empty,
-                            Name = x.Yard_Name ?? string.Empty
-                        }).FirstOrDefault(),
+                            BillLine = bg.Select(x => new Contract.Services.V1.BillLine.Response.BillLineResponse
+                            {
+                                Id = x.BillLine_Id ?? Guid.Empty,
+                                BillId = x.BillLine_BillId ?? Guid.Empty,
+                                YardId = x.BillLine_YardId ?? Guid.Empty,
+                                StartTime = x.BillLine_StartTime ?? TimeSpan.Zero,
+                                EndTime = x.BillLine_EndTime ?? TimeSpan.Zero,
+                                TotalPrice = x.BillLine_TotalPrice ?? 0
+                            }).FirstOrDefault(),
 
-                        Price = bg.Select(x => new Contract.Services.V1.Price.Response.PriceResponse
-                        {
-                            Id = x.Price_Id ?? Guid.Empty,
-                            YardPrice = x.Price_YardPrice ?? 0
-                        }).FirstOrDefault()
-                    }).ToList(),
+                            Yard = bg.Select(x => new Contract.Services.V1.Yard.Response.YardResponse
+                            {
+                                Id = x.Yard_Id ?? Guid.Empty,
+                                Name = x.Yard_Name ?? string.Empty
+                            }).FirstOrDefault(),
 
-                ServiceLineDetails = g.GroupBy(x => x.ServiceLine_Id)
-                    .Select(sg => new Contract.Services.V1.ServiceLine.Response.ServiceLineDetail
-                    {
-                        ServiceLine = sg.Select(x => new Contract.Services.V1.ServiceLine.Response.ServiceLineResponse
-                        {
-                            Id = x.ServiceLine_Id ?? Guid.Empty,
-                            ServiceId = x.ServiceLine_ServiceId ?? Guid.Empty,
-                            ComboFixedId = x.ServiceLine_ComboFixedId ?? Guid.Empty,
-                            Quantity = x.ServiceLine_Quantity ?? 0,
-                            TotalPrice = x.ServiceLine_TotalPrice ?? 0,
-                            BillId = x.ServiceLine_BillId ?? Guid.Empty
-                        }).FirstOrDefault(),
+                            Price = bg.Select(x => new Contract.Services.V1.Price.Response.PriceResponse
+                            {
+                                Id = x.Price_Id ?? Guid.Empty,
+                                YardPrice = x.Price_YardPrice ?? 0
+                            }).FirstOrDefault()
+                        }).ToList()
+                    : null,
 
-                        Service = sg.Select(x => new Contract.Services.V1.Service.Response.ServiceResponse
+                ServiceLineDetails = g.First().ServiceLine_Id != null
+                    ? g.GroupBy(x => x.ServiceLine_Id)
+                        .Select(sg => new Contract.Services.V1.ServiceLine.Response.ServiceLineDetail
                         {
-                            Id = x.Service_Id ?? Guid.Empty,
-                            Name = x.Service_Name ?? string.Empty,
-                            PurchasePrice = x.Service_PurchasePrice ?? 0,
-                            SellingPrice = x.Service_SellingPrice ?? 0
-                        }).FirstOrDefault()
-                    }).ToList()
+                            ServiceLine = sg.Select(x =>
+                                new Contract.Services.V1.ServiceLine.Response.ServiceLineResponse
+                                {
+                                    Id = x.ServiceLine_Id ?? Guid.Empty,
+                                    ServiceId = x.ServiceLine_ServiceId ?? Guid.Empty,
+                                    ComboFixedId = x.ServiceLine_ComboFixedId ?? Guid.Empty,
+                                    Quantity = x.ServiceLine_Quantity ?? 0,
+                                    TotalPrice = x.ServiceLine_TotalPrice ?? 0,
+                                    BillId = x.ServiceLine_BillId ?? Guid.Empty
+                                }).FirstOrDefault(),
+
+                            Service = sg.Select(x => new Contract.Services.V1.Service.Response.ServiceResponse
+                            {
+                                Id = x.Service_Id ?? Guid.Empty,
+                                Name = x.Service_Name ?? string.Empty,
+                                PurchasePrice = x.Service_PurchasePrice ?? 0,
+                                SellingPrice = x.Service_SellingPrice ?? 0
+                            }).FirstOrDefault()
+                        }).ToList()
+                    : null
             }).ToList();
 
-        var billPagedResult =
-            PagedResult<Response.BillDetailResponse>.Create(
-                results,
-                pageIndex,
-                pageSize,
-                results.Count());
+        return results;
+    }
 
-        return Result.Success(billPagedResult);
+    private async Task<int> TotalCount(string baseQuery, CancellationToken cancellationToken)
+    {
+        var countQueryBuilder = new StringBuilder();
+        countQueryBuilder.Append(
+            $@"SELECT COUNT(*) AS ""{nameof(SqlResponse.TotalCountSqlResponse.TotalCount)}""");
+        countQueryBuilder.Append(" \n");
+
+        countQueryBuilder.Append(baseQuery);
+        SqlResponse.TotalCountSqlResponse totalCountQueryResult = await billRepository
+            .ExecuteSqlQuery<SqlResponse.TotalCountSqlResponse>(
+                FormattableStringFactory.Create(countQueryBuilder.ToString()))
+            .SingleAsync(cancellationToken);
+
+        return totalCountQueryResult.TotalCount;
     }
 }

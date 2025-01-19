@@ -13,7 +13,6 @@ namespace BadmintonSystem.Application.UseCases.V1.Queries.User;
 
 public sealed class GetRegisterByCustomerQueryHandler(
     UserManager<AppUser> userManager,
-    RoleManager<AppRole> roleManager,
     ApplicationDbContext context)
     : IQueryHandler<Query.RegisterByCustomerQuery>
 {

@@ -1,17 +1,13 @@
-﻿using AutoMapper;
-using BadmintonSystem.Application.UseCases.V1.Services;
+﻿using BadmintonSystem.Application.UseCases.V1.Services;
 using BadmintonSystem.Contract.Abstractions.Message;
 using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.V1.Service;
 using BadmintonSystem.Domain.Abstractions.Repositories;
 using BadmintonSystem.Domain.Exceptions;
-using BadmintonSystem.Persistence;
 
 namespace BadmintonSystem.Application.UseCases.V1.Commands.Service;
 
 public sealed class UpdateQuantityServiceCommandHandler(
-    ApplicationDbContext context,
-    IMapper mapper,
     IOriginalQuantityService originalQuantityService,
     IRepositoryBase<Domain.Entities.Service, Guid> serviceRepository)
     : ICommandHandler<Command.UpdateQuantityServiceCommand>

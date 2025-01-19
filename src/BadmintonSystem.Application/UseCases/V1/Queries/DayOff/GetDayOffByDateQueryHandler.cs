@@ -3,12 +3,10 @@ using BadmintonSystem.Contract.Abstractions.Message;
 using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.V1.DayOff;
 using BadmintonSystem.Domain.Abstractions.Repositories;
-using BadmintonSystem.Persistence;
 
 namespace BadmintonSystem.Application.UseCases.V1.Queries.DayOff;
 
 public sealed class GetDayOffByDateQueryHandler(
-    ApplicationDbContext context,
     IMapper mapper,
     IRepositoryBase<Domain.Entities.DayOff, Guid> dayOffRepository)
     : IQueryHandler<Query.GetDayOffByDateQuery, Response.DayOffDetailResponse>

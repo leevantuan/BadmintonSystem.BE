@@ -4,15 +4,12 @@ using BadmintonSystem.Contract.Extensions;
 using BadmintonSystem.Contract.Services.V1.User;
 using BadmintonSystem.Domain.Entities.Identity;
 using BadmintonSystem.Domain.Exceptions;
-using BadmintonSystem.Persistence;
 using Microsoft.AspNetCore.Identity;
 
 namespace BadmintonSystem.Application.UseCases.V1.Commands.User;
 
 public sealed class ForgetPasswordCommandHandler(
-    UserManager<AppUser> userManager,
-    RoleManager<AppRole> roleManager,
-    ApplicationDbContext context)
+    UserManager<AppUser> userManager)
     : ICommandHandler<Command.ForgetPasswordCommand>
 {
     public async Task<Result> Handle(Command.ForgetPasswordCommand request, CancellationToken cancellationToken)

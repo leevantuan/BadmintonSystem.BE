@@ -8,13 +8,11 @@ using BadmintonSystem.Contract.Extensions;
 using BadmintonSystem.Contract.Services.V1.Service;
 using BadmintonSystem.Domain.Abstractions.Repositories;
 using BadmintonSystem.Domain.Exceptions;
-using BadmintonSystem.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace BadmintonSystem.Application.UseCases.V1.Queries.Service;
 
 public sealed class GetInventoryReceiptsByServiceIdWithFilterAndSortValueQueryHandler(
-    ApplicationDbContext context,
     IMapper mapper,
     IRepositoryBase<Domain.Entities.Service, Guid> serviceRepository)
     : IQueryHandler<Query.GetInventoryReceiptsByServiceIdWithFilterAndSortValueQuery,
@@ -28,7 +26,6 @@ public sealed class GetInventoryReceiptsByServiceIdWithFilterAndSortValueQueryHa
 
         Response.ServiceResponse? serviceResponse = mapper.Map<Response.ServiceResponse>(service);
 
-        // Page Index and Page Size
         int pageIndex = request.Data.PageIndex <= 0
             ? PagedResult<Domain.Entities.Service>.DefaultPageIndex
             : request.Data.PageIndex;
@@ -126,13 +123,13 @@ public sealed class GetInventoryReceiptsByServiceIdWithFilterAndSortValueQueryHa
             })
             .ToList();
 
-        var InventoryReceiptPagedResult =
+        var inventoryReceiptPagedResult =
             PagedResult<Response.GetInventoryReceiptByServiceIdResponse>.Create(
                 results,
                 pageIndex,
                 pageSize,
                 results.Count());
 
-        return Result.Success(InventoryReceiptPagedResult);
+        return Result.Success(inventoryReceiptPagedResult);
     }
 }

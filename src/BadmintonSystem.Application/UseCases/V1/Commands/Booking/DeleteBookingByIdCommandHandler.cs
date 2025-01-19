@@ -1,5 +1,4 @@
 ﻿using System.Text;
-using AutoMapper;
 using BadmintonSystem.Application.UseCases.V1.Services;
 using BadmintonSystem.Contract.Abstractions.Message;
 using BadmintonSystem.Contract.Abstractions.Shared;
@@ -13,7 +12,6 @@ namespace BadmintonSystem.Application.UseCases.V1.Commands.Booking;
 
 public sealed class DeleteBookingByIdCommandHandler(
     ApplicationDbContext context,
-    IMapper mapper,
     IYardPriceService yardPriceService,
     IBookingLineService bookingLineService,
     IBillService billService,

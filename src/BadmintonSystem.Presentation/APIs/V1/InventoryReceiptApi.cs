@@ -26,16 +26,16 @@ public class InventoryReceiptApi : ApiEndpoint, ICarterModule
             .RequireAuthorization();
 
         group1.MapPost(string.Empty, CreateInventoryReceiptV1)
-            .RequireJwtAuthorize(FunctionEnum.PRICE.ToString(), (int)ActionEnum.CREATE);
+            .RequireJwtAuthorize(FunctionEnum.INVENTORYRECEIPT.ToString(), (int)ActionEnum.CREATE);
 
-        group1.MapPost("filter-and-sort-value", GetInventoryReceiptsFilterAndSortValueV1)
-            .RequireJwtAuthorize(FunctionEnum.PRICE.ToString(), (int)ActionEnum.READ);
+        group1.MapPost("filter-and-sort", GetInventoryReceiptsFilterAndSortValueV1)
+            .RequireJwtAuthorize(FunctionEnum.INVENTORYRECEIPT.ToString(), (int)ActionEnum.READ);
 
         group1.MapGet("{inventoryReceiptId}", GetInventoryReceiptByIdV1)
-            .RequireJwtAuthorize(FunctionEnum.PRICE.ToString(), (int)ActionEnum.READ);
+            .RequireJwtAuthorize(FunctionEnum.INVENTORYRECEIPT.ToString(), (int)ActionEnum.READ);
 
         group1.MapDelete("{inventoryReceiptId}", DeleteInventoryReceiptsV1)
-            .RequireJwtAuthorize(FunctionEnum.PRICE.ToString(), (int)ActionEnum.DELETE);
+            .RequireJwtAuthorize(FunctionEnum.INVENTORYRECEIPT.ToString(), (int)ActionEnum.DELETE);
     }
 
     private static async Task<IResult> CreateInventoryReceiptV1

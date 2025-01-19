@@ -5,12 +5,10 @@ using BadmintonSystem.Contract.Services.V1.Sale;
 using BadmintonSystem.Domain.Abstractions.Repositories;
 using BadmintonSystem.Domain.Enumerations;
 using BadmintonSystem.Domain.Exceptions;
-using BadmintonSystem.Persistence;
 
 namespace BadmintonSystem.Application.UseCases.V1.Commands.Sale;
 
 public sealed class UpdateSaleCommandHandler(
-    ApplicationDbContext context,
     IMapper mapper,
     IRepositoryBase<Domain.Entities.Sale, Guid> saleRepository)
     : ICommandHandler<Command.UpdateSaleCommand, Response.SaleResponse>

@@ -4,12 +4,10 @@ using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.V1.Yard;
 using BadmintonSystem.Domain.Abstractions.Repositories;
 using BadmintonSystem.Domain.Enumerations;
-using BadmintonSystem.Persistence;
 
 namespace BadmintonSystem.Application.UseCases.V1.Commands.Yard;
 
 public sealed class CreateYardCommandHandler(
-    ApplicationDbContext context,
     IMapper mapper,
     IRepositoryBase<Domain.Entities.Yard, Guid> yardRepository)
     : ICommandHandler<Command.CreateYardCommand, Response.YardResponse>

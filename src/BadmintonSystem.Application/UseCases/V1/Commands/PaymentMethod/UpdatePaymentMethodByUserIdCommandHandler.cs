@@ -1,5 +1,4 @@
 ﻿using System.Text;
-using AutoMapper;
 using BadmintonSystem.Contract.Abstractions.Message;
 using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.V1.PaymentMethod;
@@ -12,7 +11,6 @@ namespace BadmintonSystem.Application.UseCases.V1.Commands.PaymentMethod;
 
 public sealed class UpdatePaymentMethodByUserIdCommandHandler(
     ApplicationDbContext context,
-    IMapper mapper,
     IRepositoryBase<Domain.Entities.PaymentMethod, Guid> paymentMethodRepository)
     : ICommandHandler<Command.UpdatePaymentMethodByUserIdCommand>
 {
@@ -34,7 +32,7 @@ public sealed class UpdatePaymentMethodByUserIdCommandHandler(
                                          SET ""{nameof(Domain.Entities.PaymentMethod.IsDefault)}"" = 0
                                          WHERE ""{nameof(Domain.Entities.PaymentMethod.UserId)}"" = '{request.UserId}' ");
 
-            context.Database.ExecuteSqlRaw(updateQueryBuilder.ToString());
+            await context.Database.ExecuteSqlRawAsync(updateQueryBuilder.ToString(), cancellationToken);
 
             await context.SaveChangesAsync(cancellationToken);
         }

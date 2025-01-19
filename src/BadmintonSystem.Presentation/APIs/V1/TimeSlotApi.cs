@@ -26,19 +26,19 @@ public class TimeSlotApi : ApiEndpoint, ICarterModule
             .RequireAuthorization();
 
         group1.MapPost(string.Empty, CreateTimeSlotV1)
-            .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.CREATE);
+            .RequireJwtAuthorize(FunctionEnum.TIMESLOT.ToString(), (int)ActionEnum.CREATE);
 
-        group1.MapGet("filter-and-sort-value", GetTimeSlotsFilterAndSortValueV1)
-            .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.READ);
+        group1.MapGet("filter-and-sort", GetTimeSlotsFilterAndSortValueV1)
+            .RequireJwtAuthorize(FunctionEnum.TIMESLOT.ToString(), (int)ActionEnum.READ);
 
         group1.MapGet("{timeSlotId}", GetTimeSlotByIdV1)
-            .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.READ);
+            .RequireJwtAuthorize(FunctionEnum.TIMESLOT.ToString(), (int)ActionEnum.READ);
 
         group1.MapPut("{timeSlotId}", UpdateTimeSlotV1)
-            .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.UPDATE);
+            .RequireJwtAuthorize(FunctionEnum.TIMESLOT.ToString(), (int)ActionEnum.UPDATE);
 
         group1.MapDelete(string.Empty, DeleteTimeSlotsV1)
-            .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.DELETE);
+            .RequireJwtAuthorize(FunctionEnum.TIMESLOT.ToString(), (int)ActionEnum.DELETE);
     }
 
     private static async Task<IResult> CreateTimeSlotV1

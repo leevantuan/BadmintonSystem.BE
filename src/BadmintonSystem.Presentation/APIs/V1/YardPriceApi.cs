@@ -28,7 +28,7 @@ public class YardPriceApi : ApiEndpoint, ICarterModule
         group1.MapPost(string.Empty, CreateYardPriceV1)
             .RequireJwtAuthorize(FunctionEnum.YARDPRICE.ToString(), (int)ActionEnum.CREATE);
 
-        group1.MapGet("filter-and-sort-value", GetYardPricesFilterAndSortValueV1)
+        group1.MapGet("filter-and-sort", GetYardPricesFilterAndSortValueV1)
             .RequireJwtAuthorize(FunctionEnum.YARDPRICE.ToString(), (int)ActionEnum.READ);
 
         group1.MapPost("filter-by-date", GetYardPricesFilterByDateV1)

@@ -26,16 +26,16 @@ public class PaymentMethodApi : ApiEndpoint, ICarterModule
             .RequireAuthorization();
 
         group1.MapPost(string.Empty, CreatePaymentMethodByUserIdV1)
-            .RequireJwtAuthorize(FunctionEnum.REVIEW.ToString(), (int)ActionEnum.CREATE);
+            .RequireJwtAuthorize(FunctionEnum.PAYMENTMETHOD.ToString(), (int)ActionEnum.CREATE);
 
         group1.MapGet("{paymentMethodId}", GetPaymentMethodByIdV1)
-            .RequireJwtAuthorize(FunctionEnum.REVIEW.ToString(), (int)ActionEnum.READ);
+            .RequireJwtAuthorize(FunctionEnum.PAYMENTMETHOD.ToString(), (int)ActionEnum.READ);
 
         group1.MapPut(string.Empty, UpdatePaymentMethodByUserIdV1)
-            .RequireJwtAuthorize(FunctionEnum.REVIEW.ToString(), (int)ActionEnum.UPDATE);
+            .RequireJwtAuthorize(FunctionEnum.PAYMENTMETHOD.ToString(), (int)ActionEnum.UPDATE);
 
         group1.MapDelete("{paymentMethodId}", DeletePaymentMethodByUserIdV1)
-            .RequireJwtAuthorize(FunctionEnum.REVIEW.ToString(), (int)ActionEnum.DELETE);
+            .RequireJwtAuthorize(FunctionEnum.PAYMENTMETHOD.ToString(), (int)ActionEnum.DELETE);
     }
 
     private static async Task<IResult> CreatePaymentMethodByUserIdV1

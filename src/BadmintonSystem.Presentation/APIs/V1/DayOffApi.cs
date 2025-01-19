@@ -26,16 +26,16 @@ public class DayOffApi : ApiEndpoint, ICarterModule
             .RequireAuthorization();
 
         group1.MapPost(string.Empty, CreateDayOffV1)
-            .RequireJwtAuthorize(FunctionEnum.PRICE.ToString(), (int)ActionEnum.CREATE);
+            .RequireJwtAuthorize(FunctionEnum.DAYOFF.ToString(), (int)ActionEnum.CREATE);
 
         group1.MapPost("find-by-date", GetDayOffByDateV1)
-            .RequireJwtAuthorize(FunctionEnum.PRICE.ToString(), (int)ActionEnum.READ);
+            .RequireJwtAuthorize(FunctionEnum.DAYOFF.ToString(), (int)ActionEnum.READ);
 
         group1.MapPut("{dayOffId}", UpdateDayOffV1)
-            .RequireJwtAuthorize(FunctionEnum.PRICE.ToString(), (int)ActionEnum.UPDATE);
+            .RequireJwtAuthorize(FunctionEnum.DAYOFF.ToString(), (int)ActionEnum.UPDATE);
 
         group1.MapDelete(string.Empty, DeleteDayOffsV1)
-            .RequireJwtAuthorize(FunctionEnum.PRICE.ToString(), (int)ActionEnum.DELETE);
+            .RequireJwtAuthorize(FunctionEnum.DAYOFF.ToString(), (int)ActionEnum.DELETE);
     }
 
     private static async Task<IResult> CreateDayOffV1

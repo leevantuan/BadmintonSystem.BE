@@ -1,27 +1,22 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Text;
-using AutoMapper;
 using BadmintonSystem.Contract.Abstractions.Message;
 using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Enumerations;
 using BadmintonSystem.Contract.Extensions;
 using BadmintonSystem.Contract.Services.V1.YardPrice;
 using BadmintonSystem.Domain.Abstractions.Repositories;
-using BadmintonSystem.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace BadmintonSystem.Application.UseCases.V1.Queries.YardPrice;
 
 public sealed class GetYardPricesWithFilterAndSortValueQueryHandler(
-    ApplicationDbContext context,
-    IMapper mapper,
     IRepositoryBase<Domain.Entities.YardPrice, Guid> yardPriceRepository)
     : IQueryHandler<Query.GetYardPricesWithFilterAndSortValueQuery, PagedResult<Response.YardPriceDetailResponse>>
 {
     public async Task<Result<PagedResult<Response.YardPriceDetailResponse>>> Handle
         (Query.GetYardPricesWithFilterAndSortValueQuery request, CancellationToken cancellationToken)
     {
-        // Page Index and Page Size
         int pageIndex = request.Data.PageIndex <= 0
             ? PagedResult<Domain.Entities.YardPrice>.DefaultPageIndex
             : request.Data.PageIndex;
@@ -101,18 +96,7 @@ public sealed class GetYardPricesWithFilterAndSortValueQueryHandler(
             baseQueryBuilder.Length -= 2;
         }
 
-        // Calculate total count record
-        var countQueryBuilder = new StringBuilder();
-        countQueryBuilder.Append(
-            $@"SELECT COUNT(*) AS ""{nameof(SqlResponse.TotalCountSqlResponse.TotalCount)}""");
-        countQueryBuilder.Append(" \n");
-
-        countQueryBuilder.Append(baseQueryBuilder.ToString());
-
-        SqlResponse.TotalCountSqlResponse totalCountQueryResult = await yardPriceRepository
-            .ExecuteSqlQuery<SqlResponse.TotalCountSqlResponse>(
-                FormattableStringFactory.Create(countQueryBuilder.ToString()))
-            .SingleAsync(cancellationToken);
+        int totalCount = await TotalCount(baseQueryBuilder.ToString(), cancellationToken);
 
         var yardPriceQueryBuilder = new StringBuilder();
         yardPriceQueryBuilder.Append(
@@ -127,7 +111,18 @@ public sealed class GetYardPricesWithFilterAndSortValueQueryHandler(
                 FormattableStringFactory.Create(yardPriceQueryBuilder.ToString()))
             .ToListAsync(cancellationToken);
 
-        // Group by
+        var yardPricePagedResult =
+            PagedResult<Response.YardPriceDetailResponse>.Create(
+                GroupByData(queryResult),
+                pageIndex,
+                pageSize,
+                totalCount);
+
+        return Result.Success(yardPricePagedResult);
+    }
+
+    private List<Response.YardPriceDetailResponse> GroupByData(List<Response.YardPriceDetailSql> queryResult)
+    {
         var results = queryResult.GroupBy(p => p.YardPrice_Id)
             .Select(g => new Response.YardPriceDetailResponse
             {
@@ -170,13 +165,22 @@ public sealed class GetYardPricesWithFilterAndSortValueQueryHandler(
             })
             .ToList();
 
-        var yardPricePagedResult =
-            PagedResult<Response.YardPriceDetailResponse>.Create(
-                results,
-                pageIndex,
-                pageSize,
-                totalCountQueryResult.TotalCount);
+        return results;
+    }
 
-        return Result.Success(yardPricePagedResult);
+    private async Task<int> TotalCount(string baseQuery, CancellationToken cancellationToken)
+    {
+        var countQueryBuilder = new StringBuilder();
+        countQueryBuilder.Append(
+            $@"SELECT COUNT(*) AS ""{nameof(SqlResponse.TotalCountSqlResponse.TotalCount)}""");
+        countQueryBuilder.Append(" \n");
+
+        countQueryBuilder.Append(baseQuery);
+        SqlResponse.TotalCountSqlResponse totalCountQueryResult = await yardPriceRepository
+            .ExecuteSqlQuery<SqlResponse.TotalCountSqlResponse>(
+                FormattableStringFactory.Create(countQueryBuilder.ToString()))
+            .SingleAsync(cancellationToken);
+
+        return totalCountQueryResult.TotalCount;
     }
 }

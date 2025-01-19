@@ -4,12 +4,10 @@ using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.V1.Notification;
 using BadmintonSystem.Domain.Abstractions.Repositories;
 using BadmintonSystem.Domain.Exceptions;
-using BadmintonSystem.Persistence;
 
 namespace BadmintonSystem.Application.UseCases.V1.Queries.Notification;
 
 public sealed class GetNotificationByIdQueryHandler(
-    ApplicationDbContext context,
     IMapper mapper,
     IRepositoryBase<Domain.Entities.Notification, Guid> notificationRepository)
     : IQueryHandler<Query.GetNotificationsByIdQuery, Response.NotificationDetailResponse>

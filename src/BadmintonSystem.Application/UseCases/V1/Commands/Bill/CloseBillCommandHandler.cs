@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using BadmintonSystem.Application.UseCases.V1.Services;
+﻿using BadmintonSystem.Application.UseCases.V1.Services;
 using BadmintonSystem.Contract.Abstractions.Message;
 using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.V1.Bill;
@@ -8,12 +7,12 @@ using BadmintonSystem.Domain.Entities;
 using BadmintonSystem.Domain.Enumerations;
 using BadmintonSystem.Domain.Exceptions;
 using BadmintonSystem.Persistence;
+using Microsoft.EntityFrameworkCore;
 
 namespace BadmintonSystem.Application.UseCases.V1.Commands.Bill;
 
 public sealed class CloseBillCommandHandler(
     ApplicationDbContext context,
-    IMapper mapper,
     IBillLineService billLineService,
     IBillService billService,
     IRepositoryBase<Domain.Entities.Bill, Guid> billRepository)
@@ -24,16 +23,13 @@ public sealed class CloseBillCommandHandler(
         Domain.Entities.Bill billEntities = await billRepository.FindByIdAsync(request.BillId, cancellationToken)
                                             ?? throw new BillException.BillNotFoundException(request.BillId);
 
-        var billLinesIsActive = context.BillLine
-            .Where(x => x.BillId == request.BillId && x.IsActive == ActiveEnum.IsActive).ToList();
+        List<BillLine> billLinesIsActive = await context.BillLine
+            .Where(x => x.BillId == request.BillId && x.IsActive == ActiveEnum.IsActive).ToListAsync(cancellationToken);
 
-        if (billLinesIsActive.Any())
-        {
-            foreach (BillLine billLine in billLinesIsActive)
-            {
-                await billLineService.CloseBillLineByBill(billLine.Id, cancellationToken);
-            }
-        }
+        IEnumerable<Task> closeBillLineTasks =
+            billLinesIsActive.Select(billLine => billLineService.CloseBillLineByBill(billLine.Id, cancellationToken));
+
+        await Task.WhenAll(closeBillLineTasks);
 
         if (billEntities.BookingId != null)
         {

@@ -26,22 +26,22 @@ public class BookingApi : ApiEndpoint, ICarterModule
             .RequireAuthorization();
 
         group1.MapPost(string.Empty, CreateBookingV1)
-            .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.CREATE);
+            .RequireJwtAuthorize(FunctionEnum.BOOKING.ToString(), (int)ActionEnum.CREATE);
 
         group1.MapGet("filter-and-sort-value", GetBookingsFilterAndSortValueV1)
-            .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.READ);
+            .RequireJwtAuthorize(FunctionEnum.BOOKING.ToString(), (int)ActionEnum.READ);
 
         group1.MapPost("filter-and-sort-value-by-date", GetBookingsFilterAndSortValueByDateV1)
-            .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.READ);
+            .RequireJwtAuthorize(FunctionEnum.BOOKING.ToString(), (int)ActionEnum.READ);
 
         group1.MapGet("{bookingId}", GetBookingByIdV1)
-            .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.READ);
+            .RequireJwtAuthorize(FunctionEnum.BOOKING.ToString(), (int)ActionEnum.READ);
 
         group1.MapPut("{bookingId}", UpdateBookingV1)
-            .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.UPDATE);
+            .RequireJwtAuthorize(FunctionEnum.BOOKING.ToString(), (int)ActionEnum.UPDATE);
 
         group1.MapDelete("{bookingId}", DeleteBookingsV1)
-            .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.DELETE);
+            .RequireJwtAuthorize(FunctionEnum.BOOKING.ToString(), (int)ActionEnum.DELETE);
     }
 
     private static async Task<IResult> CreateBookingV1

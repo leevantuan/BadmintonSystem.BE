@@ -2,11 +2,6 @@
 
 public static class Response
 {
-    public record ClubImageResponse(
-        Guid Id,
-        string ImageLink,
-        Guid ClubId);
-
     public class ClubImageDetailResponse
     {
         public Guid Id { get; set; }

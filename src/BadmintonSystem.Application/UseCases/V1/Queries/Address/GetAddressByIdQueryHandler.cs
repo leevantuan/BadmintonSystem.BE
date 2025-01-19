@@ -1,8 +1,6 @@
-﻿using AutoMapper;
-using BadmintonSystem.Contract.Abstractions.Message;
+﻿using BadmintonSystem.Contract.Abstractions.Message;
 using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.V1.Address;
-using BadmintonSystem.Domain.Abstractions.Repositories;
 using BadmintonSystem.Domain.Enumerations;
 using BadmintonSystem.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -11,9 +9,7 @@ using Response = BadmintonSystem.Contract.Services.V1.User.Response;
 namespace BadmintonSystem.Application.UseCases.V1.Queries.Address;
 
 public sealed class GetAddressByIdQueryHandler(
-    ApplicationDbContext context,
-    IRepositoryBase<Domain.Entities.Address, Guid> addressRepository,
-    IMapper mapper)
+    ApplicationDbContext context)
     : IQueryHandler<Query.GetAddressesByIdQuery, Response.AddressByUserDetailResponse>
 {
     public async Task<Result<Response.AddressByUserDetailResponse>> Handle

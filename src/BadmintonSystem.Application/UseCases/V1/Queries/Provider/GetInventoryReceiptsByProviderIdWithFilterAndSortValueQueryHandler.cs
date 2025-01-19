@@ -23,9 +23,10 @@ public sealed class GetInventoryReceiptsByProviderIdWithFilterAndSortValueQueryH
     public async Task<Result<PagedResult<Response.GetInventoryReceiptByProviderIdResponse>>> Handle
         (Query.GetInventoryReceiptsByProviderIdWithFilterAndSortValueQuery request, CancellationToken cancellationToken)
     {
-        Domain.Entities.Provider provider = context.Provider.FirstOrDefault(x => x.Id == request.ProviderId)
-                                            ?? throw new ProviderException.ProviderNotFoundException(
-                                                request.ProviderId);
+        Domain.Entities.Provider provider =
+            await context.Provider.FirstOrDefaultAsync(x => x.Id == request.ProviderId, cancellationToken)
+            ?? throw new ProviderException.ProviderNotFoundException(
+                request.ProviderId);
 
         Response.ProviderResponse? providerResponse = mapper.Map<Response.ProviderResponse>(provider);
 
@@ -37,7 +38,6 @@ public sealed class GetInventoryReceiptsByProviderIdWithFilterAndSortValueQueryH
             .TransformPropertiesToSqlAliases<Domain.Entities.InventoryReceipt,
                 Contract.Services.V1.InventoryReceipt.Response.InventoryReceiptResponse>();
 
-        // Page Index and Page Size
         int pageIndex = request.Data.PageIndex <= 0
             ? PagedResult<Domain.Entities.Provider>.DefaultPageIndex
             : request.Data.PageIndex;
@@ -132,13 +132,13 @@ public sealed class GetInventoryReceiptsByProviderIdWithFilterAndSortValueQueryH
             })
             .ToList();
 
-        var InventoryReceiptPagedResult =
+        var inventoryReceiptPagedResult =
             PagedResult<Response.GetInventoryReceiptByProviderIdResponse>.Create(
                 results,
                 pageIndex,
                 pageSize,
                 results.Count());
 
-        return Result.Success(InventoryReceiptPagedResult);
+        return Result.Success(inventoryReceiptPagedResult);
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System.Text;
-using AutoMapper;
 using BadmintonSystem.Contract.Abstractions.Message;
 using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.V1.Address;
@@ -14,14 +13,14 @@ namespace BadmintonSystem.Application.UseCases.V1.Commands.Address;
 
 public sealed class UpdateAddressByUserIdCommandHandler(
     ApplicationDbContext context,
-    IMapper mapper,
     IRepositoryBase<Domain.Entities.Address, Guid> addressRepository)
     : ICommandHandler<Command.UpdateAddressByUserIdCommand>
 {
     public async Task<Result> Handle(Command.UpdateAddressByUserIdCommand request, CancellationToken cancellationToken)
     {
         UserAddress userAddress =
-            context.UserAddress.FirstOrDefault(x => x.UserId == request.UserId && x.AddressId == request.Data.Id)
+            await context.UserAddress.FirstOrDefaultAsync(
+                x => x.UserId == request.UserId && x.AddressId == request.Data.Id, cancellationToken)
             ?? throw new UserAddressException.UserAddressNotFoundException();
 
         Domain.Entities.Address address = await addressRepository.FindByIdAsync(request.Data.Id, cancellationToken);
@@ -40,9 +39,7 @@ public sealed class UpdateAddressByUserIdCommandHandler(
                                          SET ""{nameof(UserAddress.IsDefault)}"" = 0
                                          WHERE ""{nameof(UserAddress.UserId)}"" = '{request.UserId}' ");
 
-            context.Database.ExecuteSqlRaw(updateQueryBuilder.ToString());
-
-            await context.SaveChangesAsync(cancellationToken);
+            await context.Database.ExecuteSqlRawAsync(updateQueryBuilder.ToString(), cancellationToken);
         }
 
         userAddress.IsDefault = (DefaultEnum)request.Data.IsDefault;

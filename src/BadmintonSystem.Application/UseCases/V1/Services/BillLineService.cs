@@ -13,7 +13,7 @@ public class BillLineService(
 {
     public async Task OpenBillLineByBill(Guid yardId, Guid billId, CancellationToken cancellationToken)
     {
-        Yard yardEntities = context.Yard.FirstOrDefault(y => y.Id == yardId)
+        Yard yardEntities = await context.Yard.FirstOrDefaultAsync(y => y.Id == yardId, cancellationToken)
                             ?? throw new YardException.YardNotFoundException(yardId);
 
         TimeSpan currentTimeSpan = DateTime.Now.TimeOfDay;
@@ -37,27 +37,26 @@ public class BillLineService(
 
     public async Task CloseBillLineByBill(Guid billLineId, CancellationToken cancellationToken)
     {
-        BillLine billLine = context.BillLine.FirstOrDefault(x => x.Id == billLineId)
+        BillLine billLine = await context.BillLine.FirstOrDefaultAsync(x => x.Id == billLineId, cancellationToken)
                             ?? throw new ApplicationException($"Bill line with id {billLineId} not found");
 
         TimeSpan currentTimeSpan = DateTime.Now.TimeOfDay;
-
         TimeSpan? totalTime = currentTimeSpan - billLine.StartTime;
-        decimal totalHours = (decimal)totalTime.Value.TotalMinutes / 60;
+        decimal totalHours = Math.Round((decimal)totalTime.Value.TotalMinutes / 60, 2);
 
-        totalHours = Math.Round(totalHours, 2);
-
-        var query = from yard in context.Yard
-            join yardType in context.YardType on yard.YardTypeId equals yardType.Id
-            join price in context.Price on yardType.Id equals price.YardTypeId
-            where billLine.StartTime >= price.StartTime && billLine.StartTime <= price.EndTime
-            select new { price };
-
-        SqlResponse.PriceDecimalSqlResponse? priceByYard = await query.AsNoTracking().Select(x =>
-            new SqlResponse.PriceDecimalSqlResponse
-            {
-                Price = x.price.YardPrice
-            }).FirstOrDefaultAsync(cancellationToken);
+        SqlResponse.PriceDecimalSqlResponse priceByYard =
+            await (from yard in context.Yard
+                join yardType in context.YardType on yard.YardTypeId
+                    equals yardType.Id
+                join price in context.Price on yardType.Id equals price
+                    .YardTypeId
+                where billLine.StartTime >= price.StartTime &&
+                      billLine.StartTime <= price.EndTime
+                select new SqlResponse.PriceDecimalSqlResponse
+                {
+                    Price = price.YardPrice
+                }).AsNoTracking().FirstOrDefaultAsync(cancellationToken)
+            ?? throw new ApplicationException("Price for yard not found");
 
         billLine.EndTime = currentTimeSpan;
         billLine.TotalPrice = totalHours * priceByYard.Price;
@@ -65,7 +64,7 @@ public class BillLineService(
 
         await context.SaveChangesAsync(cancellationToken);
 
-        Yard yardEntities = context.Yard.FirstOrDefault(y => y.Id == billLine.YardId)
+        Yard yardEntities = await context.Yard.FirstOrDefaultAsync(y => y.Id == billLine.YardId, cancellationToken)
                             ?? throw new YardException.YardNotFoundException(billLine.YardId ?? Guid.Empty);
 
         yardEntities.IsStatus = StatusEnum.TRUE;

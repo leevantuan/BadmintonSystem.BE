@@ -6,6 +6,7 @@ using BadmintonSystem.Domain.Abstractions.Repositories;
 using BadmintonSystem.Domain.Enumerations;
 using BadmintonSystem.Domain.Exceptions;
 using BadmintonSystem.Persistence;
+using Microsoft.EntityFrameworkCore;
 
 namespace BadmintonSystem.Application.UseCases.V1.Commands.Price;
 
@@ -18,7 +19,8 @@ public sealed class UpdatePriceCommandHandler(
     public async Task<Result<Response.PriceResponse>> Handle
         (Command.UpdatePriceCommand request, CancellationToken cancellationToken)
     {
-        Domain.Entities.Price? priceDefaultExists = context.Price.FirstOrDefault(x => x.IsDefault == DefaultEnum.TRUE);
+        Domain.Entities.Price? priceDefaultExists =
+            await context.Price.FirstOrDefaultAsync(x => x.IsDefault == DefaultEnum.TRUE, cancellationToken);
 
         bool priceDefaultCorrect = request.Data.IsDefault == (int)DefaultEnum.TRUE;
 

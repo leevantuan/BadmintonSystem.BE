@@ -1,23 +1,19 @@
-﻿using AutoMapper;
-using BadmintonSystem.Contract.Abstractions.Message;
+﻿using BadmintonSystem.Contract.Abstractions.Message;
 using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.V1.Service;
 using BadmintonSystem.Domain.Abstractions.Repositories;
 using BadmintonSystem.Domain.Exceptions;
-using BadmintonSystem.Persistence;
 
 namespace BadmintonSystem.Application.UseCases.V1.Commands.Service;
 
 public sealed class UpdateServiceCommandHandler(
-    ApplicationDbContext context,
-    IMapper mapper,
     IRepositoryBase<Domain.Entities.Service, Guid> serviceRepository)
     : ICommandHandler<Command.UpdateServiceCommand>
 {
     public async Task<Result> Handle
         (Command.UpdateServiceCommand request, CancellationToken cancellationToken)
     {
-        Domain.Entities.Service service = await serviceRepository.FindByIdAsync(request.Data.Id)
+        Domain.Entities.Service service = await serviceRepository.FindByIdAsync(request.Data.Id, cancellationToken)
                                           ?? throw new ServiceException.ServiceNotFoundException(request.Data.Id);
 
         service.Name = request.Data.Name ?? service.Name;

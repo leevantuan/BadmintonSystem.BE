@@ -26,19 +26,19 @@ public class YardApi : ApiEndpoint, ICarterModule
             .RequireAuthorization();
 
         group1.MapPost(string.Empty, CreateYardV1)
-            .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.CREATE);
+            .RequireJwtAuthorize(FunctionEnum.YARD.ToString(), (int)ActionEnum.CREATE);
 
-        group1.MapGet("filter-and-sort-value", GetYardsFilterAndSortValueV1)
-            .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.READ);
+        group1.MapGet("filter-and-sort", GetYardsFilterAndSortValueV1)
+            .RequireJwtAuthorize(FunctionEnum.YARD.ToString(), (int)ActionEnum.READ);
 
         group1.MapGet("{yardId}", GetYardByIdV1)
-            .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.READ);
+            .RequireJwtAuthorize(FunctionEnum.YARD.ToString(), (int)ActionEnum.READ);
 
         group1.MapPut("{yardId}", UpdateYardV1)
-            .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.UPDATE);
+            .RequireJwtAuthorize(FunctionEnum.YARD.ToString(), (int)ActionEnum.UPDATE);
 
         group1.MapDelete(string.Empty, DeleteYardsV1)
-            .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.DELETE);
+            .RequireJwtAuthorize(FunctionEnum.YARD.ToString(), (int)ActionEnum.DELETE);
     }
 
     private static async Task<IResult> CreateYardV1

@@ -26,23 +26,23 @@ public class ProviderApi : ApiEndpoint, ICarterModule
             .RequireAuthorization();
 
         group1.MapPost(string.Empty, CreateProviderV1)
-            .RequireJwtAuthorize(FunctionEnum.PRICE.ToString(), (int)ActionEnum.CREATE);
+            .RequireJwtAuthorize(FunctionEnum.PROVIDER.ToString(), (int)ActionEnum.CREATE);
 
         group1.MapGet("inventory-receipts/{providerId}",
                 GetInventoryReceiptsByProviderIdWithFilterAndSort)
-            .RequireJwtAuthorize(FunctionEnum.PRICE.ToString(), (int)ActionEnum.READ);
+            .RequireJwtAuthorize(FunctionEnum.PROVIDER.ToString(), (int)ActionEnum.READ);
 
-        group1.MapGet("filter-and-sort-value", GetProvidersFilterAndSortValueV1)
-            .RequireJwtAuthorize(FunctionEnum.PRICE.ToString(), (int)ActionEnum.READ);
+        group1.MapGet("filter-and-sort", GetProvidersFilterAndSortValueV1)
+            .RequireJwtAuthorize(FunctionEnum.PROVIDER.ToString(), (int)ActionEnum.READ);
 
         group1.MapGet("{providerId}", GetProviderByIdV1)
-            .RequireJwtAuthorize(FunctionEnum.PRICE.ToString(), (int)ActionEnum.READ);
+            .RequireJwtAuthorize(FunctionEnum.PROVIDER.ToString(), (int)ActionEnum.READ);
 
         group1.MapPut("{providerId}", UpdateProviderV1)
-            .RequireJwtAuthorize(FunctionEnum.PRICE.ToString(), (int)ActionEnum.UPDATE);
+            .RequireJwtAuthorize(FunctionEnum.PROVIDER.ToString(), (int)ActionEnum.UPDATE);
 
         group1.MapDelete(string.Empty, DeleteProvidersV1)
-            .RequireJwtAuthorize(FunctionEnum.PRICE.ToString(), (int)ActionEnum.DELETE);
+            .RequireJwtAuthorize(FunctionEnum.PROVIDER.ToString(), (int)ActionEnum.DELETE);
     }
 
     private static async Task<IResult> CreateProviderV1

@@ -5,7 +5,6 @@ using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Enumerations;
 using BadmintonSystem.Contract.Extensions;
 using BadmintonSystem.Contract.Services.V1.Booking;
-using BadmintonSystem.Domain.Abstractions.Repositories;
 using BadmintonSystem.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,14 +12,12 @@ namespace BadmintonSystem.Application.UseCases.V1.Queries.Booking;
 
 public sealed class GetBookingsWithFilterAndSortValueQueryHandler(
     IMapper mapper,
-    ApplicationDbContext context,
-    IRepositoryBase<Domain.Entities.Booking, Guid> bookingRepository)
+    ApplicationDbContext context)
     : IQueryHandler<Query.GetBookingsWithFilterAndSortValueQuery, PagedResult<Response.BookingDetail>>
 {
     public async Task<Result<PagedResult<Response.BookingDetail>>> Handle
         (Query.GetBookingsWithFilterAndSortValueQuery request, CancellationToken cancellationToken)
     {
-        // Page Index and Page Size
         int PageIndex = request.Data.PageIndex <= 0
             ? PagedResult<Domain.Entities.Booking>.DefaultPageIndex
             : request.Data.PageIndex;
@@ -30,7 +27,6 @@ public sealed class GetBookingsWithFilterAndSortValueQueryHandler(
                 ? PagedResult<Domain.Entities.Booking>.UpperPageSize
                 : request.Data.PageSize;
 
-        // Handle Query SQL
         var bookingsQuery = new StringBuilder();
 
         bookingsQuery.Append($@"SELECT * FROM ""{nameof(Domain.Entities.Booking)}""

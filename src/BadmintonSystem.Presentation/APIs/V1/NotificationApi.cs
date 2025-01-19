@@ -26,19 +26,19 @@ public class NotificationApi : ApiEndpoint, ICarterModule
             .RequireAuthorization();
 
         group1.MapPost(string.Empty, CreateNotificationV1)
-            .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.CREATE);
+            .RequireJwtAuthorize(FunctionEnum.NOTIFICATION.ToString(), (int)ActionEnum.CREATE);
 
         group1.MapGet("{notificationId}", GetNotificationByIdV1)
-            .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.READ);
+            .RequireJwtAuthorize(FunctionEnum.NOTIFICATION.ToString(), (int)ActionEnum.READ);
 
         group1.MapPut("{notificationId}", UpdateNotificationV1)
-            .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.UPDATE);
+            .RequireJwtAuthorize(FunctionEnum.NOTIFICATION.ToString(), (int)ActionEnum.UPDATE);
 
         group1.MapDelete(string.Empty, DeleteNotificationsV1)
-            .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.DELETE);
+            .RequireJwtAuthorize(FunctionEnum.NOTIFICATION.ToString(), (int)ActionEnum.DELETE);
 
         group1.MapDelete("{notificationId}", DeleteNotificationByUserIdV1)
-            .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.DELETE);
+            .RequireJwtAuthorize(FunctionEnum.NOTIFICATION.ToString(), (int)ActionEnum.DELETE);
     }
 
     private static async Task<IResult> CreateNotificationV1

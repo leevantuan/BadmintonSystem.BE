@@ -4,12 +4,10 @@ using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.V1.Yard;
 using BadmintonSystem.Domain.Abstractions.Repositories;
 using BadmintonSystem.Domain.Exceptions;
-using BadmintonSystem.Persistence;
 
 namespace BadmintonSystem.Application.UseCases.V1.Queries.Yard;
 
 public sealed class GetYardByIdQueryHandler(
-    ApplicationDbContext context,
     IMapper mapper,
     IRepositoryBase<Domain.Entities.Yard, Guid> yardRepository)
     : IQueryHandler<Query.GetYardByIdQuery, Response.YardResponse>

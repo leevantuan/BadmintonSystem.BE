@@ -20,7 +20,6 @@ public sealed class GetReviewsWithFilterAndSortValueQueryHandler(
     public async Task<Result<PagedResult<Response.ReviewDetailResponse>>> Handle
         (Query.GetReviewsWithFilterAndSortValueQuery request, CancellationToken cancellationToken)
     {
-        // Page Index and Page Size
         int PageIndex = request.Data.PageIndex <= 0
             ? PagedResult<Domain.Entities.Review>.DefaultPageIndex
             : request.Data.PageIndex;
@@ -30,7 +29,6 @@ public sealed class GetReviewsWithFilterAndSortValueQueryHandler(
                 ? PagedResult<Domain.Entities.Review>.UpperPageSize
                 : request.Data.PageSize;
 
-        // Handle Query SQL
         var reviewsQuery = new StringBuilder();
 
         reviewsQuery.Append($@"SELECT * FROM ""{nameof(Domain.Entities.Review)}""

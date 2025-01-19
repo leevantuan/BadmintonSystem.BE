@@ -2,13 +2,6 @@
 
 public static class Response
 {
-    public record ClubInformationResponse(
-        Guid Id,
-        string FacebookPageLink,
-        string InstagramLink,
-        string MapLink,
-        Guid ClubId);
-
     public class ClubInformationDetailResponse
     {
         public Guid Id { get; set; }

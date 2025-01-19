@@ -6,6 +6,7 @@ using BadmintonSystem.Domain.Abstractions.Repositories;
 using BadmintonSystem.Domain.Entities;
 using BadmintonSystem.Domain.Exceptions;
 using BadmintonSystem.Persistence;
+using Microsoft.EntityFrameworkCore;
 using DayOfWeek = BadmintonSystem.Domain.Entities.DayOfWeek;
 using Request = BadmintonSystem.Contract.Services.V1.FixedSchedule.Request;
 
@@ -20,7 +21,7 @@ public sealed class CreateFixedScheduleCommandHandler(
     public async Task<Result<Response.FixedScheduleResponse>> Handle
         (Command.CreateFixedScheduleCommand request, CancellationToken cancellationToken)
     {
-        _ = context.AppUsers.FirstOrDefault(x => x.Id == request.UserId)
+        _ = await context.AppUsers.FirstOrDefaultAsync(x => x.Id == request.UserId, cancellationToken)
             ?? throw new IdentityException.AppUserNotFoundException(request.UserId);
 
         Domain.Entities.FixedSchedule fixedSchedule = mapper.Map<Domain.Entities.FixedSchedule>(request.Data);
@@ -28,41 +29,40 @@ public sealed class CreateFixedScheduleCommandHandler(
         fixedScheduleRepository.Add(fixedSchedule);
         await context.SaveChangesAsync(cancellationToken);
 
-        var timeSlotOfWeeks = new List<TimeSlotOfWeek>();
-
-        // Day of week
-        foreach (Request.CreateDayOfWeekDetailRequest dayOfWeekRequest in request.Data.DayOfWeeks)
-        {
-            var dayOfWeek = new Contract.Services.V1.DayOfWeek.Request.CreateDayOfWeekRequest
-            {
-                WeekName = dayOfWeekRequest.WeekName,
-                FixedScheduleId = fixedSchedule.Id
-            };
-
-            DayOfWeek? dayOfWeekResult = mapper.Map<DayOfWeek>(dayOfWeek);
-
-            context.DayOfWeek.Add(dayOfWeekResult);
-            await context.SaveChangesAsync(cancellationToken);
-
-            foreach (Guid timeSlotId in dayOfWeekRequest.TimeSlotIds)
-            {
-                var timeSlot = new Contract.Services.V1.TimeSlotOfWeek.Request.CreateTimeSlotOfWeekRequest
-                {
-                    TimeSlotId = timeSlotId,
-                    DayOfWeekId = dayOfWeekResult.Id
-                };
-
-                TimeSlotOfWeek? timeSlotResult = mapper.Map<TimeSlotOfWeek>(timeSlot);
-
-                timeSlotOfWeeks.Add(timeSlotResult);
-            }
-        }
-
-        context.TimeSlotOfWeek.AddRange(timeSlotOfWeeks);
+        await CreateDayOfWeek(request.Data.DayOfWeeks, fixedSchedule.Id, cancellationToken);
         await context.SaveChangesAsync(cancellationToken);
 
         Response.FixedScheduleResponse? result = mapper.Map<Response.FixedScheduleResponse>(fixedSchedule);
 
         return Result.Success(result);
+    }
+
+    private async Task CreateDayOfWeek
+    (List<Request.CreateDayOfWeekDetailRequest> dayOfWeekRequests, Guid fixedScheduleId,
+        CancellationToken cancellationToken)
+    {
+        foreach (Request.CreateDayOfWeekDetailRequest dayOfWeekRequest in dayOfWeekRequests)
+        {
+            var dayOfWeek = new DayOfWeek
+            {
+                Id = Guid.NewGuid(),
+                WeekName = dayOfWeekRequest.WeekName,
+                FixedScheduleId = fixedScheduleId
+            };
+
+            context.DayOfWeek.Add(dayOfWeek);
+            await context.SaveChangesAsync(cancellationToken);
+
+            CreateTimeSlot(dayOfWeekRequest.TimeSlotIds, dayOfWeek.Id);
+        }
+    }
+
+    private void CreateTimeSlot(List<Guid> timeSlotIds, Guid dayOfWeekId)
+    {
+        context.TimeSlotOfWeek.AddRange(timeSlotIds.Select(x => new TimeSlotOfWeek
+        {
+            TimeSlotId = x,
+            DayOfWeekId = dayOfWeekId
+        }));
     }
 }

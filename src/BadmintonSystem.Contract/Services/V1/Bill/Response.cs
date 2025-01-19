@@ -47,11 +47,6 @@ public static class Response
         public List<ServiceLine.Response.ServiceLineDetail>? ServiceLineDetails { get; set; }
     }
 
-    public class YardIds
-    {
-        public List<Guid>? Ids { get; set; }
-    }
-
     public class GetTotalPriceSql
     {
         public Guid Id { get; set; }
@@ -67,25 +62,8 @@ public static class Response
         public int Booking_PercentPrePay { get; set; }
     }
 
-    public class GetBillDetailsSql
+    public class GetBillDetailsSql : GetBillSql
     {
-        // Bill
-        public Guid? Bill_Id { get; set; }
-
-        public decimal? Bill_TotalPrice { get; set; }
-
-        public decimal? Bill_TotalPayment { get; set; }
-
-        public string? Bill_Content { get; set; }
-
-        public string? Bill_Name { get; set; }
-
-        public Guid? Bill_UserId { get; set; }
-
-        public Guid? Bill_BookingId { get; set; }
-
-        public int? Bill_Status { get; set; }
-
         // Booking
         public Guid? Booking_Id { get; set; }
 
@@ -167,5 +145,25 @@ public static class Response
         public Guid? Price_Id { get; set; }
 
         public decimal? Price_YardPrice { get; set; }
+    }
+
+    public class GetBillSql
+    {
+        // Bill
+        public Guid? Bill_Id { get; set; }
+
+        public decimal? Bill_TotalPrice { get; set; }
+
+        public decimal? Bill_TotalPayment { get; set; }
+
+        public string? Bill_Content { get; set; }
+
+        public string? Bill_Name { get; set; }
+
+        public Guid? Bill_UserId { get; set; }
+
+        public Guid? Bill_BookingId { get; set; }
+
+        public int? Bill_Status { get; set; }
     }
 }

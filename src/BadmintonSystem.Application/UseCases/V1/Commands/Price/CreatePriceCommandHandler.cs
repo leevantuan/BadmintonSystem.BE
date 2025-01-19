@@ -5,6 +5,7 @@ using BadmintonSystem.Contract.Services.V1.Price;
 using BadmintonSystem.Domain.Abstractions.Repositories;
 using BadmintonSystem.Domain.Enumerations;
 using BadmintonSystem.Persistence;
+using Microsoft.EntityFrameworkCore;
 
 namespace BadmintonSystem.Application.UseCases.V1.Commands.Price;
 
@@ -14,10 +15,11 @@ public sealed class CreatePriceCommandHandler(
     IRepositoryBase<Domain.Entities.Price, Guid> priceRepository)
     : ICommandHandler<Command.CreatePriceCommand, Response.PriceResponse>
 {
-    public Task<Result<Response.PriceResponse>> Handle
+    public async Task<Result<Response.PriceResponse>> Handle
         (Command.CreatePriceCommand request, CancellationToken cancellationToken)
     {
-        Domain.Entities.Price? priceDefaultExists = context.Price.FirstOrDefault(x => x.IsDefault == DefaultEnum.TRUE);
+        Domain.Entities.Price? priceDefaultExists =
+            await context.Price.FirstOrDefaultAsync(x => x.IsDefault == DefaultEnum.TRUE, cancellationToken);
 
         Domain.Entities.Price price = mapper.Map<Domain.Entities.Price>(request.Data);
 
@@ -32,6 +34,6 @@ public sealed class CreatePriceCommandHandler(
 
         Response.PriceResponse? result = mapper.Map<Response.PriceResponse>(price);
 
-        return Task.FromResult(Result.Success(result));
+        return Result.Success(result);
     }
 }

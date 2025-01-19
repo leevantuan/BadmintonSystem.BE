@@ -1,6 +1,8 @@
-﻿using BadmintonSystem.Domain.Entities;
+﻿using BadmintonSystem.Contract.Extensions;
+using BadmintonSystem.Domain.Entities;
 using BadmintonSystem.Domain.Exceptions;
 using BadmintonSystem.Persistence;
+using Microsoft.EntityFrameworkCore;
 
 namespace BadmintonSystem.Application.UseCases.V1.Services;
 
@@ -22,19 +24,21 @@ public class OriginalQuantityService(
 
     public async Task UpdateQuantityService(Guid serviceId, decimal quantity, CancellationToken cancellationToken)
     {
-        Service serviceEntities = context.Service.FirstOrDefault(x => x.Id == serviceId)
+        Service serviceEntities = await context.Service.FirstOrDefaultAsync(x => x.Id == serviceId, cancellationToken)
                                   ?? throw new ServiceException.ServiceNotFoundException(serviceId);
 
-        if (serviceEntities.OriginalQuantityId != null && serviceEntities.QuantityPrinciple != null)
+        if (serviceEntities is { OriginalQuantityId: not null, QuantityPrinciple: not null })
         {
-            await UpdateOriginalQuantity(serviceEntities.OriginalQuantityId ?? Guid.Empty, quantity,
-                serviceEntities.QuantityPrinciple ?? 0,
+            await UpdateOriginalQuantity(serviceEntities.OriginalQuantityId.Value, quantity,
+                serviceEntities.QuantityPrinciple.Value,
                 cancellationToken);
         }
         else
         {
             serviceEntities.QuantityInStock += quantity;
         }
+
+        await context.SaveChangesAsync(cancellationToken);
     }
 
     private async Task UpdateOriginalQuantity
@@ -43,17 +47,21 @@ public class OriginalQuantityService(
         OriginalQuantity? originalQuantities =
             await context.OriginalQuantity.FindAsync(new object?[] { id, cancellationToken }, cancellationToken);
 
-        var serviceByOriginal =
-            context.Service.Where(x => x.OriginalQuantityId == originalQuantities.Id).ToList();
+        List<Service> serviceByOriginal =
+            await context.Service.Where(x => x.OriginalQuantityId == originalQuantities.Id)
+                .ToListAsync(cancellationToken);
 
-        decimal? newQuantity = originalQuantities.TotalQuantity + quantity * quantityPrinciple;
+        decimal? newQuantity =
+            CalculatorExtension.TotalPrice(originalQuantities.TotalQuantity.Value, quantity * quantityPrinciple);
 
         originalQuantities.TotalQuantity = newQuantity;
 
         foreach (Service service in serviceByOriginal)
         {
-            decimal newQuantityService = (decimal)(newQuantity / service.QuantityPrinciple);
-            service.QuantityInStock = Math.Round(newQuantityService, 2);
+            service.QuantityInStock =
+                CalculatorExtension.QuantityInPrinciple(newQuantity.Value, service.QuantityPrinciple.Value);
         }
+
+        await context.SaveChangesAsync(cancellationToken);
     }
 }

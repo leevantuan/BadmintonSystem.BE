@@ -9,25 +9,13 @@ public static class Request
         public Guid? YardId { get; set; }
 
         public TimeSpan? StartTime { get; set; }
-
-        //public TimeSpan? EndTime { get; set; }
-
-        //public decimal? TotalPrice { get; set; }
     }
 
     public class UpdateBillLineRequest
     {
         public Guid Id { get; set; }
 
-        //public Guid? BillId { get; set; }
-
-        //public Guid? YardId { get; set; }
-
-        //public TimeSpan? StartTime { get; set; }
-
         public TimeSpan? EndTime { get; set; }
-
-        //public decimal? TotalPrice { get; set; }
     }
 
     public class UpdateQuantityServiceRequest

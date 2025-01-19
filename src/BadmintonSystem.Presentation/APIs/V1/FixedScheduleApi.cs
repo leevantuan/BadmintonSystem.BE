@@ -26,19 +26,16 @@ public class FixedScheduleApi : ApiEndpoint, ICarterModule
             .RequireAuthorization();
 
         group1.MapPost(string.Empty, CreateFixedScheduleV1)
-            .RequireJwtAuthorize(FunctionEnum.PRICE.ToString(), (int)ActionEnum.CREATE);
+            .RequireJwtAuthorize(FunctionEnum.FIXEDSCHEDULE.ToString(), (int)ActionEnum.CREATE);
 
-        group1.MapGet("filter-and-sort-value", GetFixedSchedulesFilterAndSortValueV1)
-            .RequireJwtAuthorize(FunctionEnum.PRICE.ToString(), (int)ActionEnum.READ);
-
-        // group1.MapGet("{fixedScheduleId}", GetFixedScheduleByIdV1)
-        //     .RequireJwtAuthorize(FunctionEnum.PRICE.ToString(), (int)ActionEnum.READ);
+        group1.MapGet("filter-and-sort", GetFixedSchedulesFilterAndSortValueV1)
+            .RequireJwtAuthorize(FunctionEnum.FIXEDSCHEDULE.ToString(), (int)ActionEnum.READ);
 
         group1.MapPut("{fixedScheduleId}", UpdateFixedScheduleV1)
-            .RequireJwtAuthorize(FunctionEnum.PRICE.ToString(), (int)ActionEnum.UPDATE);
+            .RequireJwtAuthorize(FunctionEnum.FIXEDSCHEDULE.ToString(), (int)ActionEnum.UPDATE);
 
         group1.MapDelete(string.Empty, DeleteFixedSchedulesV1)
-            .RequireJwtAuthorize(FunctionEnum.PRICE.ToString(), (int)ActionEnum.DELETE);
+            .RequireJwtAuthorize(FunctionEnum.FIXEDSCHEDULE.ToString(), (int)ActionEnum.DELETE);
     }
 
     private static async Task<IResult> CreateFixedScheduleV1
@@ -71,14 +68,6 @@ public class FixedScheduleApi : ApiEndpoint, ICarterModule
         updateFixedSchedule.Id = id;
         Result<Response.FixedScheduleResponse> result =
             await sender.Send(new Command.UpdateFixedScheduleCommand(updateFixedSchedule));
-
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
-    }
-
-    private static async Task<IResult> GetFixedScheduleByIdV1(ISender sender, Guid fixedScheduleId)
-    {
-        Result<Response.FixedScheduleDetailResponse> result =
-            await sender.Send(new Query.GetFixedScheduleByIdQuery(fixedScheduleId));
 
         return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
     }

@@ -11,11 +11,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BadmintonSystem.Application.UseCases.V1.Queries.Sale;
 
-public sealed class
-    GetSalesQueryHandler(
-        ApplicationDbContext context,
-        IMapper mapper,
-        IRepositoryBase<Domain.Entities.Sale, Guid> saleRepository)
+public sealed class GetSalesQueryHandler(
+    ApplicationDbContext context,
+    IMapper mapper,
+    IRepositoryBase<Domain.Entities.Sale, Guid> saleRepository)
     : IQueryHandler<Query.GetSalesQuery, PagedResult<Response.SaleResponse>>
 {
     public async Task<Result<PagedResult<Response.SaleResponse>>> Handle

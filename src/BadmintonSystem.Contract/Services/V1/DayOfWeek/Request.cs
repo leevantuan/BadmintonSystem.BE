@@ -8,13 +8,4 @@ public static class Request
 
         public string? WeekName { get; set; }
     }
-
-    public class UpdateDayOfWeekRequest
-    {
-        public Guid Id { get; set; }
-
-        public Guid? FixedScheduleId { get; set; }
-
-        public string? WeekName { get; set; }
-    }
 }

@@ -26,21 +26,21 @@ public class ClubApi : ApiEndpoint, ICarterModule
             .RequireAuthorization();
 
         group1.MapPost(string.Empty, CreateClubV1)
-            .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.CREATE);
+            .RequireJwtAuthorize(FunctionEnum.CLUB.ToString(), (int)ActionEnum.CREATE);
 
         group1.MapGet(string.Empty, GetClubsV1)
-            .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.READ);
-        group1.MapGet("filter-and-sort-value", GetClubsFilterAndSortValueV1)
-            .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.READ);
+            .RequireJwtAuthorize(FunctionEnum.CLUB.ToString(), (int)ActionEnum.READ);
+        group1.MapGet("filter-and-sort", GetClubsFilterAndSortValueV1)
+            .RequireJwtAuthorize(FunctionEnum.CLUB.ToString(), (int)ActionEnum.READ);
 
         group1.MapGet("{clubId}", GetClubByIdV1)
-            .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.READ);
+            .RequireJwtAuthorize(FunctionEnum.CLUB.ToString(), (int)ActionEnum.READ);
 
         group1.MapPut("{clubId}", UpdateClubV1)
-            .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.UPDATE);
+            .RequireJwtAuthorize(FunctionEnum.CLUB.ToString(), (int)ActionEnum.UPDATE);
 
         group1.MapDelete(string.Empty, DeleteClubsV1)
-            .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.DELETE);
+            .RequireJwtAuthorize(FunctionEnum.CLUB.ToString(), (int)ActionEnum.DELETE);
     }
 
     private static async Task<IResult> CreateClubV1

@@ -11,11 +11,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BadmintonSystem.Application.UseCases.V1.Queries.Notification;
 
-public sealed class
-    GetNotificationsQueryHandler(
-        ApplicationDbContext context,
-        IMapper mapper,
-        IRepositoryBase<Domain.Entities.Notification, Guid> notificationRepository)
+public sealed class GetNotificationsQueryHandler(
+    ApplicationDbContext context,
+    IMapper mapper,
+    IRepositoryBase<Domain.Entities.Notification, Guid> notificationRepository)
     : IQueryHandler<Query.GetNotificationsQuery, PagedResult<Response.NotificationResponse>>
 {
     public async Task<Result<PagedResult<Response.NotificationResponse>>> Handle

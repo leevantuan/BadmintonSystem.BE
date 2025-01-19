@@ -5,7 +5,6 @@ using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Enumerations;
 using BadmintonSystem.Contract.Extensions;
 using BadmintonSystem.Contract.Services.V1.Yard;
-using BadmintonSystem.Domain.Abstractions.Repositories;
 using BadmintonSystem.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,14 +12,12 @@ namespace BadmintonSystem.Application.UseCases.V1.Queries.Yard;
 
 public sealed class GetYardsWithFilterAndSortValueQueryHandler(
     IMapper mapper,
-    ApplicationDbContext context,
-    IRepositoryBase<Domain.Entities.Yard, Guid> yardRepository)
+    ApplicationDbContext context)
     : IQueryHandler<Query.GetYardsWithFilterAndSortValueQuery, PagedResult<Response.YardDetailResponse>>
 {
     public async Task<Result<PagedResult<Response.YardDetailResponse>>> Handle
         (Query.GetYardsWithFilterAndSortValueQuery request, CancellationToken cancellationToken)
     {
-        // Page Index and Page Size
         int PageIndex = request.Data.PageIndex <= 0
             ? PagedResult<Domain.Entities.Yard>.DefaultPageIndex
             : request.Data.PageIndex;
@@ -30,7 +27,6 @@ public sealed class GetYardsWithFilterAndSortValueQueryHandler(
                 ? PagedResult<Domain.Entities.Yard>.UpperPageSize
                 : request.Data.PageSize;
 
-        // Handle Query SQL
         var yardsQuery = new StringBuilder();
 
         yardsQuery.Append($@"SELECT * FROM ""{nameof(Domain.Entities.Yard)}""

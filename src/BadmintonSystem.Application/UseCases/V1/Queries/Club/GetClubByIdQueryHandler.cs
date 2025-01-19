@@ -1,20 +1,16 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Text;
-using AutoMapper;
 using BadmintonSystem.Contract.Abstractions.Message;
 using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Extensions;
 using BadmintonSystem.Contract.Services.V1.Club;
 using BadmintonSystem.Domain.Abstractions.Repositories;
 using BadmintonSystem.Domain.Entities;
-using BadmintonSystem.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace BadmintonSystem.Application.UseCases.V1.Queries.Club;
 
 public sealed class GetClubByIdQueryHandler(
-    ApplicationDbContext context,
-    IMapper mapper,
     IRepositoryBase<Domain.Entities.Club, Guid> clubRepository)
     : IQueryHandler<Query.GetClubByIdQuery, Response.ClubDetailResponse>
 {

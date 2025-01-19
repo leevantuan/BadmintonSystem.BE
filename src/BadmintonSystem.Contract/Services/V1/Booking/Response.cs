@@ -65,30 +65,9 @@ public static class Response
 
         public List<Guid> Ids { get; set; }
     }
-
-    public class GetBookingDetailSql
+    
+    public class GetBookingDetailSql : BookingSql
     {
-        // Booking
-        public Guid? Booking_Id { get; set; }
-
-        public DateTime? Booking_BookingDate { get; set; }
-
-        public decimal? Booking_BookingTotal { get; set; }
-
-        public decimal? Booking_OriginalPrice { get; set; }
-
-        public Guid? Booking_UserId { get; set; }
-
-        public Guid? Booking_SaleId { get; set; }
-
-        public int? Booking_BookingStatus { get; set; }
-
-        public int? Booking_PaymentStatus { get; set; }
-
-        public string? Booking_FullName { get; set; }
-
-        public string? Booking_PhoneNumber { get; set; }
-
         // Yard
         public Guid? Yard_Id { get; set; }
 
@@ -116,5 +95,29 @@ public static class Response
         public Guid? BookingLine_YardPriceId { get; set; }
 
         public decimal? BookingLine_TotalPrice { get; set; }
+    }
+
+    public class BookingSql
+    {
+        // Booking
+        public Guid? Booking_Id { get; set; }
+
+        public DateTime? Booking_BookingDate { get; set; }
+
+        public decimal? Booking_BookingTotal { get; set; }
+
+        public decimal? Booking_OriginalPrice { get; set; }
+
+        public Guid? Booking_UserId { get; set; }
+
+        public Guid? Booking_SaleId { get; set; }
+
+        public int? Booking_BookingStatus { get; set; }
+
+        public int? Booking_PaymentStatus { get; set; }
+
+        public string? Booking_FullName { get; set; }
+
+        public string? Booking_PhoneNumber { get; set; }
     }
 }

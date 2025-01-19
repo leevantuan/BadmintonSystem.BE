@@ -6,6 +6,7 @@ using BadmintonSystem.Domain.Abstractions.Repositories;
 using BadmintonSystem.Domain.Enumerations;
 using BadmintonSystem.Domain.Exceptions;
 using BadmintonSystem.Persistence;
+using Microsoft.EntityFrameworkCore;
 
 namespace BadmintonSystem.Application.UseCases.V1.Commands.PaymentMethod;
 
@@ -18,7 +19,7 @@ public sealed class CreatePaymentMethodByUserIdCommandHandler(
     public async Task<Result> Handle
         (Command.CreatePaymentMethodByUserIdCommand request, CancellationToken cancellationToken)
     {
-        _ = context.AppUsers.FirstOrDefault(x => x.Id == request.UserId)
+        _ = await context.AppUsers.FirstOrDefaultAsync(x => x.Id == request.UserId, cancellationToken)
             ?? throw new IdentityException.AppUserNotFoundException(request.UserId);
 
         Domain.Entities.PaymentMethod alreadyExist =

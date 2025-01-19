@@ -1,6 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Text;
-using AutoMapper;
 using BadmintonSystem.Contract.Abstractions.Message;
 using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Enumerations;
@@ -8,7 +7,6 @@ using BadmintonSystem.Contract.Extensions;
 using BadmintonSystem.Contract.Services.V1.FixedSchedule;
 using BadmintonSystem.Domain.Abstractions.Repositories;
 using BadmintonSystem.Domain.Entities;
-using BadmintonSystem.Persistence;
 using Microsoft.EntityFrameworkCore;
 using DayOfWeek = BadmintonSystem.Domain.Entities.DayOfWeek;
 using Response = BadmintonSystem.Contract.Services.V1.FixedSchedule.Response;
@@ -16,8 +14,6 @@ using Response = BadmintonSystem.Contract.Services.V1.FixedSchedule.Response;
 namespace BadmintonSystem.Application.UseCases.V1.Queries.FixedSchedule;
 
 public sealed class GetFixedSchedulesWithFilterAndSortValueQueryHandler(
-    ApplicationDbContext context,
-    IMapper mapper,
     IRepositoryBase<Domain.Entities.FixedSchedule, Guid> fixedScheduleRepository)
     : IQueryHandler<Query.GetFixedSchedulesWithFilterAndSortValueQuery,
         PagedResult<Response.GetFixedScheduleDetailResponse>>
@@ -25,7 +21,6 @@ public sealed class GetFixedSchedulesWithFilterAndSortValueQueryHandler(
     public async Task<Result<PagedResult<Response.GetFixedScheduleDetailResponse>>> Handle
         (Query.GetFixedSchedulesWithFilterAndSortValueQuery request, CancellationToken cancellationToken)
     {
-        // Pagination
         int pageIndex = request.Data.PageIndex <= 0
             ? PagedResult<Domain.Entities.FixedSchedule>.DefaultPageIndex
             : request.Data.PageIndex;
@@ -58,7 +53,6 @@ public sealed class GetFixedSchedulesWithFilterAndSortValueQueryHandler(
                 WHERE ""{nameof(Domain.Entities.FixedSchedule.IsDeleted)}"" = false
                 AND ""{nameof(Domain.Entities.FixedSchedule.PhoneNumber)}"" ILIKE '%{request.Data.SearchTerm}%' ");
 
-        // FILTER MULTIPLE
         if (request.Data.FilterColumnAndMultipleValue.Any())
         {
             foreach (KeyValuePair<string, List<string>> item in request.Data.FilterColumnAndMultipleValue)
@@ -77,7 +71,6 @@ public sealed class GetFixedSchedulesWithFilterAndSortValueQueryHandler(
             }
         }
 
-        // SORT MULTIPLE
         if (request.Data.SortColumnAndOrder.Any())
         {
             baseQueryBuilder.Append("ORDER BY ");

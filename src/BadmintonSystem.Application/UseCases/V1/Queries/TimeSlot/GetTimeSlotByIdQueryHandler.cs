@@ -4,12 +4,10 @@ using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.V1.TimeSlot;
 using BadmintonSystem.Domain.Abstractions.Repositories;
 using BadmintonSystem.Domain.Exceptions;
-using BadmintonSystem.Persistence;
 
 namespace BadmintonSystem.Application.UseCases.V1.Queries.TimeSlot;
 
 public sealed class GetTimeSlotByIdQueryHandler(
-    ApplicationDbContext context,
     IMapper mapper,
     IRepositoryBase<Domain.Entities.TimeSlot, Guid> timeSlotRepository)
     : IQueryHandler<Query.GetTimeSlotByIdQuery, Response.TimeSlotResponse>

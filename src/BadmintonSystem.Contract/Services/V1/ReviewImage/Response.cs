@@ -2,8 +2,6 @@
 
 public static class Response
 {
-    public record ReviewImageResponse(Guid Id, string ImageLink, Guid ReviewId);
-
     public class ReviewImageDetailResponse
     {
         public Guid Id { get; set; }

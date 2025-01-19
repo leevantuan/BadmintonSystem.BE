@@ -1,16 +1,12 @@
-﻿using AutoMapper;
-using BadmintonSystem.Contract.Abstractions.Message;
+﻿using BadmintonSystem.Contract.Abstractions.Message;
 using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.V1.Provider;
 using BadmintonSystem.Domain.Abstractions.Repositories;
 using BadmintonSystem.Domain.Exceptions;
-using BadmintonSystem.Persistence;
 
 namespace BadmintonSystem.Application.UseCases.V1.Commands.Provider;
 
 public sealed class DeleteProvidersCommandHandler(
-    ApplicationDbContext context,
-    IMapper mapper,
     IRepositoryBase<Domain.Entities.Provider, Guid> providerRepository)
     : ICommandHandler<Command.DeleteProvidersCommand>
 {
@@ -22,7 +18,7 @@ public sealed class DeleteProvidersCommandHandler(
         {
             var idValue = Guid.Parse(id);
 
-            Domain.Entities.Provider provider = await providerRepository.FindByIdAsync(idValue)
+            Domain.Entities.Provider provider = await providerRepository.FindByIdAsync(idValue, cancellationToken)
                                                 ?? throw new ProviderException.ProviderNotFoundException(idValue);
 
             providers.Add(provider);

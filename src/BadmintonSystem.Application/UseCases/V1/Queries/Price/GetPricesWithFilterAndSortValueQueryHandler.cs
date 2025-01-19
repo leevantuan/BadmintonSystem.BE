@@ -20,7 +20,6 @@ public sealed class GetPricesWithFilterAndSortValueQueryHandler(
     public async Task<Result<PagedResult<Response.PriceDetailResponse>>> Handle
         (Query.GetPricesWithFilterAndSortValueQuery request, CancellationToken cancellationToken)
     {
-        // Page Index and Page Size
         int pageIndex = request.Data.PageIndex <= 0
             ? PagedResult<Domain.Entities.Price>.DefaultPageIndex
             : request.Data.PageIndex;
@@ -30,7 +29,6 @@ public sealed class GetPricesWithFilterAndSortValueQueryHandler(
                 ? PagedResult<Domain.Entities.Price>.UpperPageSize
                 : request.Data.PageSize;
 
-        // Handle Query SQL
         var baseQueryBuilder = new StringBuilder();
 
         baseQueryBuilder.Append($@"SELECT * FROM ""{nameof(Domain.Entities.Price)}""

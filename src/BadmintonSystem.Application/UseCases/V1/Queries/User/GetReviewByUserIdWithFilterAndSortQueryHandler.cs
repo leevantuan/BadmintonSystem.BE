@@ -2,7 +2,6 @@
 using BadmintonSystem.Contract.Abstractions.Message;
 using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.V1.User;
-using BadmintonSystem.Domain.Abstractions.Repositories;
 using BadmintonSystem.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,8 +9,7 @@ namespace BadmintonSystem.Application.UseCases.V1.Queries.User;
 
 public sealed class GetReviewByUserIdWithFilterAndSortQueryHandler(
     ApplicationDbContext context,
-    IMapper mapper,
-    IRepositoryBase<Domain.Entities.Review, Guid> reviewRepository)
+    IMapper mapper)
     : IQueryHandler<Query.GetReviewsByUserIdWithFilterAndSortQuery, PagedResult<Response.ReviewByUserResponse>>
 {
     public async Task<Result<PagedResult<Response.ReviewByUserResponse>>> Handle
@@ -39,7 +37,7 @@ public sealed class GetReviewByUserIdWithFilterAndSortQueryHandler(
             select new { review, reviewImage };
 
         // Group by
-        var queryGrouped = query.AsNoTracking()
+        IQueryable<Response.ReviewByUserResponse> queryGrouped = query.AsNoTracking()
             .GroupBy(x => x.review.Id)
             .Select(x => new Response.ReviewByUserResponse
             {

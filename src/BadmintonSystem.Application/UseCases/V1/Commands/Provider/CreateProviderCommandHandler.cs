@@ -3,12 +3,10 @@ using BadmintonSystem.Contract.Abstractions.Message;
 using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.V1.Provider;
 using BadmintonSystem.Domain.Abstractions.Repositories;
-using BadmintonSystem.Persistence;
 
 namespace BadmintonSystem.Application.UseCases.V1.Commands.Provider;
 
 public sealed class CreateProviderCommandHandler(
-    ApplicationDbContext context,
     IMapper mapper,
     IRepositoryBase<Domain.Entities.Provider, Guid> providerRepository)
     : ICommandHandler<Command.CreateProviderCommand>

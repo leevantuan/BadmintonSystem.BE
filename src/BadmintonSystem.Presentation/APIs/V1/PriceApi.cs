@@ -28,7 +28,7 @@ public class PriceApi : ApiEndpoint, ICarterModule
         group1.MapPost(string.Empty, CreatePriceV1)
             .RequireJwtAuthorize(FunctionEnum.PRICE.ToString(), (int)ActionEnum.CREATE);
 
-        group1.MapGet("filter-and-sort-value", GetPricesFilterAndSortValueV1)
+        group1.MapGet("filter-and-sort", GetPricesFilterAndSortValueV1)
             .RequireJwtAuthorize(FunctionEnum.PRICE.ToString(), (int)ActionEnum.READ);
 
         group1.MapGet("show-prices", GetShowPricesValueV1)

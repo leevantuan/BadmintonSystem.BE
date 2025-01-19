@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Runtime.CompilerServices;
+using System.Text;
 using AutoMapper;
 using BadmintonSystem.Contract.Abstractions.Message;
 using BadmintonSystem.Contract.Abstractions.Shared;
@@ -31,51 +32,53 @@ public sealed class GetCategoriesWithFilterAndSortValueQueryHandler(
                 : request.Data.PageSize;
 
         // Handle Query SQL
-        var categoriesQuery = new StringBuilder();
-
-        categoriesQuery.Append($@"SELECT * FROM ""{nameof(Domain.Entities.Category)}""
-                             WHERE ""{nameof(Domain.Entities.Category.Name)}"" ILIKE '%{request.Data.SearchTerm}%'");
+        var baseQuery = new StringBuilder();
+        baseQuery.Append($@"FROM ""{nameof(Domain.Entities.Category)}""
+                            WHERE ""{nameof(Domain.Entities.Category.Name)}"" ILIKE '%{request.Data.SearchTerm}%'");
 
         if (request.Data.FilterColumnAndMultipleValue.Any())
         {
             foreach (KeyValuePair<string, List<string>> item in request.Data.FilterColumnAndMultipleValue)
             {
                 string key = CategoryExtension.GetSortCategoryProperty(item.Key);
-                categoriesQuery.Append(
+                baseQuery.Append(
                     $@"AND ""{nameof(Domain.Entities.Category)}"".""{key}""::TEXT ILIKE ANY (ARRAY[");
 
                 foreach (string value in item.Value)
                 {
-                    categoriesQuery.Append($@"'%{value}%', ");
+                    baseQuery.Append($@"'%{value}%', ");
                 }
 
-                categoriesQuery.Length -= 2;
+                baseQuery.Length -= 2;
 
-                categoriesQuery.Append("]) ");
+                baseQuery.Append("]) ");
             }
         }
 
         if (request.Data.SortColumnAndOrder.Any())
         {
-            categoriesQuery.Append("ORDER BY ");
+            baseQuery.Append("ORDER BY ");
             foreach (KeyValuePair<string, SortOrder> item in request.Data.SortColumnAndOrder)
             {
                 string key = ReviewExtension.GetSortReviewProperty(item.Key);
-                categoriesQuery.Append(item.Value == SortOrder.Descending
+                baseQuery.Append(item.Value == SortOrder.Descending
                     ? $@" ""{nameof(Domain.Entities.Category)}"".""{key}"" DESC, "
                     : $@" ""{nameof(Domain.Entities.Category)}"".""{key}"" ASC, ");
             }
 
-            categoriesQuery.Length -= 2;
+            baseQuery.Length -= 2;
         }
 
+        int totalCount = await TotalCount(baseQuery.ToString(), cancellationToken);
+
+        var categoriesQuery = new StringBuilder();
+        categoriesQuery.Append(@"SELECT * ");
+        categoriesQuery.Append(baseQuery);
         categoriesQuery.Append($"\nOFFSET {(PageIndex - 1) * PageSize} ROWS FETCH NEXT {PageSize} ROWS ONLY");
 
 
         List<Domain.Entities.Category> categories =
             await context.Category.FromSqlRaw(categoriesQuery.ToString()).ToListAsync(cancellationToken);
-
-        int totalCount = categories.Count();
 
         var categoryPagedResult =
             PagedResult<Domain.Entities.Category>.Create(categories, PageIndex, PageSize, totalCount);
@@ -84,5 +87,21 @@ public sealed class GetCategoriesWithFilterAndSortValueQueryHandler(
             mapper.Map<PagedResult<Response.CategoryDetailResponse>>(categoryPagedResult);
 
         return Result.Success(result);
+    }
+
+    private async Task<int> TotalCount(string baseQuery, CancellationToken cancellationToken)
+    {
+        var countQueryBuilder = new StringBuilder();
+        countQueryBuilder.Append(
+            $@"SELECT COUNT(*) AS ""{nameof(SqlResponse.TotalCountSqlResponse.TotalCount)}""");
+        countQueryBuilder.Append(" \n");
+
+        countQueryBuilder.Append(baseQuery);
+        SqlResponse.TotalCountSqlResponse totalCountQueryResult = await categoryRepository
+            .ExecuteSqlQuery<SqlResponse.TotalCountSqlResponse>(
+                FormattableStringFactory.Create(countQueryBuilder.ToString()))
+            .SingleAsync(cancellationToken);
+
+        return totalCountQueryResult.TotalCount;
     }
 }

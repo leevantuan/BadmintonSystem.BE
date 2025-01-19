@@ -11,11 +11,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BadmintonSystem.Application.UseCases.V1.Queries.Review;
 
-public sealed class
-    GetReviewsQueryHandler(
-        ApplicationDbContext context,
-        IMapper mapper,
-        IRepositoryBase<Domain.Entities.Review, Guid> reviewRepository)
+public sealed class GetReviewsQueryHandler(
+    ApplicationDbContext context,
+    IMapper mapper,
+    IRepositoryBase<Domain.Entities.Review, Guid> reviewRepository)
     : IQueryHandler<Query.GetReviewsQuery, PagedResult<Response.ReviewResponse>>
 {
     public async Task<Result<PagedResult<Response.ReviewResponse>>> Handle

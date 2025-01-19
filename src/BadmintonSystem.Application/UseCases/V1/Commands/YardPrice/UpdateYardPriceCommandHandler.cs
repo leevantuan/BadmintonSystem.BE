@@ -5,12 +5,10 @@ using BadmintonSystem.Contract.Services.V1.YardPrice;
 using BadmintonSystem.Domain.Abstractions.Repositories;
 using BadmintonSystem.Domain.Enumerations;
 using BadmintonSystem.Domain.Exceptions;
-using BadmintonSystem.Persistence;
 
 namespace BadmintonSystem.Application.UseCases.V1.Commands.YardPrice;
 
 public sealed class UpdateYardPriceCommandHandler(
-    ApplicationDbContext context,
     IMapper mapper,
     IRepositoryBase<Domain.Entities.YardPrice, Guid> yardPriceRepository)
     : ICommandHandler<Command.UpdateYardPriceCommand, Response.YardPriceResponse>

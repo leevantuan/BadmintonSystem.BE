@@ -5,7 +5,6 @@ using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Enumerations;
 using BadmintonSystem.Contract.Extensions;
 using BadmintonSystem.Contract.Services.V1.TimeSlot;
-using BadmintonSystem.Domain.Abstractions.Repositories;
 using BadmintonSystem.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,14 +12,12 @@ namespace BadmintonSystem.Application.UseCases.V1.Queries.TimeSlot;
 
 public sealed class GetTimeSlotsWithFilterAndSortValueQueryHandler(
     IMapper mapper,
-    ApplicationDbContext context,
-    IRepositoryBase<Domain.Entities.TimeSlot, Guid> timeSlotRepository)
+    ApplicationDbContext context)
     : IQueryHandler<Query.GetTimeSlotsWithFilterAndSortValueQuery, PagedResult<Response.TimeSlotDetailResponse>>
 {
     public async Task<Result<PagedResult<Response.TimeSlotDetailResponse>>> Handle
         (Query.GetTimeSlotsWithFilterAndSortValueQuery request, CancellationToken cancellationToken)
     {
-        // Page Index and Page Size
         int PageIndex = request.Data.PageIndex <= 0
             ? PagedResult<Domain.Entities.TimeSlot>.DefaultPageIndex
             : request.Data.PageIndex;
@@ -30,7 +27,6 @@ public sealed class GetTimeSlotsWithFilterAndSortValueQueryHandler(
                 ? PagedResult<Domain.Entities.TimeSlot>.UpperPageSize
                 : request.Data.PageSize;
 
-        // Handle Query SQL
         var timeSlotsQuery = new StringBuilder();
 
         timeSlotsQuery.Append($@"SELECT * FROM ""{nameof(Domain.Entities.TimeSlot)}""

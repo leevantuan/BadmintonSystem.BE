@@ -1,16 +1,12 @@
-﻿using AutoMapper;
-using BadmintonSystem.Contract.Abstractions.Message;
+﻿using BadmintonSystem.Contract.Abstractions.Message;
 using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.V1.FixedSchedule;
 using BadmintonSystem.Domain.Abstractions.Repositories;
 using BadmintonSystem.Domain.Exceptions;
-using BadmintonSystem.Persistence;
 
 namespace BadmintonSystem.Application.UseCases.V1.Commands.FixedSchedule;
 
 public sealed class DeleteFixedSchedulesCommandHandler(
-    ApplicationDbContext context,
-    IMapper mapper,
     IRepositoryBase<Domain.Entities.FixedSchedule, Guid> fixedScheduleRepository)
     : ICommandHandler<Command.DeleteFixedSchedulesCommand>
 {

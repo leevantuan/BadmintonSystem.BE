@@ -1,5 +1,5 @@
-﻿using AutoMapper;
-using BadmintonSystem.Contract.Abstractions.Shared;
+﻿using BadmintonSystem.Contract.Abstractions.Shared;
+using BadmintonSystem.Contract.Extensions;
 using BadmintonSystem.Domain.Entities;
 using BadmintonSystem.Domain.Exceptions;
 using BadmintonSystem.Persistence;
@@ -10,14 +10,14 @@ namespace BadmintonSystem.Application.UseCases.V1.Services;
 
 public class ServiceLineService(
     ApplicationDbContext context,
-    IOriginalQuantityService originalQuantityService,
-    IMapper mapper)
+    IOriginalQuantityService originalQuantityService)
     : IServiceLineService
 {
     public async Task UpdateQuantityServiceLine(Guid serviceLineId, int quantity, CancellationToken cancellationToken)
     {
-        ServiceLine serviceLineEntities = context.ServiceLine.FirstOrDefault(s => s.Id == serviceLineId)
-                                          ?? throw new ServiceLineException.ServiceLineNotFoundException(serviceLineId);
+        ServiceLine serviceLineEntities =
+            await context.ServiceLine.FirstOrDefaultAsync(s => s.Id == serviceLineId, cancellationToken)
+            ?? throw new ServiceLineException.ServiceLineNotFoundException(serviceLineId);
 
         int quantityChange = quantity - serviceLineEntities.Quantity;
         serviceLineEntities.Quantity = quantity;
@@ -35,7 +35,7 @@ public class ServiceLineService(
     public async Task CreateServiceLine
         (Guid billId, List<Request.CreateServiceLineRequest> serviceLines, CancellationToken cancellationToken)
     {
-        _ = context.Bill.FirstOrDefault(b => b.Id == billId)
+        _ = await context.Bill.FirstOrDefaultAsync(b => b.Id == billId, cancellationToken)
             ?? throw new BillException.BillNotFoundException(billId);
 
         if (serviceLines.Any())
@@ -53,12 +53,13 @@ public class ServiceLineService(
                 SqlResponse.PriceDecimalSqlResponse price =
                     await GetPriceByServiceId(serviceLine.ServiceId ?? Guid.Empty, cancellationToken);
 
-                serviceLineEntities.TotalPrice = (decimal)(serviceLine.Quantity * price.Price);
+                serviceLineEntities.TotalPrice =
+                    CalculatorExtension.TotalPrice(price.Price, serviceLine.Quantity.Value);
 
                 context.ServiceLine.Add(serviceLineEntities);
                 await context.SaveChangesAsync(cancellationToken);
 
-                await originalQuantityService.UpdateQuantityService(serviceLine.ServiceId ?? Guid.Empty,
+                await originalQuantityService.UpdateQuantityService(serviceLine.ServiceId.Value,
                     0 - (serviceLine.Quantity ?? 1), cancellationToken);
             }
 

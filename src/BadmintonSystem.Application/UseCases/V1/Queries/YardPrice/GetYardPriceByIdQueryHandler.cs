@@ -1,29 +1,25 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Text;
-using AutoMapper;
 using BadmintonSystem.Contract.Abstractions.Message;
 using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Extensions;
 using BadmintonSystem.Contract.Services.V1.YardPrice;
 using BadmintonSystem.Domain.Abstractions.Repositories;
 using BadmintonSystem.Domain.Exceptions;
-using BadmintonSystem.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace BadmintonSystem.Application.UseCases.V1.Queries.YardPrice;
 
 public sealed class GetYardPriceByIdQueryHandler(
-    ApplicationDbContext context,
-    IMapper mapper,
     IRepositoryBase<Domain.Entities.YardPrice, Guid> yardPriceRepository)
     : IQueryHandler<Query.GetYardPriceByIdQuery, Response.YardPriceDetailResponse>
 {
     public async Task<Result<Response.YardPriceDetailResponse>> Handle
         (Query.GetYardPriceByIdQuery request, CancellationToken cancellationToken)
     {
-        Task<Domain.Entities.YardPrice> yardPrice = yardPriceRepository.FindByIdAsync(request.Id, cancellationToken)
-                                                    ?? throw new YardPriceException.YardPriceNotFoundException(
-                                                        request.Id);
+        _ = await yardPriceRepository.FindByIdAsync(request.Id, cancellationToken)
+            ?? throw new YardPriceException.YardPriceNotFoundException(
+                request.Id);
 
         string yardColumns = StringExtension
             .TransformPropertiesToSqlAliases<Domain.Entities.Yard,

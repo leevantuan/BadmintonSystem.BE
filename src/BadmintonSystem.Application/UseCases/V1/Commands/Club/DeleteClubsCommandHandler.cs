@@ -1,16 +1,12 @@
-﻿using AutoMapper;
-using BadmintonSystem.Contract.Abstractions.Message;
+﻿using BadmintonSystem.Contract.Abstractions.Message;
 using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.V1.Club;
 using BadmintonSystem.Domain.Abstractions.Repositories;
 using BadmintonSystem.Domain.Exceptions;
-using BadmintonSystem.Persistence;
 
 namespace BadmintonSystem.Application.UseCases.V1.Commands.Club;
 
 public sealed class DeleteClubsCommandHandler(
-    ApplicationDbContext context,
-    IMapper mapper,
     IRepositoryBase<Domain.Entities.Club, Guid> clubRepository)
     : ICommandHandler<Command.DeleteClubsCommand>
 {

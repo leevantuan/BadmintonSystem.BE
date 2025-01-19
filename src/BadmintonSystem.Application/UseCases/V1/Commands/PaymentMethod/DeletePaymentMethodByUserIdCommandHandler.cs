@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using BadmintonSystem.Contract.Abstractions.Message;
+﻿using BadmintonSystem.Contract.Abstractions.Message;
 using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.V1.PaymentMethod;
 using BadmintonSystem.Domain.Abstractions.Repositories;
@@ -10,7 +9,6 @@ namespace BadmintonSystem.Application.UseCases.V1.Commands.PaymentMethod;
 
 public sealed class DeletePaymentMethodByUserIdCommandHandler(
     ApplicationDbContext context,
-    IMapper mapper,
     IRepositoryBase<Domain.Entities.PaymentMethod, Guid> paymentMethodRepository)
     : ICommandHandler<Command.DeletePaymentMethodByUserIdCommand>
 {

@@ -11,11 +11,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BadmintonSystem.Application.UseCases.V1.Queries.Club;
 
-public sealed class
-    GetClubsQueryHandler(
-        ApplicationDbContext context,
-        IMapper mapper,
-        IRepositoryBase<Domain.Entities.Club, Guid> clubRepository)
+public sealed class GetClubsQueryHandler(
+    ApplicationDbContext context,
+    IMapper mapper,
+    IRepositoryBase<Domain.Entities.Club, Guid> clubRepository)
     : IQueryHandler<Query.GetClubsQuery, PagedResult<Response.ClubResponse>>
 {
     public async Task<Result<PagedResult<Response.ClubResponse>>> Handle

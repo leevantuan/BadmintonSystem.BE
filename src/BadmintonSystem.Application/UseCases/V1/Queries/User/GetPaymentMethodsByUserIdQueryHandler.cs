@@ -11,7 +11,6 @@ namespace BadmintonSystem.Application.UseCases.V1.Queries.User;
 
 public sealed class GetPaymentMethodsByUserIdQueryHandler(
     ApplicationDbContext context,
-    IRepositoryBase<Domain.Entities.PaymentMethod, Guid> paymentMethodRepository,
     IMapper mapper)
     : IQueryHandler<Query.GetPaymentMethodsByUserIdQuery, PagedResult<Response.PaymentMethodByUserResponse>>
 {

@@ -2,23 +2,22 @@
 using BadmintonSystem.Contract.Abstractions.Message;
 using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.V1.Address;
-using BadmintonSystem.Domain.Abstractions.Repositories;
 using BadmintonSystem.Domain.Entities;
 using BadmintonSystem.Domain.Enumerations;
 using BadmintonSystem.Domain.Exceptions;
 using BadmintonSystem.Persistence;
+using Microsoft.EntityFrameworkCore;
 
 namespace BadmintonSystem.Application.UseCases.V1.Commands.Address;
 
 public sealed class CreateAddressByUserIdCommandHandler(
     ApplicationDbContext context,
-    IMapper mapper,
-    IRepositoryBase<Domain.Entities.Address, Guid> addressRepository)
+    IMapper mapper)
     : ICommandHandler<Command.CreateAddressByUserIdCommand>
 {
     public async Task<Result> Handle(Command.CreateAddressByUserIdCommand request, CancellationToken cancellationToken)
     {
-        _ = context.AppUsers.FirstOrDefault(x => x.Id == request.UserId)
+        _ = await context.AppUsers.FirstOrDefaultAsync(x => x.Id == request.UserId, cancellationToken)
             ?? throw new IdentityException.AppUserNotFoundException(request.UserId);
 
         Domain.Entities.Address? address = mapper.Map<Domain.Entities.Address>(request.Data);

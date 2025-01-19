@@ -14,11 +14,7 @@ public static class Request
 
         public Guid? UserId { get; set; }
 
-        //public Guid? BookingId { get; set; }
-
         public Guid? YardId { get; set; }
-
-        //public int? Status { get; set; }
     }
 
     public class UpdateBillRequest

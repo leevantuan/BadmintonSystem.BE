@@ -1,6 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Text;
-using AutoMapper;
 using BadmintonSystem.Contract.Abstractions.Message;
 using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Enumerations;
@@ -16,17 +15,15 @@ namespace BadmintonSystem.Application.UseCases.V1.Queries.User;
 
 public sealed class GetAddressesByEmailWithFilterAndSortQueryHandler(
     ApplicationDbContext context,
-    IRepositoryBase<Domain.Entities.Address, Guid> addressRepository,
-    IMapper mapper)
+    IRepositoryBase<Domain.Entities.Address, Guid> addressRepository)
     : IQueryHandler<Query.GetAddressesByEmailWithFilterAndSortQuery, PagedResult<Response.AddressByUserDetailResponse>>
 {
     public async Task<Result<PagedResult<Response.AddressByUserDetailResponse>>> Handle
         (Query.GetAddressesByEmailWithFilterAndSortQuery request, CancellationToken cancellationToken)
     {
-        _ = context.AppUsers.FirstOrDefault(x => x.Id == request.UserId)
+        _ = await context.AppUsers.FirstOrDefaultAsync(x => x.Id == request.UserId, cancellationToken)
             ?? throw new IdentityException.AppUserNotFoundException(request.UserId);
 
-        // Pagination
         int pageIndex = request.Data.PageIndex <= 0
             ? PagedResult<Domain.Entities.Address>.DefaultPageIndex
             : request.Data.PageIndex;

@@ -27,38 +27,38 @@ public class BillApi : ApiEndpoint, ICarterModule
 
         // QUERY
         group1.MapPost("filter-and-sort-value", GetBillsFilterAndSortValueV1)
-            .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.READ);
+            .RequireJwtAuthorize(FunctionEnum.BILL.ToString(), (int)ActionEnum.READ);
 
         group1.MapGet("{billId}", GetBillByIdV1)
-            .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.READ);
+            .RequireJwtAuthorize(FunctionEnum.BILL.ToString(), (int)ActionEnum.READ);
 
         // Command
         group1.MapPost(string.Empty, CreateBillV1)
-            .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.UPDATE);
+            .RequireJwtAuthorize(FunctionEnum.BILL.ToString(), (int)ActionEnum.UPDATE);
 
         group1.MapPut("update/{billId}", UpdateBillV1)
-            .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.DELETE);
+            .RequireJwtAuthorize(FunctionEnum.BILL.ToString(), (int)ActionEnum.DELETE);
 
         group1.MapPut("close-bill/{billId}", CloseBillV1)
-            .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.DELETE);
+            .RequireJwtAuthorize(FunctionEnum.BILL.ToString(), (int)ActionEnum.DELETE);
 
         group1.MapPut("open-yard", OpenYardByBillV1)
-            .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.DELETE);
+            .RequireJwtAuthorize(FunctionEnum.BILL.ToString(), (int)ActionEnum.DELETE);
 
         group1.MapPut("close-yard", CloseYardByBillV1)
-            .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.DELETE);
+            .RequireJwtAuthorize(FunctionEnum.BILL.ToString(), (int)ActionEnum.DELETE);
 
         group1.MapPut("update-quantity-service", UpdateQuantityServiceV1)
-            .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.DELETE);
+            .RequireJwtAuthorize(FunctionEnum.BILL.ToString(), (int)ActionEnum.DELETE);
 
         group1.MapPost("create-service/{billId}", CreateServiceByBillV1)
-            .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.DELETE);
+            .RequireJwtAuthorize(FunctionEnum.BILL.ToString(), (int)ActionEnum.DELETE);
 
         group1.MapDelete("{serviceLineId}", DeleteServiceBillV1)
-            .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.DELETE);
+            .RequireJwtAuthorize(FunctionEnum.BILL.ToString(), (int)ActionEnum.DELETE);
 
         group1.MapPut("open-booking/{billId}", OpenYardByBillInBookingV1)
-            .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.DELETE);
+            .RequireJwtAuthorize(FunctionEnum.BILL.ToString(), (int)ActionEnum.DELETE);
     }
 
     private static async Task<IResult> CreateBillV1
@@ -186,18 +186,4 @@ public class BillApi : ApiEndpoint, ICarterModule
 
         return Results.Ok(result);
     }
-    //
-    // private static async Task<IResult> GetBillsFilterAndSortValueByDateV1
-    // (
-    //     ISender sender,
-    //     [FromBody] DateTime date,
-    //     [AsParameters] Contract.Abstractions.Shared.Request.PagedFilterAndSortRequest request)
-    // {
-    //     var pagedQueryRequest =
-    //         new Contract.Abstractions.Shared.Request.PagedFilterAndSortQueryRequest(request);
-    //     Result<PagedResult<Response.GetBillDetailResponse>> result =
-    //         await sender.Send(new Query.GetBillsByDateFilterAndSortValueQuery(date, pagedQueryRequest));
-    //
-    //     return Results.Ok(result);
-    // }
 }

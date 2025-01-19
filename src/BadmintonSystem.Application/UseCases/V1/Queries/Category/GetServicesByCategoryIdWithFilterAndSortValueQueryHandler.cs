@@ -1,19 +1,15 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Text;
-using AutoMapper;
 using BadmintonSystem.Contract.Abstractions.Message;
 using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Extensions;
 using BadmintonSystem.Contract.Services.V1.Category;
 using BadmintonSystem.Domain.Abstractions.Repositories;
-using BadmintonSystem.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace BadmintonSystem.Application.UseCases.V1.Queries.Category;
 
 public sealed class GetServicesByCategoryIdWithFilterAndSortValueQueryHandler(
-    IMapper mapper,
-    ApplicationDbContext context,
     IRepositoryBase<Domain.Entities.Category, Guid> categoryRepository)
     : IQueryHandler<Query.GetServicesByCategoryIdWithFilterAndSortValueQuery,
         PagedResult<Response.GetServicesByCategoryIdResponse>>
@@ -30,9 +26,9 @@ public sealed class GetServicesByCategoryIdWithFilterAndSortValueQueryHandler(
                 ? PagedResult<Domain.Entities.Category>.UpperPageSize
                 : request.Data.PageSize;
 
-        // SQL Query String
         string categoryColumns = StringExtension
             .TransformPropertiesToSqlAliases<Domain.Entities.Category, Response.CategoryResponse>();
+
         string serviceColumns = StringExtension
             .TransformPropertiesToSqlAliases<Domain.Entities.Service,
                 Contract.Services.V1.Service.Response.ServiceResponse>();

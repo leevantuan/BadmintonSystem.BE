@@ -1,20 +1,16 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Text;
-using AutoMapper;
 using BadmintonSystem.Contract.Abstractions.Message;
 using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Enumerations;
 using BadmintonSystem.Contract.Extensions;
 using BadmintonSystem.Contract.Services.V1.InventoryReceipt;
 using BadmintonSystem.Domain.Abstractions.Repositories;
-using BadmintonSystem.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace BadmintonSystem.Application.UseCases.V1.Queries.InventoryReceipt;
 
 public sealed class GetInventoryReceiptsWithFilterAndSortValueQueryHandler(
-    IMapper mapper,
-    ApplicationDbContext context,
     IRepositoryBase<Domain.Entities.InventoryReceipt, Guid> inventoryReceiptRepository)
     : IQueryHandler<Query.GetInventoryReceiptsWithFilterAndSortValueQuery,
         PagedResult<Response.InventoryReceiptDetailResponse>>
@@ -30,7 +26,6 @@ public sealed class GetInventoryReceiptsWithFilterAndSortValueQueryHandler(
             .TransformPropertiesToSqlAliases<Domain.Entities.InventoryReceipt,
                 Response.InventoryReceiptDetail>();
 
-        // Page Index and Page Size
         int pageIndex = request.Data.PageIndex <= 0
             ? PagedResult<Domain.Entities.InventoryReceipt>.DefaultPageIndex
             : request.Data.PageIndex;
@@ -40,7 +35,6 @@ public sealed class GetInventoryReceiptsWithFilterAndSortValueQueryHandler(
                 ? PagedResult<Domain.Entities.InventoryReceipt>.UpperPageSize
                 : request.Data.PageSize;
 
-        // Handle Query SQL
         var baseQueryBuilder = new StringBuilder();
 
         baseQueryBuilder.Append(
@@ -117,6 +111,8 @@ public sealed class GetInventoryReceiptsWithFilterAndSortValueQueryHandler(
             baseQueryBuilder.Length -= 2;
         }
 
+        int totalCount = await TotalCount(baseQueryBuilder.ToString(), cancellationToken);
+
         baseQueryBuilder.Append($"\nOFFSET {(pageIndex - 1) * pageSize} ROWS FETCH NEXT {pageSize} ROWS ONLY");
 
         var totalPriceQueryBuilder = new StringBuilder();
@@ -138,7 +134,35 @@ public sealed class GetInventoryReceiptsWithFilterAndSortValueQueryHandler(
                 FormattableStringFactory.Create(inventoryReceiptQueryBuilder.ToString()))
             .ToListAsync(cancellationToken);
 
-        // Group by
+        var inventoryReceiptPagedResult =
+            PagedResult<Response.InventoryReceiptDetailResponse>.Create(
+                GroupByData(inventoryReceipts, totalPrice),
+                pageIndex,
+                pageSize,
+                totalCount);
+
+        return Result.Success(inventoryReceiptPagedResult);
+    }
+
+    private async Task<int> TotalCount(string baseQuery, CancellationToken cancellationToken)
+    {
+        var countQueryBuilder = new StringBuilder();
+        countQueryBuilder.Append(
+            $@"SELECT COUNT(*) AS ""{nameof(SqlResponse.TotalCountSqlResponse.TotalCount)}""");
+        countQueryBuilder.Append(" \n");
+
+        countQueryBuilder.Append(baseQuery);
+        SqlResponse.TotalCountSqlResponse totalCountQueryResult = await inventoryReceiptRepository
+            .ExecuteSqlQuery<SqlResponse.TotalCountSqlResponse>(
+                FormattableStringFactory.Create(countQueryBuilder.ToString()))
+            .SingleAsync(cancellationToken);
+
+        return totalCountQueryResult.TotalCount;
+    }
+
+    private List<Response.InventoryReceiptDetailResponse> GroupByData
+        (List<Response.InventoryReceiptDetailSql> inventoryReceipts, SqlResponse.TotalPriceSqlResponse totalPrice)
+    {
         var results = inventoryReceipts.GroupBy(p => p.InventoryReceipt_Id)
             .Select(g => new Response.InventoryReceiptDetailResponse
             {
@@ -176,13 +200,6 @@ public sealed class GetInventoryReceiptsWithFilterAndSortValueQueryHandler(
                 TotalPrice = totalPrice.TotalPrice
             }).Distinct().ToList();
 
-        var InventoryReceiptPagedResult =
-            PagedResult<Response.InventoryReceiptDetailResponse>.Create(
-                results,
-                pageIndex,
-                pageSize,
-                results.Count());
-
-        return Result.Success(InventoryReceiptPagedResult);
+        return results;
     }
 }

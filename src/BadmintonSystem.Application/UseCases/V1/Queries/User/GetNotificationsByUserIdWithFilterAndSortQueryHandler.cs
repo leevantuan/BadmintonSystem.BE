@@ -15,8 +15,7 @@ namespace BadmintonSystem.Application.UseCases.V1.Queries.User;
 
 public sealed class GetNotificationsByUserIdWithFilterAndSortQueryHandler(
     ApplicationDbContext context,
-    IRepositoryBase<Domain.Entities.Notification, Guid> notificationRepository,
-    IMapper mapper)
+    IRepositoryBase<Domain.Entities.Notification, Guid> notificationRepository)
     : IQueryHandler<Query.GetNotificationsByUserIdWithFilterAndSortQuery,
         PagedResult<Response.NotificationByUserResponse>>
 {

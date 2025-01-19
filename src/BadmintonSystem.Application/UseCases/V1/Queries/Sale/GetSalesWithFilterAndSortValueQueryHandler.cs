@@ -5,7 +5,6 @@ using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Enumerations;
 using BadmintonSystem.Contract.Extensions;
 using BadmintonSystem.Contract.Services.V1.Sale;
-using BadmintonSystem.Domain.Abstractions.Repositories;
 using BadmintonSystem.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,14 +12,12 @@ namespace BadmintonSystem.Application.UseCases.V1.Queries.Sale;
 
 public sealed class GetSalesWithFilterAndSortValueQueryHandler(
     IMapper mapper,
-    ApplicationDbContext context,
-    IRepositoryBase<Domain.Entities.Sale, Guid> saleRepository)
+    ApplicationDbContext context)
     : IQueryHandler<Query.GetSalesWithFilterAndSortValueQuery, PagedResult<Response.SaleDetailResponse>>
 {
     public async Task<Result<PagedResult<Response.SaleDetailResponse>>> Handle
         (Query.GetSalesWithFilterAndSortValueQuery request, CancellationToken cancellationToken)
     {
-        // Page Index and Page Size
         int PageIndex = request.Data.PageIndex <= 0
             ? PagedResult<Domain.Entities.Sale>.DefaultPageIndex
             : request.Data.PageIndex;
@@ -30,7 +27,6 @@ public sealed class GetSalesWithFilterAndSortValueQueryHandler(
                 ? PagedResult<Domain.Entities.Sale>.UpperPageSize
                 : request.Data.PageSize;
 
-        // Handle Query SQL
         var salesQuery = new StringBuilder();
 
         salesQuery.Append($@"SELECT * FROM ""{nameof(Domain.Entities.Sale)}""

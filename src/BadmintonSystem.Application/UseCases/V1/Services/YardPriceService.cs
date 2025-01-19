@@ -1,29 +1,55 @@
 ﻿using System.Text;
-using AutoMapper;
-using BadmintonSystem.Domain.Abstractions.Repositories;
 using BadmintonSystem.Domain.Entities;
 using BadmintonSystem.Domain.Enumerations;
 using BadmintonSystem.Persistence;
 using Microsoft.EntityFrameworkCore;
-using Npgsql;
 using DayOfWeek = BadmintonSystem.Domain.Entities.DayOfWeek;
 
 namespace BadmintonSystem.Application.UseCases.V1.Services;
 
 public sealed class YardPriceService(
-    ApplicationDbContext context,
-    IMapper mapper,
-    IRepositoryBase<YardPrice, Guid> repository)
+    ApplicationDbContext context)
     : IYardPriceService
 {
-    public async Task<bool> CreateYardPrice(DateTime date, Guid userId)
+    public async Task<bool> CreateYardPrice(DateTime date, Guid userId, CancellationToken cancellationToken)
     {
-        var baseQueryBuilder = new StringBuilder();
         var extensionQueryBuilder = new StringBuilder();
-        var cteQueryBuilder = new StringBuilder();
-        var insertQueryBuilder = new StringBuilder();
         extensionQueryBuilder.Append(@"CREATE EXTENSION IF NOT EXISTS ""uuid-ossp"";");
 
+        var baseQueryBuilder = new StringBuilder();
+        baseQueryBuilder.Append(extensionQueryBuilder);
+        baseQueryBuilder.Append(" \n");
+        baseQueryBuilder.Append(CteQueryBuilder(date));
+        baseQueryBuilder.Append(" \n");
+        baseQueryBuilder.Append(InsertQueryBuilder(date, userId));
+
+        await context.Database.ExecuteSqlRawAsync(baseQueryBuilder.ToString(), cancellationToken);
+
+        await context.SaveChangesAsync(cancellationToken);
+
+        return true;
+    }
+
+    public async Task UpdateYardPricesByBookingId(Guid bookingId, CancellationToken cancellationToken)
+    {
+        var updateYardPriceQueryBuilder = new StringBuilder();
+        updateYardPriceQueryBuilder.Append($@"WITH yardPriceIds AS (
+	        SELECT ""{nameof(BookingLine.YardPriceId)}"" AS ""Id""
+	            FROM ""{nameof(BookingLine)}"" AS bookingLine
+	            WHERE ""{nameof(BookingLine.BookingId)}"" = '{bookingId}'
+	            AND bookingLine.""{nameof(BookingLine.IsDeleted)}"" = false
+            )
+            UPDATE ""{nameof(YardPrice)}"" 
+            SET ""{nameof(YardPrice.IsBooking)}"" = {(int)BookingEnum.UNBOOKED},
+	            ""{nameof(YardPrice.ModifiedDate)}"" = NOW()
+            WHERE ""{nameof(YardPrice.Id)}"" IN (SELECT ""Id"" FROM yardPriceIds)");
+
+        await context.Database.ExecuteSqlRawAsync(updateYardPriceQueryBuilder.ToString(), cancellationToken);
+    }
+
+    private string CteQueryBuilder(DateTime date)
+    {
+        var cteQueryBuilder = new StringBuilder();
         cteQueryBuilder.Append($@"WITH FixedScheduleTemp AS (
 	            SELECT 
 		            fixedSchedule.""{nameof(FixedSchedule.StartDate)}"", 
@@ -39,7 +65,13 @@ public sealed class YardPriceService(
 	            WHERE '{date}'::DATE BETWEEN fixedSchedule.""{nameof(FixedSchedule.StartDate)}"" AND fixedSchedule.""{nameof(FixedSchedule.EndDate)}""
             )");
 
-        insertQueryBuilder.Append($@"INSERT INTO ""YardPrice"" (
+        return cteQueryBuilder.ToString();
+    }
+
+    private string InsertQueryBuilder(DateTime date, Guid userId)
+    {
+        var insertQueryBuilder = new StringBuilder();
+        insertQueryBuilder.Append($@"INSERT INTO ""{nameof(YardPrice)}"" (
 	            ""{nameof(YardPrice.Id)}"", 
 	            ""{nameof(YardPrice.YardId)}"", 
 	            ""{nameof(YardPrice.TimeSlotId)}"",
@@ -66,7 +98,7 @@ public sealed class YardPriceService(
 	            END AS ""{nameof(YardPrice.IsBooking)}"",
 	            NOW() AS ""{nameof(YardPrice.CreatedDate)}"", 
 	            NULL AS ""{nameof(YardPrice.ModifiedDate)}"", 
-	            @CreatedBy AS ""{nameof(YardPrice.CreatedBy)}"",
+	            '{userId}' AS ""{nameof(YardPrice.CreatedBy)}"",
 	            NULL AS ""{nameof(YardPrice.ModifiedBy)}"", 
 	            FALSE AS ""{nameof(YardPrice.IsDeleted)}"", 
 	            NULL AS ""{nameof(YardPrice.DeletedAt)}"" 
@@ -82,39 +114,6 @@ public sealed class YardPriceService(
             LEFT JOIN FixedScheduleTemp 
 	        ON FixedScheduleTemp.""TimeSlotId"" = timeSlot.""Id""; ");
 
-        baseQueryBuilder.Append(extensionQueryBuilder);
-        baseQueryBuilder.Append(" \n");
-        baseQueryBuilder.Append(cteQueryBuilder);
-        baseQueryBuilder.Append(" \n");
-        baseQueryBuilder.Append(insertQueryBuilder);
-
-        NpgsqlParameter[] parameters =
-        {
-            new("@CreatedBy", userId)
-        };
-
-        context.Database.ExecuteSqlRaw(baseQueryBuilder.ToString(), parameters);
-
-        await context.SaveChangesAsync();
-
-        return true;
-    }
-
-    public async Task UpdateYardPricesByBookingId(Guid bookingId, CancellationToken cancellationToken)
-    {
-        var updateYardPriceQueryBuilder = new StringBuilder();
-        updateYardPriceQueryBuilder.Append($@"WITH yardPriceIds AS (
-	        SELECT ""{nameof(BookingLine.YardPriceId)}"" AS ""Id""
-	            FROM ""{nameof(BookingLine)}"" AS bookingLine
-	            WHERE ""{nameof(BookingLine.BookingId)}"" = '{bookingId}'
-	            AND bookingLine.""{nameof(BookingLine.IsDeleted)}"" = false
-            )
-
-            UPDATE ""{nameof(YardPrice)}"" 
-            SET ""{nameof(YardPrice.IsBooking)}"" = {(int)BookingEnum.UNBOOKED},
-	            ""{nameof(YardPrice.ModifiedDate)}"" = NOW()
-            WHERE ""{nameof(YardPrice.Id)}"" IN (SELECT ""Id"" FROM yardPriceIds)");
-
-        await context.Database.ExecuteSqlRawAsync(updateYardPriceQueryBuilder.ToString(), cancellationToken);
+        return insertQueryBuilder.ToString();
     }
 }

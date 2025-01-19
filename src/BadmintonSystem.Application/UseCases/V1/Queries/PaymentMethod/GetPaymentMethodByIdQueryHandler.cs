@@ -4,12 +4,10 @@ using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.V1.PaymentMethod;
 using BadmintonSystem.Domain.Abstractions.Repositories;
 using BadmintonSystem.Domain.Exceptions;
-using BadmintonSystem.Persistence;
 
 namespace BadmintonSystem.Application.UseCases.V1.Queries.PaymentMethod;
 
 public sealed class GetPaymentMethodByIdQueryHandler(
-    ApplicationDbContext context,
     IMapper mapper,
     IRepositoryBase<Domain.Entities.PaymentMethod, Guid> paymentMethodRepository)
     : IQueryHandler<Query.GetPaymentMethodByIdQuery, Response.PaymentMethodDetailResponse>

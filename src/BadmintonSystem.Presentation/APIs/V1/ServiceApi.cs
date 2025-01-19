@@ -31,7 +31,7 @@ public class ServiceApi : ApiEndpoint, ICarterModule
         group1.MapGet(string.Empty, GetServicesV1)
             .RequireJwtAuthorize(FunctionEnum.SERVICE.ToString(), (int)ActionEnum.READ);
 
-        group1.MapGet("filter-and-sort-value", GetServicesFilterAndSortValueV1)
+        group1.MapGet("filter-and-sort", GetServicesFilterAndSortValueV1)
             .RequireJwtAuthorize(FunctionEnum.SERVICE.ToString(), (int)ActionEnum.READ);
 
         group1.MapGet("inventory-receipts/{serviceId}", GetInventoryReceiptByServiceIdFilterAndSortValueV1)

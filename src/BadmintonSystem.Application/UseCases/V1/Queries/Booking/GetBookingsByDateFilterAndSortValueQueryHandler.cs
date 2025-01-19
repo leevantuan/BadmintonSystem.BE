@@ -1,6 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Text;
-using AutoMapper;
 using BadmintonSystem.Contract.Abstractions.Message;
 using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Enumerations;
@@ -8,15 +7,12 @@ using BadmintonSystem.Contract.Extensions;
 using BadmintonSystem.Contract.Services.V1.Booking;
 using BadmintonSystem.Domain.Abstractions.Repositories;
 using BadmintonSystem.Domain.Entities;
-using BadmintonSystem.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace BadmintonSystem.Application.UseCases.V1.Queries.Booking;
 
 public sealed class GetBookingsByDateFilterAndSortValueQueryHandler(
-    ApplicationDbContext context,
-    IRepositoryBase<Domain.Entities.Booking, Guid> bookingRepository,
-    IMapper mapper)
+    IRepositoryBase<Domain.Entities.Booking, Guid> bookingRepository)
     : IQueryHandler<Query.GetBookingsByDateFilterAndSortValueQuery, PagedResult<Response.GetBookingDetailResponse>>
 {
     public async Task<Result<PagedResult<Response.GetBookingDetailResponse>>> Handle
@@ -42,7 +38,6 @@ public sealed class GetBookingsByDateFilterAndSortValueQueryHandler(
             .TransformPropertiesToSqlAliases<BookingLine,
                 Contract.Services.V1.BookingLine.Response.BookingLineResponse>();
 
-        // Pagination
         int pageIndex = request.Data.PageIndex <= 0
             ? PagedResult<Domain.Entities.Address>.DefaultPageIndex
             : request.Data.PageIndex;
@@ -99,16 +94,7 @@ public sealed class GetBookingsByDateFilterAndSortValueQueryHandler(
             baseQueryBuilder.Length -= 2;
         }
 
-        var countQueryBuilder = new StringBuilder();
-        countQueryBuilder.Append(
-            $@"SELECT COUNT(*) AS ""{nameof(SqlResponse.TotalCountSqlResponse.TotalCount)}""");
-        countQueryBuilder.Append(" \n");
-
-        countQueryBuilder.Append(baseQueryBuilder);
-        SqlResponse.TotalCountSqlResponse totalCountQueryResult = await bookingRepository
-            .ExecuteSqlQuery<SqlResponse.TotalCountSqlResponse>(
-                FormattableStringFactory.Create(countQueryBuilder.ToString()))
-            .SingleAsync(cancellationToken);
+        int totalCount = await TotalCount(baseQueryBuilder.ToString(), cancellationToken);
 
         bookingQueryBuilder.Append(baseQueryBuilder);
         bookingQueryBuilder.Append($@"OFFSET {(pageIndex - 1) * pageSize} ROWS FETCH NEXT {pageSize} ROWS ONLY");
@@ -136,7 +122,34 @@ public sealed class GetBookingsByDateFilterAndSortValueQueryHandler(
                 FormattableStringFactory.Create(bookingQueryBuilder.ToString()))
             .ToListAsync(cancellationToken);
 
-        // Group by
+        var bookingPagedResult =
+            PagedResult<Response.GetBookingDetailResponse>.Create(
+                GroupByData(bookings),
+                pageIndex,
+                pageSize,
+                totalCount);
+
+        return Result.Success(bookingPagedResult);
+    }
+
+    private async Task<int> TotalCount(string baseQuery, CancellationToken cancellationToken)
+    {
+        var countQueryBuilder = new StringBuilder();
+        countQueryBuilder.Append(
+            $@"SELECT COUNT(*) AS ""{nameof(SqlResponse.TotalCountSqlResponse.TotalCount)}""");
+        countQueryBuilder.Append(" \n");
+
+        countQueryBuilder.Append(baseQuery);
+        SqlResponse.TotalCountSqlResponse totalCountQueryResult = await bookingRepository
+            .ExecuteSqlQuery<SqlResponse.TotalCountSqlResponse>(
+                FormattableStringFactory.Create(countQueryBuilder.ToString()))
+            .SingleAsync(cancellationToken);
+
+        return totalCountQueryResult.TotalCount;
+    }
+
+    private List<Response.GetBookingDetailResponse> GroupByData(List<Response.GetBookingDetailSql> bookings)
+    {
         var results = bookings.GroupBy(p => p.Booking_Id)
             .Select(g => new Response.GetBookingDetailResponse
             {
@@ -170,13 +183,6 @@ public sealed class GetBookingsByDateFilterAndSortValueQueryHandler(
             })
             .ToList();
 
-        var bookingPagedResult =
-            PagedResult<Response.GetBookingDetailResponse>.Create(
-                results,
-                pageIndex,
-                pageSize,
-                totalCountQueryResult.TotalCount);
-
-        return Result.Success(bookingPagedResult);
+        return results;
     }
 }

@@ -2,14 +2,6 @@
 
 public static class Response
 {
-    public record PaymentMethodResponse(
-        Guid Id,
-        string Provider,
-        int AccountNumber,
-        DateTime? Expiry,
-        int IsDefault,
-        Guid UserId);
-
     public class PaymentMethodDetailResponse
     {
         public Guid Id { get; set; }

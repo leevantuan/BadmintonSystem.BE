@@ -2,7 +2,7 @@
 
 public interface IYardPriceService
 {
-    Task<bool> CreateYardPrice(DateTime date, Guid userId);
+    Task<bool> CreateYardPrice(DateTime date, Guid userId, CancellationToken cancellationToken);
 
     Task UpdateYardPricesByBookingId(Guid bookingId, CancellationToken cancellationToken);
 }

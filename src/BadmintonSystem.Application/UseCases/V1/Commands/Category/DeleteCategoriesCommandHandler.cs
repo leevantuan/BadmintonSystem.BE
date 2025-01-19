@@ -1,16 +1,12 @@
-﻿using AutoMapper;
-using BadmintonSystem.Contract.Abstractions.Message;
+﻿using BadmintonSystem.Contract.Abstractions.Message;
 using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.V1.Category;
 using BadmintonSystem.Domain.Abstractions.Repositories;
 using BadmintonSystem.Domain.Exceptions;
-using BadmintonSystem.Persistence;
 
 namespace BadmintonSystem.Application.UseCases.V1.Commands.Category;
 
 public sealed class DeleteCategoriesCommandHandler(
-    ApplicationDbContext context,
-    IMapper mapper,
     IRepositoryBase<Domain.Entities.Category, Guid> categoryRepository)
     : ICommandHandler<Command.DeleteCategoriesCommand>
 {
@@ -22,7 +18,7 @@ public sealed class DeleteCategoriesCommandHandler(
         {
             var idValue = Guid.Parse(id);
 
-            Domain.Entities.Category category = await categoryRepository.FindByIdAsync(idValue)
+            Domain.Entities.Category category = await categoryRepository.FindByIdAsync(idValue, cancellationToken)
                                                 ?? throw new CategoryException.CategoryNotFoundException(idValue);
 
             categories.Add(category);

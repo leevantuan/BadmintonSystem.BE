@@ -14,8 +14,6 @@ using Microsoft.EntityFrameworkCore;
 namespace BadmintonSystem.Application.UseCases.V1.Queries.User;
 
 public sealed class GetBookingsByUserIdWithFilterAndSortQueryHandler(
-    ApplicationDbContext context,
-    IMapper mapper,
     IRepositoryBase<Domain.Entities.Booking, Guid> bookingRepository)
     : IQueryHandler<Query.GetBookingsByUserIdWithFilterAndSortQuery, PagedResult<Response.GetBookingByUserIdResponse>>
 {

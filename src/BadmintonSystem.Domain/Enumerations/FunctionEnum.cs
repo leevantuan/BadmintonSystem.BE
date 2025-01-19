@@ -18,5 +18,9 @@ public enum FunctionEnum
     TIMESLOT = 13,
     YARD = 14,
     YARDPRICE = 15,
-    YARDTYPE = 16
+    YARDTYPE = 16,
+    BILL = 17,
+    INVENTORYRECEIPT = 18,
+    PROVIDER = 19,
+    PAYMENTMETHOD = 20
 }

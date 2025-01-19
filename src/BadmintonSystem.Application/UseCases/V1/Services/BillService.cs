@@ -1,6 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Text;
-using AutoMapper;
+using BadmintonSystem.Contract.Extensions;
 using BadmintonSystem.Contract.Services.V1.Bill;
 using BadmintonSystem.Domain.Abstractions.Repositories;
 using BadmintonSystem.Domain.Entities;
@@ -13,7 +13,6 @@ namespace BadmintonSystem.Application.UseCases.V1.Services;
 
 public sealed class BillService(
     ApplicationDbContext context,
-    IMapper mapper,
     IRepositoryBase<Bill, Guid> billRepository)
     : IBillService
 {
@@ -28,66 +27,75 @@ public sealed class BillService(
 
     public async Task UpdateTotalPriceByBillId(Guid billId, CancellationToken cancellationToken)
     {
-        Bill billEntities = context.Bill.FirstOrDefault(b => b.Id == billId)
+        Bill billEntities = await context.Bill.FirstOrDefaultAsync(b => b.Id == billId, cancellationToken)
                             ?? throw new BillException.BillNotFoundException(billId);
 
-        var totalPriceQueryBuilder = new StringBuilder();
-        totalPriceQueryBuilder.Append(@$"
-                SELECT 
-                    bill.""Id"",
-                    COALESCE(SUM(billLine.""TotalPrice""), 0) AS ""BillLine_TotalPrice"",
-                    COALESCE(SUM(serviceLine.""TotalPrice""),0) AS ""ServiceLine_TotalPrice"",
-                    COALESCE(booking.""BookingTotal"", 0) AS ""Booking_TotalPrice"",
-                    COALESCE(booking.""OriginalPrice"", 0) AS ""Booking_OriginalPrice"",
-                    COALESCE(booking.""PercentPrePay"", 0) AS ""Booking_PercentPrePay""
-                FROM ""Bill"" AS bill
-                LEFT JOIN ""BillLine"" AS billLine 
-                ON bill.""Id"" = billLine.""BillId""
-                LEFT JOIN ""ServiceLine"" AS serviceLine 
-                ON bill.""Id"" = serviceLine.""BillId"" 
-                AND serviceLine.""IsDeleted"" = false
-                LEFT JOIN ""Booking"" AS booking 
-                ON bill.""BookingId"" = booking.""Id""
-                WHERE bill.""Id"" = '{billId}'
-                GROUP BY 
-                    bill.""Id"", 
-                    booking.""BookingTotal"", 
-                    booking.""OriginalPrice"", 
-                    booking.""PercentPrePay"" ");
+        Response.GetTotalPriceSql listPrices = await GetTotalPricesSql(billId, cancellationToken);
 
-        Response.GetTotalPriceSql listPrices = await billRepository.ExecuteSqlQuery<Response.GetTotalPriceSql>(
-                FormattableStringFactory.Create(totalPriceQueryBuilder.ToString()))
-            .FirstAsync(cancellationToken);
-
-        decimal? totalPrice = listPrices.BillLine_TotalPrice + listPrices.ServiceLine_TotalPrice +
-                              listPrices.Booking_TotalPrice;
-
-        decimal? totalPrePay = listPrices.Booking_TotalPrice * listPrices.Booking_PercentPrePay / 100;
-
-        billEntities.TotalPrice = totalPrice ?? 0;
-        billEntities.TotalPayment = totalPrePay ?? 0;
+        billEntities.TotalPrice = CalculatorExtension.TotalPrice(listPrices.BillLine_TotalPrice,
+            listPrices.ServiceLine_TotalPrice, listPrices.Booking_TotalPrice);
+        billEntities.TotalPayment =
+            CalculatorExtension.TotalPrePay(listPrices.Booking_TotalPrice, listPrices.Booking_PercentPrePay);
 
         await context.SaveChangesAsync(cancellationToken);
     }
 
     public async Task ChangeYardActiveByBookingId(Guid billId, StatusEnum status, CancellationToken cancellationToken)
     {
-        var query = from bill in context.Bill
-            join booking in context.Booking on bill.BookingId equals booking.Id
-            join bookingLine in context.BookingLine on booking.Id equals bookingLine.BookingId
-            join yardPrice in context.YardPrice on bookingLine.YardPriceId equals yardPrice.Id
-            join yard in context.Yard on yardPrice.YardId equals yard.Id
-            where bill.Id == billId
-            select new { yard };
-
-        List<Guid> ids = await query.AsNoTracking().GroupBy(x => x.yard.Id).Select(x => x.Key)
-            .ToListAsync(cancellationToken);
-
-        var yards = context.Yard.Where(x => ids.Contains(x.Id)).ToList();
+        List<Yard> yards = await GetYardsByBillId(billId, cancellationToken);
 
         foreach (Yard yard in yards)
         {
             yard.IsStatus = status;
         }
+
+        await context.SaveChangesAsync(cancellationToken);
+    }
+
+    private async Task<List<Yard>> GetYardsByBillId(Guid billId, CancellationToken cancellationToken)
+    {
+        List<Guid> ids = await (from bill in context.Bill
+            join booking in context.Booking on bill.BookingId equals booking.Id
+            join bookingLine in context.BookingLine on booking.Id equals bookingLine.BookingId
+            join yardPrice in context.YardPrice on bookingLine.YardPriceId equals yardPrice.Id
+            join yard in context.Yard on yardPrice.YardId equals yard.Id
+            where bill.Id == billId
+            select yard.Id).Distinct().ToListAsync(cancellationToken);
+
+        List<Yard> yards = await context.Yard.Where(x => ids.Contains(x.Id)).ToListAsync(cancellationToken);
+
+        return yards;
+    }
+
+    private async Task<Response.GetTotalPriceSql> GetTotalPricesSql(Guid billId, CancellationToken cancellationToken)
+    {
+        var totalPriceQueryBuilder = new StringBuilder();
+        totalPriceQueryBuilder.Append(@$"
+                SELECT bill.""{nameof(Bill.Id)}"",
+                    COALESCE(SUM(billLine.""{nameof(BillLine.TotalPrice)}""), 0) AS ""BillLine_TotalPrice"",
+                    COALESCE(SUM(serviceLine.""{nameof(ServiceLine.TotalPrice)}""),0) AS ""ServiceLine_TotalPrice"",
+                    COALESCE(booking.""{nameof(Booking.BookingTotal)}"", 0) AS ""Booking_TotalPrice"",
+                    COALESCE(booking.""{nameof(Booking.OriginalPrice)}"", 0) AS ""Booking_OriginalPrice"",
+                    COALESCE(booking.""{nameof(Booking.PercentPrePay)}"", 0) AS ""Booking_PercentPrePay""
+                FROM ""{nameof(Bill)}"" AS bill
+                LEFT JOIN ""{nameof(BillLine)}"" AS billLine 
+                ON bill.""{nameof(Bill.Id)}"" = billLine.""{nameof(BillLine.BillId)}""
+                LEFT JOIN ""{nameof(ServiceLine)}"" AS serviceLine 
+                ON bill.""{nameof(Bill.Id)}"" = serviceLine.""{nameof(ServiceLine.BillId)}"" 
+                AND serviceLine.""IsDeleted"" = false
+                LEFT JOIN ""{nameof(Booking)}"" AS booking 
+                ON bill.""{nameof(Bill.BookingId)}"" = booking.""{nameof(Booking.Id)}""
+                WHERE bill.""{nameof(Bill.Id)}"" = '{billId}'
+                GROUP BY 
+                    bill.""{nameof(Bill.Id)}"", 
+                    booking.""{nameof(Booking.BookingTotal)}"", 
+                    booking.""{nameof(Booking.OriginalPrice)}"", 
+                    booking.""{nameof(Booking.PercentPrePay)}"" ");
+
+        Response.GetTotalPriceSql listPrices = await billRepository.ExecuteSqlQuery<Response.GetTotalPriceSql>(
+                FormattableStringFactory.Create(totalPriceQueryBuilder.ToString()))
+            .FirstAsync(cancellationToken);
+
+        return listPrices;
     }
 }

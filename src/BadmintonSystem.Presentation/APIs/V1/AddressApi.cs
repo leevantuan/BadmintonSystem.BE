@@ -27,16 +27,16 @@ public class AddressApi : ApiEndpoint, ICarterModule
             .RequireAuthorization();
 
         group1.MapPost(string.Empty, CreateAddressV1)
-            .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.CREATE);
+            .RequireJwtAuthorize(FunctionEnum.ADDRESS.ToString(), (int)ActionEnum.CREATE);
 
         group1.MapGet("{addressId}", GetAddressByIdV1)
-            .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.READ);
+            .RequireJwtAuthorize(FunctionEnum.ADDRESS.ToString(), (int)ActionEnum.READ);
 
         group1.MapPut("{addressId}", UpdateAddressV1)
-            .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.UPDATE);
+            .RequireJwtAuthorize(FunctionEnum.ADDRESS.ToString(), (int)ActionEnum.UPDATE);
 
         group1.MapDelete("{addressId}", DeleteAddressByUserIdV1)
-            .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.DELETE);
+            .RequireJwtAuthorize(FunctionEnum.ADDRESS.ToString(), (int)ActionEnum.DELETE);
     }
 
     private static async Task<IResult> CreateAddressV1

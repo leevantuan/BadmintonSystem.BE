@@ -2,15 +2,14 @@
 using BadmintonSystem.Application.UseCases.V1.Services;
 using BadmintonSystem.Contract.Abstractions.Message;
 using BadmintonSystem.Contract.Abstractions.Shared;
+using BadmintonSystem.Contract.Extensions;
 using BadmintonSystem.Contract.Services.V1.Service;
 using BadmintonSystem.Domain.Abstractions.Repositories;
-using BadmintonSystem.Persistence;
 using Request = BadmintonSystem.Contract.Services.V1.Service.Request;
 
 namespace BadmintonSystem.Application.UseCases.V1.Commands.Service;
 
 public sealed class CreateServiceCommandHandler(
-    ApplicationDbContext context,
     IMapper mapper,
     IOriginalQuantityService originalQuantityService,
     IRepositoryBase<Domain.Entities.Service, Guid> serviceRepository)
@@ -42,8 +41,6 @@ public sealed class CreateServiceCommandHandler(
 
         foreach (Request.ServiceDetail service in request.Data.ServiceDetails)
         {
-            decimal newQuantityService = (decimal)(request.Data.QuantityInStock / service.QuantityPrinciple);
-
             Domain.Entities.Service? entities = mapper.Map<Domain.Entities.Service>(request.Data);
 
             entities.OriginalQuantityId = originalQuantityId;
@@ -52,7 +49,8 @@ public sealed class CreateServiceCommandHandler(
             entities.PurchasePrice = service.PurchasePrice;
             entities.SellingPrice = service.SellingPrice;
             entities.Unit = service.Unit;
-            entities.QuantityInStock = Math.Round(newQuantityService, 2);
+            entities.QuantityInStock =
+                CalculatorExtension.QuantityInPrinciple(request.Data.QuantityInStock, service.QuantityPrinciple.Value);
 
             serviceRepository.Add(entities);
         }

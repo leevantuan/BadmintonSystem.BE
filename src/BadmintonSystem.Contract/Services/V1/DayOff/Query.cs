@@ -5,13 +5,6 @@ namespace BadmintonSystem.Contract.Services.V1.DayOff;
 
 public static class Query
 {
-    public record GetDayOffByIdQuery(Guid Id)
-        : IQuery<Response.DayOffDetailResponse>;
-
-    public record GetDayOffsWithFilterAndSortValueQuery(
-        Abstractions.Shared.Request.PagedFilterAndSortQueryRequest Data)
-        : IQuery<PagedResult<Response.DayOffDetailResponse>>;
-
     public record GetDayOffByDateQuery(DateTime Date)
         : IQuery<Response.DayOffDetailResponse>;
 }

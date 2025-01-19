@@ -1,20 +1,16 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Text;
-using AutoMapper;
 using BadmintonSystem.Application.UseCases.V1.Services;
 using BadmintonSystem.Contract.Abstractions.Message;
 using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Extensions;
 using BadmintonSystem.Contract.Services.V1.YardPrice;
 using BadmintonSystem.Domain.Abstractions.Repositories;
-using BadmintonSystem.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace BadmintonSystem.Application.UseCases.V1.Queries.YardPrice;
 
 public sealed class GetYardPricesByYardIdInTodayQueryHandler(
-    ApplicationDbContext context,
-    IMapper mapper,
     IYardPriceService yardPriceService,
     IRepositoryBase<Domain.Entities.YardPrice, Guid> yardPriceRepository)
     : IQueryHandler<Query.GetYardPricesByYardIdInTodayQuery, Response.YardPricesByDateDetailResponse>
@@ -28,7 +24,7 @@ public sealed class GetYardPricesByYardIdInTodayQueryHandler(
 
         if (!effectiveDateIsExists.Any())
         {
-            yardPriceService.CreateYardPrice(date, request.UserId);
+            await yardPriceService.CreateYardPrice(date, request.UserId, cancellationToken);
         }
 
         string yardColumns = StringExtension

@@ -30,7 +30,7 @@ public class SaleApi : ApiEndpoint, ICarterModule
 
         group1.MapGet(string.Empty, GetSalesV1)
             .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.READ);
-        group1.MapGet("filter-and-sort-value", GetSalesFilterAndSortValueV1)
+        group1.MapGet("filter-and-sort", GetSalesFilterAndSortValueV1)
             .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.READ);
 
         group1.MapGet("{saleId}", GetSaleByIdV1)

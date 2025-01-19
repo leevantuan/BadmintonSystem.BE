@@ -31,11 +31,11 @@ public class CategoryApi : ApiEndpoint, ICarterModule
         group1.MapGet(string.Empty, GetCategoriesV1)
             .RequireJwtAuthorize(FunctionEnum.CATEGORY.ToString(), (int)ActionEnum.READ);
 
-        group1.MapGet("filter-and-sort-by-single-value", GetCategoriesFilterAndSortValueV1)
+        group1.MapGet("filter-and-sort", GetCategoriesFilterAndSortValueV1)
             .RequireJwtAuthorize(FunctionEnum.CATEGORY.ToString(), (int)ActionEnum.READ);
 
-        group1.MapGet("{categoryId}/services/filter-and-sort-value",
-                GetServicesByCategoryIdFilterAndSortValueV1)
+        group1.MapGet(
+                "{categoryId}/services/filter-and-sort", GetServicesByCategoryIdFilterAndSortValueV1)
             .RequireJwtAuthorize(FunctionEnum.CATEGORY.ToString(), (int)ActionEnum.READ);
 
         group1.MapGet("{categoryId}", GetCategoryByIdV1)
