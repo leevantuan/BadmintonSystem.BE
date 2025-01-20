@@ -56,8 +56,7 @@ public sealed class GetBillsWithFilterAndSortValueQueryHandler(
                 Contract.Services.V1.Price.Response.PriceResponse>();
 
         var baseQueryBuilder = new StringBuilder();
-        baseQueryBuilder.Append($@"SELECT *
-	            FROM ""{nameof(Domain.Entities.Bill)}"" AS bill
+        baseQueryBuilder.Append($@"FROM ""{nameof(Domain.Entities.Bill)}"" AS bill
 	            WHERE bill.""{nameof(Domain.Entities.Bill.ModifiedDate)}"" IS NOT NULL
 	            AND bill.""{nameof(Domain.Entities.Bill.ModifiedDate)}""::DATE BETWEEN '{request.Filter.StartDate.Date}' AND '{request.Filter.EndDate.Date}'");
 
@@ -96,10 +95,14 @@ public sealed class GetBillsWithFilterAndSortValueQueryHandler(
 
         int totalCount = await TotalCount(baseQueryBuilder.ToString(), cancellationToken);
 
+        baseQueryBuilder.Append($"\nOFFSET {(pageIndex - 1) * pageSize} ROWS FETCH NEXT {pageSize} ROWS ONLY");
+
+        int totalPrice = await TotalPrice(baseQueryBuilder.ToString(), cancellationToken);
+
         var billCteQueryBuilder = new StringBuilder();
         billCteQueryBuilder.Append(@"WITH billTemp AS ( ");
+        billCteQueryBuilder.Append(@"SELECT * ");
         billCteQueryBuilder.Append(baseQueryBuilder);
-        billCteQueryBuilder.Append($"\nOFFSET {(pageIndex - 1) * pageSize} ROWS FETCH NEXT {pageSize} ROWS ONLY");
         billCteQueryBuilder.Append("\n )");
 
         var billQueryBuilder = new StringBuilder();
@@ -136,7 +139,7 @@ public sealed class GetBillsWithFilterAndSortValueQueryHandler(
 
         var billPagedResult =
             PagedResult<Response.BillDetailResponse>.Create(
-                GroupByData(bills),
+                GroupByData(bills, totalPrice),
                 pageIndex,
                 pageSize,
                 totalCount);
@@ -144,7 +147,7 @@ public sealed class GetBillsWithFilterAndSortValueQueryHandler(
         return Result.Success(billPagedResult);
     }
 
-    private List<Response.BillDetailResponse> GroupByData(List<Response.GetBillDetailsSql> bills)
+    private List<Response.BillDetailResponse> GroupByData(List<Response.GetBillDetailsSql> bills, int totalPrice)
     {
         // GROUP BY
         var results = bills.GroupBy(p => p.Bill_Id)
@@ -158,7 +161,7 @@ public sealed class GetBillsWithFilterAndSortValueQueryHandler(
                 Status = g.First().Bill_Status,
                 UserId = g.First().Bill_UserId,
                 BookingId = g.First().Bill_BookingId,
-
+                TotalPriceByRangeDate = totalPrice,
                 Booking = g.First().Booking_Id != null
                     ? g.Select(s => new Contract.Services.V1.Booking.Response.BookingDetail
                     {
@@ -225,6 +228,21 @@ public sealed class GetBillsWithFilterAndSortValueQueryHandler(
             }).ToList();
 
         return results;
+    }
+
+    private async Task<int> TotalPrice(string baseQuery, CancellationToken cancellationToken)
+    {
+        var totalPriceQueryBuilder = new StringBuilder();
+        totalPriceQueryBuilder.Append(
+            $@"SELECT COALESCE( SUM(bill.""{nameof(Domain.Entities.Bill.TotalPrice)}""), 0) AS ""{nameof(SqlResponse.TotalPriceSqlResponse.TotalPrice)}"" ");
+        totalPriceQueryBuilder.Append(baseQuery);
+
+        SqlResponse.TotalPriceSqlResponse totalPrice = await billRepository
+            .ExecuteSqlQuery<SqlResponse.TotalPriceSqlResponse>(
+                FormattableStringFactory.Create(totalPriceQueryBuilder.ToString()))
+            .FirstAsync(cancellationToken);
+
+        return totalPrice.TotalPrice;
     }
 
     private async Task<int> TotalCount(string baseQuery, CancellationToken cancellationToken)

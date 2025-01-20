@@ -45,6 +45,8 @@ public static class Response
         public List<BillLine.Response.BillLineDetail>? BillLineDetails { get; set; }
 
         public List<ServiceLine.Response.ServiceLineDetail>? ServiceLineDetails { get; set; }
+
+        public int? TotalPriceByRangeDate { get; set; }
     }
 
     public class GetTotalPriceSql

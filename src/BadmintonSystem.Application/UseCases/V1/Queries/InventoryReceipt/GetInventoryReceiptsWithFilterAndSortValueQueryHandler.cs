@@ -115,15 +115,7 @@ public sealed class GetInventoryReceiptsWithFilterAndSortValueQueryHandler(
 
         baseQueryBuilder.Append($"\nOFFSET {(pageIndex - 1) * pageSize} ROWS FETCH NEXT {pageSize} ROWS ONLY");
 
-        var totalPriceQueryBuilder = new StringBuilder();
-        totalPriceQueryBuilder.Append(
-            $@"SELECT SUM(inventoryReceipt.""{nameof(Domain.Entities.InventoryReceipt.Price)}"") AS ""{nameof(SqlResponse.TotalPriceSqlResponse.TotalPrice)}"" ");
-        totalPriceQueryBuilder.Append(baseQueryBuilder);
-
-        SqlResponse.TotalPriceSqlResponse totalPrice = await inventoryReceiptRepository
-            .ExecuteSqlQuery<SqlResponse.TotalPriceSqlResponse>(
-                FormattableStringFactory.Create(totalPriceQueryBuilder.ToString()))
-            .FirstAsync(cancellationToken);
+        int totalPrice = await TotalPrice(baseQueryBuilder.ToString(), cancellationToken);
 
         var inventoryReceiptQueryBuilder = new StringBuilder();
         inventoryReceiptQueryBuilder.Append($@"SELECT {serviceColumns}, {inventoryReceiptColumns}");
@@ -144,6 +136,21 @@ public sealed class GetInventoryReceiptsWithFilterAndSortValueQueryHandler(
         return Result.Success(inventoryReceiptPagedResult);
     }
 
+    private async Task<int> TotalPrice(string baseQuery, CancellationToken cancellationToken)
+    {
+        var totalPriceQueryBuilder = new StringBuilder();
+        totalPriceQueryBuilder.Append(
+            $@"SELECT COALESCE( SUM(inventoryReceipt.""{nameof(Domain.Entities.InventoryReceipt.Price)}""), 0) AS ""{nameof(SqlResponse.TotalPriceSqlResponse.TotalPrice)}"" ");
+        totalPriceQueryBuilder.Append(baseQuery);
+
+        SqlResponse.TotalPriceSqlResponse totalPrice = await inventoryReceiptRepository
+            .ExecuteSqlQuery<SqlResponse.TotalPriceSqlResponse>(
+                FormattableStringFactory.Create(totalPriceQueryBuilder.ToString()))
+            .FirstAsync(cancellationToken);
+
+        return totalPrice.TotalPrice;
+    }
+
     private async Task<int> TotalCount(string baseQuery, CancellationToken cancellationToken)
     {
         var countQueryBuilder = new StringBuilder();
@@ -161,7 +168,7 @@ public sealed class GetInventoryReceiptsWithFilterAndSortValueQueryHandler(
     }
 
     private List<Response.InventoryReceiptDetailResponse> GroupByData
-        (List<Response.InventoryReceiptDetailSql> inventoryReceipts, SqlResponse.TotalPriceSqlResponse totalPrice)
+        (List<Response.InventoryReceiptDetailSql> inventoryReceipts, int totalPrice)
     {
         var results = inventoryReceipts.GroupBy(p => p.InventoryReceipt_Id)
             .Select(g => new Response.InventoryReceiptDetailResponse
@@ -197,7 +204,7 @@ public sealed class GetInventoryReceiptsWithFilterAndSortValueQueryHandler(
                 ModifiedBy = g.First().InventoryReceipt_ModifiedBy ?? Guid.Empty,
                 IsDeleted = g.First().InventoryReceipt_IsDeleted ?? false,
                 DeletedAt = g.First().InventoryReceipt_DeletedAt,
-                TotalPrice = totalPrice.TotalPrice
+                TotalPrice = totalPrice
             }).Distinct().ToList();
 
         return results;
