@@ -41,6 +41,14 @@ public sealed class CreateServiceCommandHandler(
 
         foreach (Request.ServiceDetail service in request.Data.ServiceDetails)
         {
+            Domain.Entities.Service? isNameExists =
+                await serviceRepository.FindSingleAsync(x => x.Name == service.Name, cancellationToken);
+
+            if (isNameExists != null)
+            {
+                return Result.Failure(new Error("400", "Name Exists!"));
+            }
+
             Domain.Entities.Service? entities = mapper.Map<Domain.Entities.Service>(request.Data);
 
             entities.OriginalQuantityId = originalQuantityId;

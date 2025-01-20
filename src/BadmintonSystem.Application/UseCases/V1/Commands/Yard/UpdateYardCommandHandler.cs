@@ -19,6 +19,14 @@ public sealed class UpdateYardCommandHandler(
         Domain.Entities.Yard yard = await yardRepository.FindByIdAsync(request.Data.Id, cancellationToken)
                                     ?? throw new YardException.YardNotFoundException(request.Data.Id);
 
+        Domain.Entities.Yard? isNameExists =
+            await yardRepository.FindSingleAsync(x => x.Name == request.Data.Name, cancellationToken);
+
+        if (isNameExists != null)
+        {
+            return Result.Failure<Response.YardResponse>(new Error("400", "Name Exists!"));
+        }
+
         yard.Name = request.Data.Name ?? yard.Name;
         yard.YardTypeId = request.Data.YardTypeId;
         yard.IsStatus = (StatusEnum)request.Data.IsStatus;

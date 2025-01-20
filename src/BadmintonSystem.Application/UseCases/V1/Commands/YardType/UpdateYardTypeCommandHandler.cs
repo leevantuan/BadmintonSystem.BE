@@ -18,6 +18,14 @@ public sealed class UpdateYardTypeCommandHandler(
         Domain.Entities.YardType yardType = await yardTypeRepository.FindByIdAsync(request.Data.Id, cancellationToken)
                                             ?? throw new YardTypeException.YardTypeNotFoundException(request.Data.Id);
 
+        Domain.Entities.YardType? isNameExists =
+            await yardTypeRepository.FindSingleAsync(x => x.Name == request.Data.Name, cancellationToken);
+
+        if (isNameExists != null)
+        {
+            return Result.Failure<Response.YardTypeResponse>(new Error("400", "Name Exists!"));
+        }
+
         yardType.Name = request.Data.Name ?? yardType.Name;
 
         Response.YardTypeResponse? result = mapper.Map<Response.YardTypeResponse>(yardType);

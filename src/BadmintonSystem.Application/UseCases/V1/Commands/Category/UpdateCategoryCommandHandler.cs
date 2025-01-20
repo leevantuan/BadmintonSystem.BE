@@ -20,6 +20,14 @@ public sealed class UpdateCategoryCommandHandler(
             ?? throw new CategoryException.CategoryNotFoundException(request.Data.Id ??
                                                                      Guid.Empty);
 
+        Domain.Entities.Category? isNameExists =
+            await categoryRepository.FindSingleAsync(x => x.Name == request.Data.Name, cancellationToken);
+
+        if (isNameExists != null)
+        {
+            return Result.Failure<Response.CategoryResponse>(new Error("400", "Name Exists!"));
+        }
+
         category.Name = request.Data.Name ?? category.Name;
 
         Response.CategoryResponse? result = mapper.Map<Response.CategoryResponse>(category);

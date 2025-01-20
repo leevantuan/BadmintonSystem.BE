@@ -12,9 +12,17 @@ public sealed class CreateYardCommandHandler(
     IRepositoryBase<Domain.Entities.Yard, Guid> yardRepository)
     : ICommandHandler<Command.CreateYardCommand, Response.YardResponse>
 {
-    public Task<Result<Response.YardResponse>> Handle
+    public async Task<Result<Response.YardResponse>> Handle
         (Command.CreateYardCommand request, CancellationToken cancellationToken)
     {
+        Domain.Entities.Yard? isNameExists =
+            await yardRepository.FindSingleAsync(x => x.Name == request.Data.Name, cancellationToken);
+
+        if (isNameExists != null)
+        {
+            return Result.Failure<Response.YardResponse>(new Error("400", "Name Exists!"));
+        }
+
         Domain.Entities.Yard yard = mapper.Map<Domain.Entities.Yard>(request.Data);
 
         yard.IsStatus = (StatusEnum)request.Data.IsStatus;
@@ -23,6 +31,6 @@ public sealed class CreateYardCommandHandler(
 
         Response.YardResponse? result = mapper.Map<Response.YardResponse>(yard);
 
-        return Task.FromResult(Result.Success(result));
+        return Result.Success(result);
     }
 }
