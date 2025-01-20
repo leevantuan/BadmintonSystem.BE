@@ -19,6 +19,9 @@ public static class Command
     public record OpenYardByBillInBookingCommand(Guid BillId)
         : ICommand;
 
+    public record CancelledByBillInBookingCommand(Guid BillId)
+        : ICommand;
+
     public record OpenYardByBillCommand(BillLine.Request.CreateBillLineRequest Data)
         : ICommand;
 

@@ -10,14 +10,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BadmintonSystem.Application.UseCases.V1.Commands.Bill;
 
-public sealed class OpenYardByBillInBookingCommandHandler(
-    IBillService billService,
+public sealed class CancelledByBillInBookingCommandHandler(
     ApplicationDbContext context,
     IRepositoryBase<Domain.Entities.Bill, Guid> billRepository)
-    : ICommandHandler<Command.OpenYardByBillInBookingCommand>
+    : ICommandHandler<Command.CancelledByBillInBookingCommand>
 {
     public async Task<Result> Handle
-        (Command.OpenYardByBillInBookingCommand request, CancellationToken cancellationToken)
+        (Command.CancelledByBillInBookingCommand request, CancellationToken cancellationToken)
     {
         Domain.Entities.Bill billEntities = await billRepository.FindByIdAsync(request.BillId, cancellationToken)
                                             ?? throw new BillException.BillNotFoundException(request.BillId);
@@ -27,13 +26,11 @@ public sealed class OpenYardByBillInBookingCommandHandler(
             throw new ApplicationException("You cannot open yard because it is not booking.");
         }
 
-        await billService.ChangeYardActiveByBookingId(request.BillId, StatusEnum.FALSE, cancellationToken);
-
         Domain.Entities.Booking? bookingEntities =
             await context.Booking.FirstOrDefaultAsync(x => x.Id == billEntities.BookingId, cancellationToken);
 
-        bookingEntities.BookingStatus = BookingStatusEnum.Used;
-        billEntities.Status = BillStatusEnum.ACTIVE_NOW;
+        bookingEntities.BookingStatus = BookingStatusEnum.Cancelled;
+        billEntities.Status = BillStatusEnum.CLOSE_BILL;
 
         return Result.Success();
     }

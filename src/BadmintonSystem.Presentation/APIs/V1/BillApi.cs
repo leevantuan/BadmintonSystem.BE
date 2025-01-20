@@ -59,6 +59,9 @@ public class BillApi : ApiEndpoint, ICarterModule
 
         group1.MapPut("open-booking/{billId}", OpenYardByBillInBookingV1)
             .RequireJwtAuthorize(FunctionEnum.BILL.ToString(), (int)ActionEnum.DELETE);
+
+        group1.MapPut("cancel-booking/{billId}", CancelByBillInBookingV1)
+            .RequireJwtAuthorize(FunctionEnum.BILL.ToString(), (int)ActionEnum.DELETE);
     }
 
     private static async Task<IResult> CreateBillV1
@@ -154,7 +157,6 @@ public class BillApi : ApiEndpoint, ICarterModule
         return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
-
     private static async Task<IResult> OpenYardByBillInBookingV1
     (
         ISender sender,
@@ -162,6 +164,17 @@ public class BillApi : ApiEndpoint, ICarterModule
     )
     {
         Result result = await sender.Send(new Command.OpenYardByBillInBookingCommand(billId));
+
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
+    }
+
+    private static async Task<IResult> CancelByBillInBookingV1
+    (
+        ISender sender,
+        Guid billId
+    )
+    {
+        Result result = await sender.Send(new Command.CancelledByBillInBookingCommand(billId));
 
         return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
