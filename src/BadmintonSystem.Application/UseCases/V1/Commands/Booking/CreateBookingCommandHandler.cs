@@ -7,6 +7,7 @@ using BadmintonSystem.Domain.Entities.Identity;
 using BadmintonSystem.Domain.Enumerations;
 using BadmintonSystem.Domain.Exceptions;
 using BadmintonSystem.Persistence;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace BadmintonSystem.Application.UseCases.V1.Commands.Booking;
@@ -14,6 +15,7 @@ namespace BadmintonSystem.Application.UseCases.V1.Commands.Booking;
 public sealed class CreateBookingCommandHandler(
     ApplicationDbContext context,
     IBookingHub bookingHub,
+    IMediator mediator,
     IBookingLineService bookingLineService)
     : ICommandHandler<Command.CreateBookingCommand>
 {
@@ -52,6 +54,8 @@ public sealed class CreateBookingCommandHandler(
             };
 
             await CreateBookingAsync(idByDate, bookingEntity, billEntity, cancellationToken);
+
+            await mediator.Publish(new DomainEvent.BookingDone(bookingEntity.Id), cancellationToken);
         }
 
         await bookingHub.BookingByUserAsync(new Contract.Services.V1.Bill.Response.BookingHubResponse
