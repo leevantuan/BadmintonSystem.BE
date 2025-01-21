@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using BadmintonSystem.Contract.Abstractions.Shared;
-using BadmintonSystem.Contract.Services.V1.User;
+using BadmintonSystem.Contract.Services.V1.ChatRoom;
 using BadmintonSystem.Domain.Entities;
 using BadmintonSystem.Domain.Entities.Identity;
 using BadmintonSystem.Domain.Enumerations;
@@ -15,23 +15,29 @@ public class ServiceV1Profile : Profile
 {
     public ServiceV1Profile()
     {
+        // ChatRoom
+        CreateMap<ChatRoom, Response.ChatRoomResponse>().ReverseMap();
+
+        // ChatMessage
+        CreateMap<ChatMessage, V1.ChatMessage.Response.ChatMessageResponse>().ReverseMap();
+
         // CLUB INFORMATION
         CreateMap<ClubInformation, V1.ClubInformation.Request.CreateClubInformationRequest>().ReverseMap();
         CreateMap<ClubImage, V1.ClubImage.Request.CreateClubImageRequest>().ReverseMap();
 
         // App User
-        CreateMap<AppUser, Response.AppUserResponse>().ReverseMap();
+        CreateMap<AppUser, V1.User.Response.AppUserResponse>().ReverseMap();
 
         // Address
         CreateMap<Address, V1.Address.Response.AddressResponse>().ReverseMap();
         CreateMap<Address, V1.Address.Request.CreateAddressRequest>().ReverseMap();
 
         // Payment method
-        CreateMap<PaymentMethod, Response.PaymentMethodByUserResponse>()
+        CreateMap<PaymentMethod, V1.User.Response.PaymentMethodByUserResponse>()
             .ForMember(dest => (DefaultEnum)dest.IsDefault, opt
                 => opt.MapFrom(src => src.IsDefault));
         CreateMap<PaymentMethod, V1.PaymentMethod.Request.CreatePaymentMethodRequest>().ReverseMap();
-        CreateMap<PaymentMethod, Response.NotificationByUserResponse>().ReverseMap();
+        CreateMap<PaymentMethod, V1.User.Response.NotificationByUserResponse>().ReverseMap();
 
         // Category ==> Có lớp con
         CreateMap<Category, CategoryResponse>().ReverseMap();

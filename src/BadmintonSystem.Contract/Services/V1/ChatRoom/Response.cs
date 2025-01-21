@@ -49,10 +49,6 @@ public static class Response
 
         public string? AppUser_Email { get; set; }
 
-        public string? AppUser_FirstName { get; set; }
-
-        public string? AppUser_LastName { get; set; }
-
         public string? AppUser_FullName { get; set; }
 
         public DateTime? AppUser_DateOfBirth { get; set; }

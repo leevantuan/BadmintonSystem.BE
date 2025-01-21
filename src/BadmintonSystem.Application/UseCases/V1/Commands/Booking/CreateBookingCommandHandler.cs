@@ -1,4 +1,5 @@
-﻿using BadmintonSystem.Application.UseCases.V1.Services;
+﻿using BadmintonSystem.Application.Abstractions;
+using BadmintonSystem.Application.UseCases.V1.Services;
 using BadmintonSystem.Contract.Abstractions.Message;
 using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.V1.Booking;
@@ -12,6 +13,7 @@ namespace BadmintonSystem.Application.UseCases.V1.Commands.Booking;
 
 public sealed class CreateBookingCommandHandler(
     ApplicationDbContext context,
+    IBookingHub bookingHub,
     IBookingLineService bookingLineService)
     : ICommandHandler<Command.CreateBookingCommand>
 {
@@ -52,6 +54,12 @@ public sealed class CreateBookingCommandHandler(
             await CreateBookingAsync(idByDate, bookingEntity, billEntity, cancellationToken);
         }
 
+        await bookingHub.BookingByUserAsync(new Contract.Services.V1.Bill.Response.BookingHubResponse
+        {
+            Ids = request.Data.YardPriceIds,
+            Type = BookingEnum.BOOKED.ToString()
+        });
+
         return Result.Success();
     }
 
@@ -76,6 +84,7 @@ public sealed class CreateBookingCommandHandler(
     {
         context.Booking.Add(bookingEntity);
         await context.SaveChangesAsync(cancellationToken);
+
 
         context.Bill.Add(billEntity);
         await context.SaveChangesAsync(cancellationToken);

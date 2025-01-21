@@ -3,7 +3,7 @@ using BadmintonSystem.Domain.Entities.Identity;
 
 namespace BadmintonSystem.Domain.Entities;
 
-public class ChatRoom : EntityBase<Guid>
+public class ChatRoom : EntityAuditBase<Guid>
 {
     public Guid UserId { get; set; }
 

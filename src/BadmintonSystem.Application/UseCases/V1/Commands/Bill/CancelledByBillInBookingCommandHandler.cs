@@ -1,4 +1,4 @@
-﻿using BadmintonSystem.Application.UseCases.V1.Services;
+﻿using BadmintonSystem.Application.Abstractions;
 using BadmintonSystem.Contract.Abstractions.Message;
 using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.V1.Bill;
@@ -12,6 +12,7 @@ namespace BadmintonSystem.Application.UseCases.V1.Commands.Bill;
 
 public sealed class CancelledByBillInBookingCommandHandler(
     ApplicationDbContext context,
+    IBookingHub bookingHub,
     IRepositoryBase<Domain.Entities.Bill, Guid> billRepository)
     : ICommandHandler<Command.CancelledByBillInBookingCommand>
 {
@@ -31,6 +32,13 @@ public sealed class CancelledByBillInBookingCommandHandler(
 
         bookingEntities.BookingStatus = BookingStatusEnum.Cancelled;
         billEntities.Status = BillStatusEnum.CLOSE_BILL;
+
+        // await bookingHub.SendBookingMessageToUserAsync("f443be1e-0642-4ff7-b3cc-183ef6548494",
+        //     new Response.BookingHubResponse
+        //     {
+        //         Id = request.BillId,
+        //         Type = BillStatusEnum.CLOSE_BILL.ToString()
+        //     });
 
         return Result.Success();
     }

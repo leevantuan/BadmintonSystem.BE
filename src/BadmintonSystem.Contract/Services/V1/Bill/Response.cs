@@ -168,4 +168,11 @@ public static class Response
 
         public int? Bill_Status { get; set; }
     }
+
+    public class BookingHubResponse
+    {
+        public List<Guid> Ids { get; set; }
+
+        public string Type { get; set; }
+    }
 }

@@ -1,6 +1,8 @@
 ﻿using BadmintonSystem.API.DependencyInjection.Extensions;
+using BadmintonSystem.API.Hubs;
 using BadmintonSystem.API.Middleware;
 using BadmintonSystem.Application.DependencyInjection.Extensions;
+using BadmintonSystem.Contract.Constants;
 using BadmintonSystem.Infrastructure.DependencyInjection.Extensions;
 using BadmintonSystem.Infrastructure.Seed;
 using BadmintonSystem.Persistence.DependencyInjection.Extensions;
@@ -33,6 +35,9 @@ builder.Logging
     .AddSerilog();
 
 builder.Host.UseSerilog();
+
+// Add SignalR
+builder.Services.AddSignalR();
 
 // Add Authentication
 builder.Services.AddJwtAuthenticationConfigurationAPI(builder.Configuration);
@@ -122,6 +127,10 @@ app.MapControllers();
 
 // // Initialize and seed the database
 // await app.AddInitialiserConfigurationPersistence();
+
+// Add Map Hub
+app.MapHub<BookingHubBase>(HubsPath.BookingUrl);
+app.MapHub<ChatHubBase>(HubsPath.ChatUrl);
 
 try
 {
