@@ -22,33 +22,54 @@ public sealed class SendEmailByBookingDoneEventHandler(
     {
         string? email = httpContextAccessor.HttpContext?.GetCurrentUserEmail();
 
+        string? userName = httpContextAccessor.HttpContext?.GetCurrentUserName();
+
         if (string.IsNullOrEmpty(email))
         {
             throw new EmailException.EmailNotFoundException();
         }
 
-        Result<Response.GetBookingDetailResponse> result =
-            await sender.Send(new Query.GetBookingByIdQuery(notification.Id), cancellationToken);
+        var results = new List<Result<Response.GetBookingDetailResponse>>();
+
+        foreach (Guid id in notification.Ids)
+        {
+            Result<Response.GetBookingDetailResponse> result =
+                await sender.Send(new Query.GetBookingByIdQuery(id), cancellationToken);
+
+            results.Add(result);
+        }
 
         var bookingLines = new List<Request.BookingInGmailRequest>();
 
-        foreach (Response.BookingLineDetail item in result.Value.BookingLines)
+        foreach (Result<Response.GetBookingDetailResponse> item in results)
         {
             bookingLines.Add(new Request.BookingInGmailRequest
             {
-                Name = item.YardName ?? string.Empty,
-                Price = item.Price
+                EffectiveDate = item.Value.EffectiveDate,
+
+                Yards = item.Value.BookingLines.Select(x => new Request.YardDetailInGmail
+                {
+                    Name = x.YardName,
+                    StartTime = x.StartTime,
+                    EndTime = x.EndTime,
+                    Price = x.Price
+                }).ToList()
             });
         }
+
+        decimal totalPrice = bookingLines.Sum(bl => bl.Yards.Sum(yard => yard.Price));
+
 
         var gmailRequest = new Request.BookingInformationInGmailRequest
         {
             MailTo = email,
-            MailSubject = $"WELCOME TO BADMINTON BOOKING WEB - Date: {result.Value.EffectiveDate.Date:dd/MM/yyyy}",
+            MailSubject = $"WELCOME TO BADMINTON BOOKING WEB - Date: {DateTime.Now.Date:dd/MM/yyyy}",
             MailBody = string.Empty,
-            BookingLines = bookingLines
+            BookingLines = bookingLines,
+            FullName = userName,
+            TotalPrice = totalPrice
         };
 
-        await mailService.SendMailAsync(gmailRequest);
+        await mailService.SendBookingInformationMail(gmailRequest);
     }
 }

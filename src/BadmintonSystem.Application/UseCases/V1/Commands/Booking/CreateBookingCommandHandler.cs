@@ -27,6 +27,7 @@ public sealed class CreateBookingCommandHandler(
 
         List<Response.GetIdsByDate> idsByDate = await GetIdsByDateAsync(request.Data.YardPriceIds, cancellationToken);
 
+        var bookingIds = new List<Guid>();
         foreach (Response.GetIdsByDate idByDate in idsByDate)
         {
             var bookingEntity = new Domain.Entities.Booking
@@ -55,7 +56,7 @@ public sealed class CreateBookingCommandHandler(
 
             await CreateBookingAsync(idByDate, bookingEntity, billEntity, cancellationToken);
 
-            await mediator.Publish(new DomainEvent.BookingDone(bookingEntity.Id), cancellationToken);
+            bookingIds.Add(bookingEntity.Id);
         }
 
         await bookingHub.BookingByUserAsync(new Contract.Services.V1.Bill.Response.BookingHubResponse
@@ -63,6 +64,8 @@ public sealed class CreateBookingCommandHandler(
             Ids = request.Data.YardPriceIds,
             Type = BookingEnum.BOOKED.ToString()
         });
+
+        await mediator.Publish(new DomainEvent.BookingDone(bookingIds), cancellationToken);
 
         return Result.Success();
     }

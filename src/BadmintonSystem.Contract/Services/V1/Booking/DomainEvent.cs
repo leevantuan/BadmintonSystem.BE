@@ -4,9 +4,9 @@ namespace BadmintonSystem.Contract.Services.V1.Booking;
 
 public static class DomainEvent
 {
-    public record BookingDone(Guid Id)
+    public record BookingDone(List<Guid> Ids)
         : IDomainEvent;
 
-    public record BookingCancelled(Guid Id)
+    public record BookingCancelled(List<Guid> Ids)
         : IDomainEvent;
 }

@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using BadmintonSystem.Application.Abstractions;
 using BadmintonSystem.Contract.Services.V1.Gmail;
+using BadmintonSystem.Contract.Source;
 using BadmintonSystem.Infrastructure.DependencyInjection.Options;
 using MailKit.Net.Smtp;
 using MailKit.Security;
@@ -104,35 +105,31 @@ public class GmailService : IGmailService
 
                 emailMessage.Subject = request.MailSubject;
 
-                string templateUrl =
-                    "https://res.cloudinary.com/dldksrtdf/raw/upload/v1736184430/OrderTemplate_onv5bo.html";
+                string emailTemplateText = string.Empty;
 
-                using (var client = new HttpClient())
+                // emailTemplateText =
+                //     emailTemplateText.Replace("{DateTime}", DateTime.Now.ToString("MM/dd/yyyy HH:mm tt"));
+
+                string bookingDetailHtml = GenerateBookingDetailInformationHTML(request.BookingLines);
+
+                emailTemplateText = TemplateEmail.EmailTemplate.GetBookingConfirmationEmail(request.FullName,
+                    request.TotalPrice,
+                    bookingDetailHtml);
+
+                var emailBodyBuilder = new BodyBuilder
                 {
-                    string emailTemplateText = await client.GetStringAsync(templateUrl);
+                    HtmlBody = emailTemplateText,
+                    TextBody = "Plain Text goes here to avoid marked as spam for some email servers."
+                };
 
-                    emailTemplateText =
-                        emailTemplateText.Replace("{DateTime}", DateTime.Now.ToString("MM/dd/yyyy HH:mm tt"));
+                emailMessage.Body = emailBodyBuilder.ToMessageBody();
 
-                    string bookingDetailHtml = GenerateOrderDetailInformationHTML(request.BookingLines);
-
-                    emailTemplateText = emailTemplateText.Replace("{ProductList}", bookingDetailHtml);
-
-                    var emailBodyBuilder = new BodyBuilder
-                    {
-                        HtmlBody = emailTemplateText,
-                        TextBody = "Plain Text goes here to avoid marked as spam for some email servers."
-                    };
-
-                    emailMessage.Body = emailBodyBuilder.ToMessageBody();
-
-                    using (var mailClient = new SmtpClient())
-                    {
-                        mailClient.Connect(_mailOption.Server, _mailOption.Port, SecureSocketOptions.StartTls);
-                        mailClient.Authenticate(_mailOption.SenderEmail, _mailOption.Password);
-                        mailClient.Send(emailMessage);
-                        mailClient.Disconnect(true);
-                    }
+                using (var mailClient = new SmtpClient())
+                {
+                    await mailClient.ConnectAsync(_mailOption.Server, _mailOption.Port, SecureSocketOptions.StartTls);
+                    await mailClient.AuthenticateAsync(_mailOption.SenderEmail, _mailOption.Password);
+                    await mailClient.SendAsync(emailMessage);
+                    await mailClient.DisconnectAsync(true);
                 }
             }
 
@@ -144,20 +141,90 @@ public class GmailService : IGmailService
         }
     }
 
-    private static string GenerateOrderDetailInformationHTML(List<Request.BookingInGmailRequest> bookings)
+    private static string GenerateBookingDetailInformationHTML(List<Request.BookingInGmailRequest> bookings)
     {
         var bookingDetailHtml = new StringBuilder();
 
         foreach (Request.BookingInGmailRequest booking in bookings)
         {
-            bookingDetailHtml.AppendLine("<tr style=\"margin: 0;padding: 0;box-sizing: border-box;\">");
-            bookingDetailHtml.AppendLine(
-                $"    <td class=\"yard-name\" style=\"margin: 0;padding: 10px;box-sizing: border-box;text-align: center;border: 1px solid #ddd;width: 70;\">{booking.Name} : {booking.StartTime} - {booking.EndTime}</td>");
-            bookingDetailHtml.AppendLine(
-                $"    <td class=\"yard-price\" style=\"margin: 0;padding: 10px;box-sizing: border-box;text-align: center;border: 1px solid #ddd;width: 30;\">{booking.Price} $</td>");
+            bookingDetailHtml.AppendLine("<tr>");
+            bookingDetailHtml.AppendLine("<td><strong style='color: blue;'>Ngày nhận chỗ:</strong></td>");
+            bookingDetailHtml.AppendLine($"<td>{booking.EffectiveDate}</td>");
             bookingDetailHtml.AppendLine("</tr>");
+
+            foreach (Request.YardDetailInGmail yard in booking.Yards)
+            {
+                bookingDetailHtml.AppendLine("<tr>");
+                bookingDetailHtml.AppendLine("<td><strong>Sân:</strong></td>");
+                bookingDetailHtml.AppendLine($"<td>{yard.Name}</td>");
+                bookingDetailHtml.AppendLine("</tr>");
+
+                bookingDetailHtml.AppendLine("<tr>");
+                bookingDetailHtml.AppendLine("<td><strong>Thời gian:</strong></td>");
+                bookingDetailHtml.AppendLine($"<td>{yard.StartTime} - {yard.EndTime}</td>");
+                bookingDetailHtml.AppendLine("</tr>");
+                bookingDetailHtml.AppendLine("</tr>");
+
+                bookingDetailHtml.AppendLine("<tr>");
+                bookingDetailHtml.AppendLine("<td><strong>Giá:</strong></td>");
+                bookingDetailHtml.AppendLine($"<td style='color: red;'>{yard.Price} vnđ</td>");
+                bookingDetailHtml.AppendLine("</tr>");
+            }
         }
 
         return bookingDetailHtml.ToString();
     }
+
+    // public async Task<bool> TestSendBookingInformationMail(Request.BookingInformationInGmailRequest request)
+    // {
+    //     try
+    //     {
+    //         using (var emailMessage = new MimeMessage())
+    //         {
+    //             var emailFrom = new MailboxAddress(_mailOption.SenderName, _mailOption.SenderEmail);
+    //             emailMessage.From.Add(emailFrom);
+    //
+    //             emailMessage.To.Add(MailboxAddress.Parse(request.MailTo));
+    //
+    //             emailMessage.Subject = request.MailSubject;
+    //
+    //             string templateUrl =
+    //                 "https://res.cloudinary.com/dldksrtdf/raw/upload/v1736184430/OrderTemplate_onv5bo.html";
+    //
+    //             using (var client = new HttpClient())
+    //             {
+    //                 string emailTemplateText = await client.GetStringAsync(templateUrl);
+    //
+    //                 emailTemplateText =
+    //                     emailTemplateText.Replace("{DateTime}", DateTime.Now.ToString("MM/dd/yyyy HH:mm tt"));
+    //
+    //                 string bookingDetailHtml = GenerateOrderDetailInformationHTML(request.BookingLines);
+    //
+    //                 emailTemplateText = emailTemplateText.Replace("{ProductList}", bookingDetailHtml);
+    //
+    //                 var emailBodyBuilder = new BodyBuilder
+    //                 {
+    //                     HtmlBody = emailTemplateText,
+    //                     TextBody = "Plain Text goes here to avoid marked as spam for some email servers."
+    //                 };
+    //
+    //                 emailMessage.Body = emailBodyBuilder.ToMessageBody();
+    //
+    //                 using (var mailClient = new SmtpClient())
+    //                 {
+    //                     mailClient.Connect(_mailOption.Server, _mailOption.Port, SecureSocketOptions.StartTls);
+    //                     mailClient.Authenticate(_mailOption.SenderEmail, _mailOption.Password);
+    //                     mailClient.Send(emailMessage);
+    //                     mailClient.Disconnect(true);
+    //                 }
+    //             }
+    //         }
+    //
+    //         return true;
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         throw new NotImplementedException(ex.Message);
+    //     }
+    // }
 }

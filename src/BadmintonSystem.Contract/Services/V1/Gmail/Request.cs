@@ -15,16 +15,25 @@ public static class Request
     {
         public decimal TotalPrice { get; set; }
 
+        public string FullName { get; set; }
+
         public List<BookingInGmailRequest> BookingLines { get; set; }
     }
 
     public class BookingInGmailRequest
     {
+        public DateTime EffectiveDate { get; set; }
+
+        public List<YardDetailInGmail> Yards { get; set; }
+    }
+
+    public class  YardDetailInGmail
+    {
         public string Name { get; set; }
 
-        public DateTime StartTime { get; set; }
+        public TimeSpan StartTime { get; set; }
 
-        public DateTime EndTime { get; set; }
+        public TimeSpan EndTime { get; set; }
 
         public decimal Price { get; set; }
     }

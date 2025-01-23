@@ -8,7 +8,5 @@ public interface IGmailService
 
     Task<bool> SendMailAsync(Request.GmailRequest request);
 
-    //Task<bool> TestSendHtmlMail(Request.GmailRequest request);
-
     Task<bool> SendBookingInformationMail(Request.BookingInformationInGmailRequest request);
 }
