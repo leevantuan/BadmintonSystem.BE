@@ -40,6 +40,9 @@ public class BookingApi : ApiEndpoint, ICarterModule
         group1.MapPut("{bookingId}", UpdateBookingV1)
             .RequireJwtAuthorize(FunctionEnum.BOOKING.ToString(), (int)ActionEnum.UPDATE);
 
+        group1.MapPut("reserve/{bookingId}", ReserveBookingV1)
+            .RequireJwtAuthorize(FunctionEnum.BOOKING.ToString(), (int)ActionEnum.UPDATE);
+
         group1.MapDelete("{bookingId}", DeleteBookingsV1)
             .RequireJwtAuthorize(FunctionEnum.BOOKING.ToString(), (int)ActionEnum.DELETE);
     }
@@ -71,6 +74,18 @@ public class BookingApi : ApiEndpoint, ICarterModule
     )
     {
         Result result = await sender.Send(new Command.UpdateBookingCommand(id));
+
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
+    }
+
+    private static async Task<IResult> ReserveBookingV1
+    (
+        ISender sender,
+        Guid id,
+        [FromBody] Request.ReserveBookingRequest type
+    )
+    {
+        Result result = await sender.Send(new Command.ReserveBookingByIdCommand(id, type));
 
         return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }

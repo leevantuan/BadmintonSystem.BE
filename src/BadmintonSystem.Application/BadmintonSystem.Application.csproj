@@ -24,7 +24,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="UseCases\V1\Commands\Booking\"/>
         <Folder Include="UseCases\V1\Commands\Category\"/>
         <Folder Include="UseCases\V1\Commands\Club\"/>
         <Folder Include="UseCases\V1\Commands\Price\"/>

@@ -46,4 +46,9 @@ public static class Request
 
         public List<Guid> YardPriceIds { get; set; }
     }
+
+    public class ReserveBookingRequest
+    {
+        public string Type { get; set; }
+    }
 }

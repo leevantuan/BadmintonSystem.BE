@@ -22,4 +22,9 @@ public class BookingHub(IHubContext<BookingHubBase> hubContext)
     {
         await hubContext.Clients.All.SendAsync("ReceiveMessage", message);
     }
+
+    public async Task ReserveBookingByUserAsync(Response.BookingHubResponse message)
+    {
+        await hubContext.Clients.All.SendAsync("ReceiveMessage", message);
+    }
 }

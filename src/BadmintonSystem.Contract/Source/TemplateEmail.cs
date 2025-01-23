@@ -44,23 +44,23 @@ public static class TemplateEmail
                             <td>{date}</td>
                         </tr>
                         <tr>
-                            <td colspan='2'><strong style='color: blue;'>Chi tiết đặt chỗ:</strong></td>
+                            <td colspan='2'><strong >Chi tiết đặt chỗ:</strong></td>
                         </tr>
 
                         {bookingDetail}
 
                     </table>
 
-                    <p><strong>Tổng số tiền:</strong style='color: red;'> {totalPrice} vnđ</p>
+                    <p><strong>Tổng số tiền:</strong><p style='color: red;'> {totalPrice} VND</p> </p>
                     <p>Nếu bạn có bất kỳ câu hỏi hoặc yêu cầu đặc biệt nào, xin vui lòng liên hệ với chúng tôi qua email này
-                        hoặc gọi đến số hotline của chúng tôi: <b>1900123123.</b></p>
+                        hoặc gọi đến số hotline của chúng tôi: <b>1900 123123.</b></p>
                     <p>Chúng tôi rất mong được phục vụ bạn và hy vọng bạn sẽ có một trải nghiệm tuyệt vời với dịch vụ của chúng
                         tôi.</p>
                     <p><strong>Trân trọng,</strong></p>
                     <p>Badminton Booking Web</p>
                     <p><strong>Địa chỉ:</strong> Club cầu lông BMTSYS</p>
                     <p><strong>Email:</strong> managersystem.net@gmail.com</p>
-                    <p><strong>Số điện thoại:</strong> 1900123123</p>
+                    <p><strong>Số điện thoại:</strong> 1900 123123</p>
                     <p><strong>Website:</strong> <a href='link'>Badminton Booking Web</a></p>
                 </div>
             </div>

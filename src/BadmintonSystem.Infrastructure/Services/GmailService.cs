@@ -147,9 +147,11 @@ public class GmailService : IGmailService
 
         foreach (Request.BookingInGmailRequest booking in bookings)
         {
+            string date = booking.EffectiveDate.ToString("dd/MM/yyyy");
+
             bookingDetailHtml.AppendLine("<tr>");
             bookingDetailHtml.AppendLine("<td><strong style='color: blue;'>Ngày nhận chỗ:</strong></td>");
-            bookingDetailHtml.AppendLine($"<td>{booking.EffectiveDate}</td>");
+            bookingDetailHtml.AppendLine($"<td>{date}</td>");
             bookingDetailHtml.AppendLine("</tr>");
 
             foreach (Request.YardDetailInGmail yard in booking.Yards)
@@ -167,7 +169,7 @@ public class GmailService : IGmailService
 
                 bookingDetailHtml.AppendLine("<tr>");
                 bookingDetailHtml.AppendLine("<td><strong>Giá:</strong></td>");
-                bookingDetailHtml.AppendLine($"<td style='color: red;'>{yard.Price} vnđ</td>");
+                bookingDetailHtml.AppendLine($"<td style='color: red;'>{yard.Price:n0} VND</td>");
                 bookingDetailHtml.AppendLine("</tr>");
             }
         }
