@@ -100,11 +100,11 @@ builder.Services.AddAutoMapperConfigurationApplication();
 WebApplication app = builder.Build();
 
 // Seed data
-using (IServiceScope scope = app.Services.CreateScope())
-{
-    IDbSeeder databaseSeeder = scope.ServiceProvider.GetRequiredService<IDbSeeder>();
-    await databaseSeeder.SeedAsync();
-}
+// using (IServiceScope scope = app.Services.CreateScope())
+// {
+//     IDbSeeder databaseSeeder = scope.ServiceProvider.GetRequiredService<IDbSeeder>();
+//     await databaseSeeder.SeedAsync();
+// }
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
@@ -114,6 +114,15 @@ app.MapCarter();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment() || app.Environment.IsStaging())
 {
+    app.AddMigrations();
+
+    // Seed data
+    using (IServiceScope scope = app.Services.CreateScope())
+    {
+        IDbSeeder databaseSeeder = scope.ServiceProvider.GetRequiredService<IDbSeeder>();
+        await databaseSeeder.SeedAsync();
+    }
+
     app.AddSwaggerConfigurationAPI();
 }
 

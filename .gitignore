@@ -399,3 +399,5 @@ FodyWeavers.xsd
 
 # Idea
 .idea
+.env
+.docker-compose.yml
