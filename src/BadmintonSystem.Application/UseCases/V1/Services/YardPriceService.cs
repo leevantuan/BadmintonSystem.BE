@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using BadmintonSystem.Application.Abstractions;
 using BadmintonSystem.Domain.Entities;
 using BadmintonSystem.Domain.Enumerations;
 using BadmintonSystem.Persistence;
@@ -45,6 +46,17 @@ public sealed class YardPriceService(
             WHERE ""{nameof(YardPrice.Id)}"" IN (SELECT ""Id"" FROM yardPriceIds)");
 
         await context.Database.ExecuteSqlRawAsync(updateYardPriceQueryBuilder.ToString(), cancellationToken);
+    }
+
+    public Task<string> GetYardPriceByRedisAsync(string cacheKey)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task SetYardPriceByRedisAsync
+        (string cacheKey)
+    {
+        throw new NotImplementedException();
     }
 
     private string CteQueryBuilder(DateTime date)

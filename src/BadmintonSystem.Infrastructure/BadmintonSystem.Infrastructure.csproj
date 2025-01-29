@@ -14,6 +14,8 @@
     <ItemGroup>
         <PackageReference Update="SonarAnalyzer.CSharp" Version="9.32.0.97167"/>
         <PackageReference Include="MailKit" Version="4.9.0"/>
+        <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="9.0.1"/>
+        <PackageReference Include="StackExchange.Redis" Version="2.8.24"/>
     </ItemGroup>
 
 </Project>

@@ -1,15 +1,19 @@
 ﻿using BadmintonSystem.API.DependencyInjection.Extensions;
 using BadmintonSystem.API.Hubs;
 using BadmintonSystem.API.Middleware;
+using BadmintonSystem.Application.Abstractions;
 using BadmintonSystem.Application.DependencyInjection.Extensions;
 using BadmintonSystem.Contract.Constants;
 using BadmintonSystem.Infrastructure.DependencyInjection.Extensions;
+using BadmintonSystem.Infrastructure.DependencyInjection.Options;
 using BadmintonSystem.Infrastructure.Seed;
+using BadmintonSystem.Infrastructure.Services;
 using BadmintonSystem.Persistence.DependencyInjection.Extensions;
 using BadmintonSystem.Persistence.DependencyInjection.Options;
 using Carter;
 using MicroElements.Swashbuckle.FluentValidation.AspNetCore;
 using Serilog;
+using StackExchange.Redis;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -41,6 +45,9 @@ builder.Services.AddSignalR();
 
 // Add Authentication
 builder.Services.AddJwtAuthenticationConfigurationAPI(builder.Configuration);
+
+// Redis
+builder.Services.AddRedisInfrastructure(builder.Configuration);
 
 // Add Infrastructure Layer
 builder.Services.AddServicesInfrastructure();
@@ -98,13 +105,6 @@ builder.Services.AddAutoMapperConfigurationApplication();
 
 // Configure App and Build
 WebApplication app = builder.Build();
-
-// Seed data
-// using (IServiceScope scope = app.Services.CreateScope())
-// {
-//     IDbSeeder databaseSeeder = scope.ServiceProvider.GetRequiredService<IDbSeeder>();
-//     await databaseSeeder.SeedAsync();
-// }
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
