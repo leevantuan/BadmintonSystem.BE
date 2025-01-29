@@ -12,30 +12,40 @@ public class RedisService(
     IConnectionMultiplexer connectionMultiplexer)
     : IRedisService
 {
-    public async Task SetAsync<T>(string cacheKey, T response, TimeSpan timeOut)
+    public async Task SetAsync<T>(string key, T value)
     {
         // Convert sang dạng string
-        string serializerResponse = JsonConvert.SerializeObject(response, new JsonSerializerSettings
+        string serializerResponse = JsonConvert.SerializeObject(value, new JsonSerializerSettings
         {
             ContractResolver = new CamelCasePropertyNamesContractResolver()
         });
 
         // Lưu trữ dữ liệu vào Redis cache
-        await distributedCache.SetStringAsync(cacheKey, serializerResponse, new DistributedCacheEntryOptions
+        await distributedCache.SetStringAsync(key, serializerResponse, new DistributedCacheEntryOptions
         {
-            AbsoluteExpirationRelativeToNow = timeOut
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30)
         });
     }
 
-    public async Task<string> GetAsync(string cacheKey)
+    public async Task<string> GetAsync(string key)
     {
         // Lấy dữ liệu từ Redis cache
-        string? cacheResponse = await distributedCache.GetStringAsync(cacheKey);
+        string? cacheResponse = await distributedCache.GetStringAsync(key);
 
         return string.IsNullOrEmpty(cacheResponse) ? string.Empty : cacheResponse;
     }
 
-    public async Task DeleteAsync(string pattern)
+    public async Task DeleteByKeyAsync(string key)
+    {
+        string? cacheResponse = await distributedCache.GetStringAsync(key);
+
+        if (!string.IsNullOrEmpty(cacheResponse))
+        {
+            await distributedCache.RemoveAsync(key);
+        }
+    }
+
+    public async Task DeletesAsync(string pattern)
     {
         if (string.IsNullOrWhiteSpace(pattern))
         {

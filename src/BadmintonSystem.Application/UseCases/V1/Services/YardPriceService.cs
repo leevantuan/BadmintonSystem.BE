@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using BadmintonSystem.Application.Abstractions;
+using BadmintonSystem.Contract.Services.V1.YardPrice;
 using BadmintonSystem.Domain.Entities;
 using BadmintonSystem.Domain.Enumerations;
 using BadmintonSystem.Persistence;
@@ -9,6 +10,7 @@ using DayOfWeek = BadmintonSystem.Domain.Entities.DayOfWeek;
 namespace BadmintonSystem.Application.UseCases.V1.Services;
 
 public sealed class YardPriceService(
+    IRedisService redisService,
     ApplicationDbContext context)
     : IYardPriceService
 {
@@ -46,17 +48,6 @@ public sealed class YardPriceService(
             WHERE ""{nameof(YardPrice.Id)}"" IN (SELECT ""Id"" FROM yardPriceIds)");
 
         await context.Database.ExecuteSqlRawAsync(updateYardPriceQueryBuilder.ToString(), cancellationToken);
-    }
-
-    public Task<string> GetYardPriceByRedisAsync(string cacheKey)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task SetYardPriceByRedisAsync
-        (string cacheKey)
-    {
-        throw new NotImplementedException();
     }
 
     private string CteQueryBuilder(DateTime date)

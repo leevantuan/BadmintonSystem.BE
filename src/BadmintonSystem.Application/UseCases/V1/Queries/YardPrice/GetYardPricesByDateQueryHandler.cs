@@ -1,6 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Text;
 using AutoMapper;
+using BadmintonSystem.Application.Abstractions;
 using BadmintonSystem.Application.UseCases.V1.Services;
 using BadmintonSystem.Contract.Abstractions.Message;
 using BadmintonSystem.Contract.Abstractions.Shared;
@@ -8,13 +9,18 @@ using BadmintonSystem.Contract.Extensions;
 using BadmintonSystem.Contract.Services.V1.YardPrice;
 using BadmintonSystem.Domain.Abstractions.Repositories;
 using BadmintonSystem.Persistence;
+using BadmintonSystem.Persistence.Helpers;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace BadmintonSystem.Application.UseCases.V1.Queries.YardPrice;
 
 public sealed class GetYardPricesByDateQueryHandler(
     ApplicationDbContext context,
     IMapper mapper,
+    IRedisService redisService,
+    IHttpContextAccessor httpContextAccessor,
     IRepositoryBase<Domain.Entities.YardPrice, Guid> yardPriceRepository,
     IYardPriceService yardPriceService)
     : IQueryHandler<Query.GetYardPricesByDateQuery, List<Response.YardPricesByDateDetailResponse>>
@@ -22,6 +28,18 @@ public sealed class GetYardPricesByDateQueryHandler(
     public async Task<Result<List<Response.YardPricesByDateDetailResponse>>> Handle
         (Query.GetYardPricesByDateQuery request, CancellationToken cancellationToken)
     {
+        string endpoint = httpContextAccessor.HttpContext.GetEndpoint();
+
+        var cacheKey = StringExtension.GenerateCacheKeyFromRequest(endpoint, request.Date);
+
+        var cacheData = await redisService.GetAsync(cacheKey);
+
+        if (!string.IsNullOrEmpty(cacheData))
+        {
+            var data = JsonConvert.DeserializeObject<List<Response.YardPricesByDateDetailResponse>>(cacheData);
+            return data;
+        }
+
         IQueryable<Domain.Entities.YardPrice>? effectiveDateIsExists =
             yardPriceRepository.FindAll(x => x.EffectiveDate.Date == request.Date.Date);
 
@@ -110,6 +128,8 @@ public sealed class GetYardPricesByDateQueryHandler(
                 }).OrderBy(x => x.StartTime).ToList()
             }).OrderBy(x => x.Yard.Name)
             .ToList();
+
+        await redisService.SetAsync(cacheKey, results);
 
         return Result.Success(results);
     }

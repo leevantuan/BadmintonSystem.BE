@@ -1,6 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Text;
 using AutoMapper;
+using BadmintonSystem.Application.Abstractions;
 using BadmintonSystem.Contract.Extensions;
 using BadmintonSystem.Contract.Services.V1.Price;
 using BadmintonSystem.Domain.Abstractions.Repositories;
@@ -15,6 +16,7 @@ namespace BadmintonSystem.Application.UseCases.V1.Services;
 public sealed class BookingLineService(
     ApplicationDbContext context,
     IMapper mapper,
+    IRedisService redisService,
     IRepositoryBase<YardPrice, Guid> pricesRepository)
     : IBookingLineService
 {
@@ -87,6 +89,14 @@ public sealed class BookingLineService(
                 BookingLine? bookingLineEntities = mapper.Map<BookingLine>(bookingLine);
 
                 context.BookingLine.Add(bookingLineEntities);
+
+                await context.SaveChangesAsync(cancellationToken);
+
+                string endpoint = "/api/v1/yard-prices/filter-by-date";
+
+                var cacheKey = StringExtension.GenerateCacheKeyFromRequest(endpoint, yardPrice.EffectiveDate);
+
+                await redisService.DeleteByKeyAsync(cacheKey);
             }
         }
 

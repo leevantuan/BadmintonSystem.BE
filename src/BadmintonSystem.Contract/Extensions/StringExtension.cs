@@ -1,4 +1,6 @@
-﻿namespace BadmintonSystem.Contract.Extensions;
+﻿using System.Text;
+
+namespace BadmintonSystem.Contract.Extensions;
 
 public static class StringExtension
 {
@@ -51,5 +53,15 @@ public static class StringExtension
                 .Select(p => $@"{entityNameToLower}.""{p.Name}"" AS ""{typeof(TEntity).Name}_{p.Name}"""));
 
         return columns;
+    }
+
+    public static string GenerateCacheKeyFromRequest(string endPoint, DateTime date)
+    {
+        var onlyDate = date.Date.ToString("dd-MM-yyyy");
+
+        var keyBuilder = new StringBuilder();
+        keyBuilder.Append($"{endPoint}|{onlyDate}");
+
+        return keyBuilder.ToString();
     }
 }

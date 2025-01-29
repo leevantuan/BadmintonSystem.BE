@@ -35,4 +35,9 @@ public static class HttpContextHelper
 
         return JsonConvert.DeserializeObject<List<string>>(serializedRoles ?? string.Empty);
     }
+
+    public static string GetEndpoint(this HttpContext httpContext)
+    {
+        return httpContext.Request.Path.ToString();
+    }
 }
