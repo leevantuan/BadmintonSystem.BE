@@ -1,16 +1,20 @@
-﻿using BadmintonSystem.Contract.Abstractions.Shared;
+﻿using BadmintonSystem.Contract.Abstractions.IntegrationEvents;
+using BadmintonSystem.Contract.Abstractions.Shared;
+using BadmintonSystem.Contract.Enumerations;
 using BadmintonSystem.Contract.Services.V1.Booking;
 using BadmintonSystem.Domain.Enumerations;
 using BadmintonSystem.Persistence.Helpers;
 using BadmintonSystem.Presentation.Abstractions;
 using BadmintonSystem.Presentation.Extensions;
 using Carter;
+using MassTransit;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Request = BadmintonSystem.Contract.Services.V1.Booking.Request;
+using Response = BadmintonSystem.Contract.Services.V1.Booking.Response;
 
 namespace BadmintonSystem.Presentation.APIs.V1;
 
@@ -45,6 +49,27 @@ public class BookingApi : ApiEndpoint, ICarterModule
 
         group1.MapDelete("{bookingId}", DeleteBookingsV1)
             .RequireJwtAuthorize(FunctionEnum.BOOKING.ToString(), (int)ActionEnum.DELETE);
+
+        group1.MapPost("public-email-rabbitmq", EmailRabbitMqV1)
+            .AllowAnonymous();
+    }
+
+    private static async Task<IResult> EmailRabbitMqV1
+    (
+        IPublishEndpoint publishEndpoint
+    )
+    {
+        await publishEndpoint.Publish(new BusEvent.EmailCreatedBusEvent
+        {
+            Id = Guid.NewGuid(),
+            Description = "Email Description",
+            Name = "Email Notification",
+            TimeSpan = DateTime.Now,
+            TransactionId = Guid.NewGuid(),
+            Type = NotificationType.sms
+        });
+
+        return Results.Ok();
     }
 
     private static async Task<IResult> CreateBookingV1

@@ -31,6 +31,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BadmintonSystem.Architectur
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BadmintonSystem.Infrastructure.Dapper", "src\BadmintonSystem.Infrastructure.Dapper\BadmintonSystem.Infrastructure.Dapper.csproj", "{997D09E4-91D7-4E93-A141-638D88D39F76}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BadmintonSystem.Infrastructure.Bus", "src\BadmintonSystem.Infrastructure.Bus\BadmintonSystem.Infrastructure.Bus.csproj", "{B072D8CC-296F-496D-84A1-1CCF9C4D42C6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -73,6 +75,10 @@ Global
 		{997D09E4-91D7-4E93-A141-638D88D39F76}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{997D09E4-91D7-4E93-A141-638D88D39F76}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{997D09E4-91D7-4E93-A141-638D88D39F76}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B072D8CC-296F-496D-84A1-1CCF9C4D42C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B072D8CC-296F-496D-84A1-1CCF9C4D42C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B072D8CC-296F-496D-84A1-1CCF9C4D42C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B072D8CC-296F-496D-84A1-1CCF9C4D42C6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -87,6 +93,7 @@ Global
 		{C0048D2B-9B42-4009-9D13-7AD2354E9603} = {4B903FCA-555A-4118-B6C4-AF88570B426B}
 		{F0083BAD-6911-4FB4-807F-B67271C1B39A} = {08C15C3B-CCAA-433C-9D33-222B551A12CD}
 		{997D09E4-91D7-4E93-A141-638D88D39F76} = {4B903FCA-555A-4118-B6C4-AF88570B426B}
+		{B072D8CC-296F-496D-84A1-1CCF9C4D42C6} = {4B903FCA-555A-4118-B6C4-AF88570B426B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B918239E-DF4F-4DF2-9A83-FEE7C42D2807}

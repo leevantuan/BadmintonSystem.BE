@@ -33,6 +33,7 @@
         <ProjectReference Include="..\BadmintonSystem.Application\BadmintonSystem.Application.csproj"/>
         <ProjectReference Include="..\BadmintonSystem.Contract\BadmintonSystem.Contract.csproj"/>
         <ProjectReference Include="..\BadmintonSystem.Infrastructure.Dapper\BadmintonSystem.Infrastructure.Dapper.csproj"/>
+        <ProjectReference Include="..\BadmintonSystem.Infrastructure.Bus\BadmintonSystem.Infrastructure.Bus.csproj"/>
         <ProjectReference Include="..\BadmintonSystem.Infrastructure\BadmintonSystem.Infrastructure.csproj"/>
         <ProjectReference Include="..\BadmintonSystem.Persistence\BadmintonSystem.Persistence.csproj"/>
         <ProjectReference Include="..\BadmintonSystem.Presentation\BadmintonSystem.Presentation.csproj"/>

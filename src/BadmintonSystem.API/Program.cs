@@ -1,19 +1,16 @@
 ﻿using BadmintonSystem.API.DependencyInjection.Extensions;
 using BadmintonSystem.API.Hubs;
 using BadmintonSystem.API.Middleware;
-using BadmintonSystem.Application.Abstractions;
 using BadmintonSystem.Application.DependencyInjection.Extensions;
 using BadmintonSystem.Contract.Constants;
+using BadmintonSystem.Infrastructure.Bus.DependencyInjection.Extensions;
 using BadmintonSystem.Infrastructure.DependencyInjection.Extensions;
-using BadmintonSystem.Infrastructure.DependencyInjection.Options;
 using BadmintonSystem.Infrastructure.Seed;
-using BadmintonSystem.Infrastructure.Services;
 using BadmintonSystem.Persistence.DependencyInjection.Extensions;
 using BadmintonSystem.Persistence.DependencyInjection.Options;
 using Carter;
 using MicroElements.Swashbuckle.FluentValidation.AspNetCore;
 using Serilog;
-using StackExchange.Redis;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -97,6 +94,9 @@ builder.Services.AddCarter();
 
 // Add Auto Mapper
 builder.Services.AddAutoMapperConfigurationApplication();
+
+// Add RabbitMQ
+builder.Services.AddMassTransitRabbitMqInfrastructureBus(builder.Configuration);
 
 // Add Authentication
 //builder.Services.AddCookieAuthenticationConfigurationAPI();
