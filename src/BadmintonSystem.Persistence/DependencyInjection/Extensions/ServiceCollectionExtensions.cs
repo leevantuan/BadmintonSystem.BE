@@ -93,6 +93,9 @@ public static class ServiceCollectionExtensions
             IOptionsMonitor<PostgresServerRetryOptions> options =
                 provider.GetRequiredService<IOptionsMonitor<PostgresServerRetryOptions>>();
 
+            var env = configuration["ASPNETCORE_ENVIRONMENT"] ?? "Development";
+            _ = env.Equals("Development", StringComparison.OrdinalIgnoreCase);
+
             builder
                 .EnableDetailedErrors()
                 .EnableSensitiveDataLogging()

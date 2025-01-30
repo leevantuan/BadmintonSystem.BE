@@ -22,6 +22,9 @@ public static class ServiceCollectionExtensions
     public static void AddRedisInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         // Đọc cấu hình Redis từ appsettings.json
+        var env = configuration["Environment"] ?? "Development";
+        _ = env.Equals("Development", StringComparison.OrdinalIgnoreCase);
+
         var redisOption = new RedisOption();
         configuration.GetSection("RedisOption").Bind(redisOption);
         services.AddSingleton(redisOption);
