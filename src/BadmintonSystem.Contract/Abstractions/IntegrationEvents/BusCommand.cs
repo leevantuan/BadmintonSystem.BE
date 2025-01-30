@@ -2,11 +2,13 @@
 
 namespace BadmintonSystem.Contract.Abstractions.IntegrationEvents;
 
-public static class BusCommad
+public static class BusCommand
 {
-    public record SendEmailBusEvent : IBusCommand
+    public record SendEmailBusCommand : IBusCommand
     {
         public DateTime SendDate { get; set; }
+
+        public string Type { get; set; }
 
         public Guid Id { get; set; }
 

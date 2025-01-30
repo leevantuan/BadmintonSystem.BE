@@ -50,16 +50,48 @@ public class BookingApi : ApiEndpoint, ICarterModule
         group1.MapDelete("{bookingId}", DeleteBookingsV1)
             .RequireJwtAuthorize(FunctionEnum.BOOKING.ToString(), (int)ActionEnum.DELETE);
 
-        group1.MapPost("public-email-rabbitmq", EmailRabbitMqV1)
+        group1.MapPost("publish-email-rabbitmq", EmailPublishRabbitMqV1)
+            .AllowAnonymous();
+
+        group1.MapPost("command-email-rabbitmq", EmailCommandRabbitMqV1)
             .AllowAnonymous();
     }
 
-    private static async Task<IResult> EmailRabbitMqV1
+    private static async Task<IResult> EmailCommandRabbitMqV1
+    (
+        IBus bus
+    )
+    {
+        // Command Events
+        var sendEmail = new BusCommand.SendEmailBusCommand
+        {
+            Id = Guid.NewGuid(),
+            Description = "Email Description",
+            Name = "Email Notification",
+            TimeSpan = DateTime.Now,
+            TransactionId = Guid.NewGuid(),
+            Type = NotificationType.sms
+        };
+
+        ISendEndpoint endPoint = await bus.GetSendEndpoint(Address<BusCommand.SendEmailBusCommand>());
+
+        await endPoint.Send(sendEmail);
+
+        return Results.Ok();
+    }
+
+    private static Uri Address<T>()
+    {
+        return new Uri($"queue:{KebabCaseEndpointNameFormatter.Instance.SanitizeName(typeof(T).Name)}");
+    }
+
+    private static async Task<IResult> EmailPublishRabbitMqV1
     (
         IPublishEndpoint publishEndpoint
     )
     {
-        await publishEndpoint.Publish(new BusEvent.EmailCreatedBusEvent
+        // Publish Events
+        await publishEndpoint.Publish(new BusEvent.EmailNotificationBusEvent
         {
             Id = Guid.NewGuid(),
             Description = "Email Description",

@@ -13,6 +13,7 @@ COPY ["BadmintonSystem.BE/src/BadmintonSystem.Contract/BadmintonSystem.Contract.
 COPY ["BadmintonSystem.BE/src/BadmintonSystem.Domain/BadmintonSystem.Domain.csproj", "src/BadmintonSystem.Domain/"]
 COPY ["BadmintonSystem.BE/src/BadmintonSystem.Persistence/BadmintonSystem.Persistence.csproj", "src/BadmintonSystem.Persistence/"]
 COPY ["BadmintonSystem.BE/src/BadmintonSystem.Infrastructure.Dapper/BadmintonSystem.Infrastructure.Dapper.csproj", "src/BadmintonSystem.Infrastructure.Dapper/"]
+COPY ["BadmintonSystem.BE/src/BadmintonSystem.Infrastructure.Bus/BadmintonSystem.Infrastructure.Bus.csproj", "src/BadmintonSystem.Infrastructure.Bus/"]
 COPY ["BadmintonSystem.BE/src/BadmintonSystem.Infrastructure/BadmintonSystem.Infrastructure.csproj", "src/BadmintonSystem.Infrastructure/"]
 COPY ["BadmintonSystem.BE/src/BadmintonSystem.Presentation/BadmintonSystem.Presentation.csproj", "src/BadmintonSystem.Presentation/"]
 RUN dotnet restore "src/BadmintonSystem.API/BadmintonSystem.API.csproj"

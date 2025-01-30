@@ -9,9 +9,18 @@ namespace BadmintonSystem.Infrastructure.Bus.DependencyInjection.Extensions;
 
 public static class ServiceCollectionExtensions
 {
+    public static void AddMediatRInfrastructureBus(this IServiceCollection services)
+    {
+        services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(AssemblyReference.Assembly));
+    }
+
     public static void AddMassTransitRabbitMqInfrastructureBus
         (this IServiceCollection services, IConfiguration configuration)
     {
+        // Đọc cấu hình Redis từ appsettings.json
+        string env = configuration["Environment"] ?? "Development";
+        _ = env.Equals("Development", StringComparison.OrdinalIgnoreCase);
+
         var masstransitConfiguration = new MasstransitConfiguration();
 
         configuration.GetSection(nameof(MasstransitConfiguration)).Bind(masstransitConfiguration);
@@ -36,9 +45,9 @@ public static class ServiceCollectionExtensions
                     });
 
                 // Cấu hình ReceiveEndpoint với tên queue cụ thể
-                bus.ReceiveEndpoint("BadmintonSystem-send-mail-queue", e =>
+                bus.ReceiveEndpoint("send-mail-event", e =>
                 {
-                    e.ConfigureConsumer<SendEmailWhenReceivedEmailEventConsumer>(context);
+                    e.ConfigureConsumer<EmailNotificationBusEventConsumer>(context);
                 });
 
                 // Config consumer

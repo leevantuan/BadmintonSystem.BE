@@ -1,14 +1,14 @@
 ﻿using MassTransit;
+using MediatR;
 
 namespace BadmintonSystem.Contract.Abstractions.Message;
 
-public abstract class ConsumerEvent<TMessage> : IConsumer<TMessage>
+public abstract class ConsumerEvent<TMessage>(ISender sender)
+    : IConsumer<TMessage>
     where TMessage : class, IBusEvent
 {
     public async Task Consume(ConsumeContext<TMessage> context)
     {
-        await Handle(context.Message);
+        await sender.Send(context.Message);
     }
-
-    protected abstract Task Handle(TMessage message);
 }

@@ -1,12 +1,14 @@
 ﻿using MassTransit;
+using MediatR;
 
 namespace BadmintonSystem.Contract.Abstractions.Message;
 
-public abstract class ConsumerCommand<TMessage> : IConsumer<TMessage>
+public abstract class ConsumerCommand<TMessage>(ISender sender)
+    : IConsumer<TMessage>
     where TMessage : class, IBusCommand
 {
     public async Task Consume(ConsumeContext<TMessage> context)
     {
-        throw new NotImplementedException();
+        await sender.Send(context.Message);
     }
 }

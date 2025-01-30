@@ -98,6 +98,9 @@ builder.Services.AddAutoMapperConfigurationApplication();
 // Add RabbitMQ
 builder.Services.AddMassTransitRabbitMqInfrastructureBus(builder.Configuration);
 
+// Add MediatR In Bus
+builder.Services.AddMediatRInfrastructureBus();
+
 // Add Authentication
 //builder.Services.AddCookieAuthenticationConfigurationAPI();
 // Configuration Seeder

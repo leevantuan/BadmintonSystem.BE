@@ -1,9 +1,10 @@
 ﻿using MassTransit;
+using MediatR;
 
 namespace BadmintonSystem.Contract.Abstractions.Message;
 
 [ExcludeFromTopology]
-public interface IBusMessage
+public interface IBusMessage : IRequest
 {
     public Guid Id { get; set; }
 

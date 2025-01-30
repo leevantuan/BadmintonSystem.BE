@@ -4,7 +4,7 @@ namespace BadmintonSystem.Contract.Abstractions.IntegrationEvents;
 
 public static class BusEvent
 {
-    public record EmailCreatedBusEvent : IBusEvent, ICommand
+    public record EmailNotificationBusEvent : IBusEvent, ICommand
     {
         public string Type { get; set; }
 
