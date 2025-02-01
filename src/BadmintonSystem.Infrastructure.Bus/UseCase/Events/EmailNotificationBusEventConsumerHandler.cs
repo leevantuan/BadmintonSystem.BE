@@ -1,12 +1,16 @@
 ﻿using BadmintonSystem.Contract.Abstractions.IntegrationEvents;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace BadmintonSystem.Infrastructure.Bus.UseCase.Events;
 
-public sealed class EmailNotificationBusEventConsumerHandler : IRequestHandler<BusEvent.EmailNotificationBusEvent>
+public sealed class EmailNotificationBusEventConsumerHandler(
+    ILogger<EmailNotificationBusEventConsumerHandler> logger)
+    : IRequestHandler<BusEvent.EmailNotificationBusEvent>
 {
-    public Task Handle(BusEvent.EmailNotificationBusEvent request, CancellationToken cancellationToken)
+    public async Task Handle(BusEvent.EmailNotificationBusEvent request, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        await Task.Delay(10000, cancellationToken);
+        logger.LogInformation($"Email notification bus event processed: {request.Name}");
     }
 }

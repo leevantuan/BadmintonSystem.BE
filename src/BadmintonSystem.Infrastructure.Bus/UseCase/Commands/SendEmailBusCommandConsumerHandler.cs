@@ -1,12 +1,16 @@
 ﻿using BadmintonSystem.Contract.Abstractions.IntegrationEvents;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace BadmintonSystem.Infrastructure.Bus.UseCase.Commands;
 
-public sealed class SendEmailBusCommandConsumerHandler : IRequestHandler<BusCommand.SendEmailBusCommand>
+public sealed class SendEmailBusCommandConsumerHandler(
+    ILogger<BusCommand.SendEmailBusCommand> logger)
+    : IRequestHandler<BusCommand.SendEmailBusCommand>
 {
-    public Task Handle(BusCommand.SendEmailBusCommand request, CancellationToken cancellationToken)
+    public async Task Handle(BusCommand.SendEmailBusCommand request, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        await Task.Delay(10000, cancellationToken);
+        logger.LogInformation($"Email notification bus command processed: {request.Name}");
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using BadmintonSystem.Infrastructure.Bus.Consumers.Commands;
 using BadmintonSystem.Infrastructure.Bus.Consumers.Events;
 using BadmintonSystem.Infrastructure.Bus.DependencyInjection.Options;
 using MassTransit;
@@ -27,9 +28,6 @@ public static class ServiceCollectionExtensions
 
         services.AddMassTransit(mt =>
         {
-            // Add consumer từng cái
-            // mt.AddConsumer<SendEmailWhenReceivedEmailEventConsumerEvent>();
-
             // Add consumer Assembly vào Masstransit
             mt.AddConsumers(Assembly.GetExecutingAssembly());
 
@@ -44,13 +42,21 @@ public static class ServiceCollectionExtensions
                         h.Password(masstransitConfiguration.Password);
                     });
 
-                // Cấu hình ReceiveEndpoint với tên queue cụ thể
-                bus.ReceiveEndpoint("send-mail-event", e =>
+                bus.ReceiveEndpoint("send-mail-event-queue", e =>
                 {
+                    // Cấu hình xử lý tuần tự
+                    e.PrefetchCount = 5; // Chỉ nhận 1 message tại một thời điểm
+                    e.ConcurrentMessageLimit = 1; // Chỉ xử lý 1 message tại một thời điểm
                     e.ConfigureConsumer<EmailNotificationBusEventConsumer>(context);
                 });
 
-                // Config consumer
+                bus.ReceiveEndpoint("send-email-command-queue", e =>
+                {
+                    e.PrefetchCount = 5; // Chỉ nhận 1 message tại một thời điểm
+                    e.ConcurrentMessageLimit = 1; // Chỉ xử lý 1 message tại một thời điểm
+                    e.ConfigureConsumer<SendEmailBusCommandConsumer>(context);
+                });
+
                 bus.ConfigureEndpoints(context);
             });
         });

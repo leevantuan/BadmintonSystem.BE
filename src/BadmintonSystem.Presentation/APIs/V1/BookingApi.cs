@@ -73,9 +73,13 @@ public class BookingApi : ApiEndpoint, ICarterModule
             Type = NotificationType.sms
         };
 
-        ISendEndpoint endPoint = await bus.GetSendEndpoint(Address<BusCommand.SendEmailBusCommand>());
-
+        ISendEndpoint endPoint = await bus.GetSendEndpoint(new Uri("queue:send-email-queue"));
         await endPoint.Send(sendEmail);
+        // ISendEndpoint endPoint = await bus.GetSendEndpoint(Address<BusCommand.SendEmailBusCommand>());
+        //
+        // await endPoint.Send(sendEmail);
+
+        //await bus.Send(sendEmail);
 
         return Results.Ok();
     }
