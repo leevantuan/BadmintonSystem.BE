@@ -4,17 +4,27 @@ public static class Request
 {
     public class CreateBooking
     {
-        public DateTime? BookingDate { get; set; }
+        public Guid Id { get; set; }
 
-        public decimal? BookingTotal { get; set; }
+        public DateTime BookingDate { get; set; }
+
+        public decimal BookingTotal { get; set; }
+
+        public decimal OriginalPrice { get; set; }
+
+        public int BookingStatus { get; set; }
+
+        public int PaymentStatus { get; set; }
 
         public Guid? UserId { get; set; }
 
         public Guid? SaleId { get; set; }
 
-        public int? BookingStatus { get; set; }
+        public int? PercentPrePay { get; set; }
 
-        public int? PaymentStatus { get; set; }
+        public string? FullName { get; set; }
+
+        public string? PhoneNumber { get; set; }
     }
 
     public class UpdateBookingRequest

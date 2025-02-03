@@ -2,6 +2,7 @@
 using BadmintonSystem.Infrastructure.Bus.Consumers.Commands;
 using BadmintonSystem.Infrastructure.Bus.Consumers.Events;
 using BadmintonSystem.Infrastructure.Bus.DependencyInjection.Options;
+using BadmintonSystem.Infrastructure.Bus.Services;
 using MassTransit;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,7 +13,9 @@ public static class ServiceCollectionExtensions
 {
     public static void AddMediatRInfrastructureBus(this IServiceCollection services)
     {
-        services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(AssemblyReference.Assembly));
+        services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(AssemblyReference.Assembly))
+            .AddTransient(typeof(IBookingService), typeof(BookingService))
+            .AddTransient(typeof(IEmailService), typeof(EmailService));
     }
 
     public static void AddMassTransitRabbitMqInfrastructureBus
@@ -42,23 +45,26 @@ public static class ServiceCollectionExtensions
                         h.Password(masstransitConfiguration.Password);
                     });
 
-                bus.ReceiveEndpoint("send-mail-event-queue", e =>
-                {
-                    // Cấu hình xử lý tuần tự
-                    e.PrefetchCount = 5; // Chỉ nhận 1 message tại một thời điểm
-                    e.ConcurrentMessageLimit = 1; // Chỉ xử lý 1 message tại một thời điểm
-                    e.ConfigureConsumer<EmailNotificationBusEventConsumer>(context);
-                });
-
-                bus.ReceiveEndpoint("send-email-command-queue", e =>
-                {
-                    e.PrefetchCount = 5; // Chỉ nhận 1 message tại một thời điểm
-                    e.ConcurrentMessageLimit = 1; // Chỉ xử lý 1 message tại một thời điểm
-                    e.ConfigureConsumer<SendEmailBusCommandConsumer>(context);
-                });
+                ConfigureReceiveEndpoint<EmailNotificationBusEventConsumer>(bus, context, "send-mail-event-queue");
+                ConfigureReceiveEndpoint<SendEmailBusCommandConsumer>(bus, context, "send-mail-client-queue");
+                ConfigureReceiveEndpoint<SendEmailBusCommandConsumer>(bus, context, "send-mail-staff-queue");
+                ConfigureReceiveEndpoint<SendUpdateCacheBusCommandConsumer>(bus, context, "send-update-cache-queue");
+                ConfigureReceiveEndpoint<SendCreateBookingCommandConsumer>(bus, context, "send-create-booking-queue");
 
                 bus.ConfigureEndpoints(context);
             });
+        });
+    }
+
+    private static void ConfigureReceiveEndpoint<TConsumer>
+        (IBusFactoryConfigurator bus, IRegistrationContext context, string queueName)
+        where TConsumer : class, IConsumer
+    {
+        bus.ReceiveEndpoint(queueName, e =>
+        {
+            e.PrefetchCount = 1; // Chỉ nhận 1 message tại một thời điểm
+            e.ConcurrentMessageLimit = 1; // Chỉ xử lý 1 message tại một thời điểm
+            e.ConfigureConsumer<TConsumer>(context);
         });
     }
 }

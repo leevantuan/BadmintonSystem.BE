@@ -69,5 +69,58 @@ public static class TemplateEmail
         </html>
         ";
         }
+
+        public static string GetBookingConfirmationEmailToStaff
+            (string fullName, decimal totalPrice, string bookingDetail)
+        {
+            string date = DateTime.Now.ToString("dd/MM/yyyy");
+
+            return $@"
+        <html>
+        <head>
+            <link href='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css' rel='stylesheet'>
+            <style>
+                .container {{
+                {{
+                    max-width: 600px;
+                    margin: auto;
+                }}
+                }}
+            </style>
+        </head>
+        <body>
+        <div class='container'>
+            <div class='card'>
+                <div class='card-header'>
+                    <h2>Thông báo đặt sân thành công!</h2>
+                </div>
+                <div class='card-body'>
+                    <h3>Thông tin đặt sân:</h3>
+
+                    <table class='table'>
+                        <tr>
+                            <td><strong>Tên khách hàng:</strong></td>
+                            <td>{fullName}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Ngày đặt sân:</strong></td>
+                            <td>{date}</td>
+                        </tr>
+                        <tr>
+                            <td colspan='2'><strong >Chi tiết đặt chỗ:</strong></td>
+                        </tr>
+
+                        {bookingDetail}
+
+                    </table>
+
+                    <p><strong>Tổng số tiền:</strong><p style='color: red;'> {totalPrice} VND</p> </p>
+                </div>
+            </div>
+        </div>
+        </body>
+        </html>
+        ";
+        }
     }
 }

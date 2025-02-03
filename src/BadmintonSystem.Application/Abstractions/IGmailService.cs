@@ -9,4 +9,6 @@ public interface IGmailService
     Task<bool> SendMailAsync(Request.GmailRequest request);
 
     Task<bool> SendBookingInformationMail(Request.BookingInformationInGmailRequest request);
+
+    Task<bool> SendBookingInformationMailToStaff(Request.BookingInformationInGmailRequest request);
 }

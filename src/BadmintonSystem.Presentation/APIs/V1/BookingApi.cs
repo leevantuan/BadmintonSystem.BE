@@ -32,6 +32,9 @@ public class BookingApi : ApiEndpoint, ICarterModule
         group1.MapPost(string.Empty, CreateBookingV1)
             .RequireJwtAuthorize(FunctionEnum.BOOKING.ToString(), (int)ActionEnum.CREATE);
 
+        group1.MapPost("create-rabbitmq", CreateBookingRabbitmqV1)
+            .RequireJwtAuthorize(FunctionEnum.BOOKING.ToString(), (int)ActionEnum.CREATE);
+
         group1.MapGet("filter-and-sort-value", GetBookingsFilterAndSortValueV1)
             .RequireJwtAuthorize(FunctionEnum.BOOKING.ToString(), (int)ActionEnum.READ);
 
@@ -75,11 +78,6 @@ public class BookingApi : ApiEndpoint, ICarterModule
 
         ISendEndpoint endPoint = await bus.GetSendEndpoint(new Uri("queue:send-email-queue"));
         await endPoint.Send(sendEmail);
-        // ISendEndpoint endPoint = await bus.GetSendEndpoint(Address<BusCommand.SendEmailBusCommand>());
-        //
-        // await endPoint.Send(sendEmail);
-
-        //await bus.Send(sendEmail);
 
         return Results.Ok();
     }
@@ -106,6 +104,19 @@ public class BookingApi : ApiEndpoint, ICarterModule
         });
 
         return Results.Ok();
+    }
+
+    private static async Task<IResult> CreateBookingRabbitmqV1
+    (
+        ISender sender,
+        [FromBody] Request.CreateBookingRequest createBooking,
+        IHttpContextAccessor httpContextAccessor)
+    {
+        Guid? userId = httpContextAccessor.HttpContext?.GetCurrentUserId();
+        Result result =
+            await sender.Send(new Command.CreateBookingRabbitMQCommand(userId ?? Guid.Empty, createBooking));
+
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> CreateBookingV1

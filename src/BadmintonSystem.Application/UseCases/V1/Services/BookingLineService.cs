@@ -91,12 +91,6 @@ public sealed class BookingLineService(
                 context.BookingLine.Add(bookingLineEntities);
 
                 await context.SaveChangesAsync(cancellationToken);
-
-                string endpoint = "/api/v1/yard-prices/filter-by-date";
-
-                var cacheKey = StringExtension.GenerateCacheKeyFromRequest(endpoint, yardPrice.EffectiveDate);
-
-                await redisService.DeleteByKeyAsync(cacheKey);
             }
         }
 

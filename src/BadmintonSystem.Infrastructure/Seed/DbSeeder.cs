@@ -322,48 +322,14 @@ public sealed class DbSeeder(
             foreach (FunctionEnum functionEnum in Enum.GetValues(typeof(FunctionEnum)))
             {
                 string functionName = functionEnum.ToString().Trim().ToUpper();
-                switch (functionName)
+
+                if (functionName == FunctionEnum.ADMINISTRATOR.ToString())
                 {
-                    case "ADMINISTRATOR":
-                        await AddAppRoleClaim(functionName, "0", role);
-                        break;
-                    case "ADDRESS":
-                        await AddAppRoleClaim(functionName, "15", role);
-                        break;
-                    case "APPUSER":
-                        await AddAppRoleClaim(functionName, "15", role);
-                        break;
-                    case "BOOKING":
-                        await AddAppRoleClaim(functionName, "15", role);
-                        break;
-                    case "CATEGORY":
-                        await AddAppRoleClaim(functionName, "15", role);
-                        break;
-                    case "CLUB":
-                        await AddAppRoleClaim(functionName, "15", role);
-                        break;
-                    case "NOFITICATION":
-                        await AddAppRoleClaim(functionName, "15", role);
-                        break;
-                    case "REVIEW":
-                        await AddAppRoleClaim(functionName, "15", role);
-                        break;
-                    case "SALE":
-                        await AddAppRoleClaim(functionName, "15", role);
-                        break;
-                    case "SERVICE":
-                        await AddAppRoleClaim(functionName, "15", role);
-                        break;
-                    case "TIMESLOT":
-                        await AddAppRoleClaim(functionName, "15", role);
-                        break;
-                    case "YARD":
-                        await AddAppRoleClaim(functionName, "15", role);
-                        break;
-                    case "YARDTYPE":
-                        await AddAppRoleClaim(functionName, "15", role);
-                        break;
+                    await AddAppRoleClaim(functionName, "0", role);
+                    continue;
                 }
+
+                await AddAppRoleClaim(functionName, "63", role);
             }
         }
     }

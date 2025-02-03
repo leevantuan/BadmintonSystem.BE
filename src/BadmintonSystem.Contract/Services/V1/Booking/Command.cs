@@ -4,6 +4,9 @@ namespace BadmintonSystem.Contract.Services.V1.Booking;
 
 public static class Command
 {
+    public record CreateBookingRabbitMQCommand(Guid UserId, Request.CreateBookingRequest Data)
+        : ICommand;
+
     public record CreateBookingCommand(Guid UserId, Request.CreateBookingRequest Data)
         : ICommand;
 

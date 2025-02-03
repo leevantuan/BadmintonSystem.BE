@@ -9,14 +9,14 @@ using Request = BadmintonSystem.Contract.Services.V1.Gmail.Request;
 
 namespace BadmintonSystem.Application.UseCases.V1.Events.Booking;
 
-public sealed class SendEmailByBookingDoneEventHandler(
+public sealed class SendEmailByBookingDoneToStaffEventHandler(
     ApplicationDbContext context,
     ISender sender,
     IGmailService mailService,
     IHttpContextAccessor httpContextAccessor)
-    : IDomainEventHandler<DomainEvent.BookingDone>
+    : IDomainEventHandler<DomainEvent.BookingNotificationToStaff>
 {
-    public async Task Handle(DomainEvent.BookingDone notification, CancellationToken cancellationToken)
+    public async Task Handle(DomainEvent.BookingNotificationToStaff notification, CancellationToken cancellationToken)
     {
         var results = new List<Result<Response.GetBookingDetailResponse>>();
 
@@ -48,17 +48,17 @@ public sealed class SendEmailByBookingDoneEventHandler(
 
         decimal totalPrice = bookingLines.Sum(bl => bl.Yards.Sum(yard => yard.Price));
 
-        var gmailClientRequest = new Request.BookingInformationInGmailRequest
+        var gmailStaffRequest = new Request.BookingInformationInGmailRequest
         {
             MailTo = notification.Email,
             MailSubject =
-                $"WELCOME TO BADMINTON BOOKING WEB, THIS IS EMAIL CONFIRM INFORMATION BOOKING - Date: {DateTime.Now.Date:dd/MM/yyyy}",
+                $"NOTIFICATION BOOKING SUCCESS - Date: {DateTime.Now.Date:dd/MM/yyyy}",
             MailBody = string.Empty,
             BookingLines = bookingLines,
             FullName = notification.Name,
             TotalPrice = totalPrice
         };
 
-        await mailService.SendBookingInformationMail(gmailClientRequest);
+        await mailService.SendBookingInformationMailToStaff(gmailStaffRequest);
     }
 }

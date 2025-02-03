@@ -9,7 +9,6 @@ using BadmintonSystem.Contract.Extensions;
 using BadmintonSystem.Contract.Services.V1.YardPrice;
 using BadmintonSystem.Domain.Abstractions.Repositories;
 using BadmintonSystem.Persistence;
-using BadmintonSystem.Persistence.Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -28,15 +27,17 @@ public sealed class GetYardPricesByDateQueryHandler(
     public async Task<Result<List<Response.YardPricesByDateDetailResponse>>> Handle
         (Query.GetYardPricesByDateQuery request, CancellationToken cancellationToken)
     {
-        string endpoint = httpContextAccessor.HttpContext.GetEndpoint();
+        // string endpoint = httpContextAccessor.HttpContext.GetEndpoint();
+        string endpoint = "get-yard-prices-by-date";
 
-        var cacheKey = StringExtension.GenerateCacheKeyFromRequest(endpoint, request.Date);
+        string cacheKey = StringExtension.GenerateCacheKeyFromRequest(endpoint, request.Date);
 
-        var cacheData = await redisService.GetAsync(cacheKey);
+        string cacheData = await redisService.GetAsync(cacheKey);
 
         if (!string.IsNullOrEmpty(cacheData))
         {
-            var data = JsonConvert.DeserializeObject<List<Response.YardPricesByDateDetailResponse>>(cacheData);
+            List<Response.YardPricesByDateDetailResponse>? data =
+                JsonConvert.DeserializeObject<List<Response.YardPricesByDateDetailResponse>>(cacheData);
             return data;
         }
 

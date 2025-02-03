@@ -67,7 +67,7 @@ public sealed class CreateBookingCommandHandler(
         });
 
         // SEND_MAIL
-        await mediator.Publish(new DomainEvent.BookingDone(bookingIds), cancellationToken);
+        await mediator.Publish(new DomainEvent.BookingDone(bookingIds, "", ""), cancellationToken);
 
         return Result.Success();
     }
