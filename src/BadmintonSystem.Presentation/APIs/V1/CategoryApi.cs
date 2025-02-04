@@ -1,9 +1,7 @@
 ﻿using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.V1.Category;
-using BadmintonSystem.Domain.Enumerations;
 using BadmintonSystem.Persistence.Helpers;
 using BadmintonSystem.Presentation.Abstractions;
-using BadmintonSystem.Presentation.Extensions;
 using Carter;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -26,26 +24,33 @@ public class CategoryApi : ApiEndpoint, ICarterModule
             .RequireAuthorization();
 
         group1.MapPost(string.Empty, CreateCategoryV1)
-            .RequireJwtAuthorize(FunctionEnum.CATEGORY.ToString(), (int)ActionEnum.CREATE);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.CATEGORY.ToString(), (int)ActionEnum.CREATE);
 
         group1.MapGet(string.Empty, GetCategoriesV1)
-            .RequireJwtAuthorize(FunctionEnum.CATEGORY.ToString(), (int)ActionEnum.READ);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.CATEGORY.ToString(), (int)ActionEnum.READ);
 
         group1.MapGet("filter-and-sort", GetCategoriesFilterAndSortValueV1)
-            .RequireJwtAuthorize(FunctionEnum.CATEGORY.ToString(), (int)ActionEnum.READ);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.CATEGORY.ToString(), (int)ActionEnum.READ);
 
         group1.MapGet(
                 "{categoryId}/services/filter-and-sort", GetServicesByCategoryIdFilterAndSortValueV1)
-            .RequireJwtAuthorize(FunctionEnum.CATEGORY.ToString(), (int)ActionEnum.READ);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.CATEGORY.ToString(), (int)ActionEnum.READ);
 
         group1.MapGet("{categoryId}", GetCategoryByIdV1)
-            .RequireJwtAuthorize(FunctionEnum.CATEGORY.ToString(), (int)ActionEnum.READ);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.CATEGORY.ToString(), (int)ActionEnum.READ);
 
         group1.MapPut("{categoryId}", UpdateCategoryV1)
-            .RequireJwtAuthorize(FunctionEnum.CATEGORY.ToString(), (int)ActionEnum.UPDATE);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.CATEGORY.ToString(), (int)ActionEnum.UPDATE);
 
         group1.MapDelete(string.Empty, DeleteCategoriesV1)
-            .RequireJwtAuthorize(FunctionEnum.CATEGORY.ToString(), (int)ActionEnum.DELETE);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.CATEGORY.ToString(), (int)ActionEnum.DELETE);
     }
 
     private static async Task<IResult> CreateCategoryV1

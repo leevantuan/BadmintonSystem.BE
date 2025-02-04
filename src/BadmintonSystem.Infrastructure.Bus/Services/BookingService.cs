@@ -21,48 +21,55 @@ public class BookingService(
     public async Task CreateBookingAsync
         (BusCommand.SendCreateBookingCommand data, CancellationToken cancellationToken)
     {
-        AppUser user = await context.AppUsers
-                           .FirstOrDefaultAsync(x => x.Id == data.UserId, cancellationToken)
-                       ?? throw new IdentityException.AppUserNotFoundException(data.UserId);
-
-        List<Response.GetIdsByDate> idsByDate =
-            await GetIdsByDateAsync(data.CreateBooking.YardPriceIds, cancellationToken);
-
-        var bookingIds = new List<Guid>();
-        foreach (Response.GetIdsByDate idByDate in idsByDate)
+        try
         {
-            var bookingEntity = new Booking
+            AppUser user = await context.AppUsers
+                               .FirstOrDefaultAsync(x => x.Id == data.UserId, cancellationToken)
+                           ?? throw new IdentityException.AppUserNotFoundException(data.UserId);
+
+            List<Response.GetIdsByDate> idsByDate =
+                await GetIdsByDateAsync(data.CreateBooking.YardPriceIds, cancellationToken);
+
+            var bookingIds = new List<Guid>();
+            foreach (Response.GetIdsByDate idByDate in idsByDate)
             {
-                Id = Guid.NewGuid(),
-                BookingStatus = BookingStatusEnum.Pending,
-                PaymentStatus = PaymentStatusEnum.Unpaid,
-                UserId = data.UserId,
-                BookingDate = idByDate.Date,
-                BookingTotal = 0,
-                OriginalPrice = 0,
-                PercentPrePay = data.CreateBooking.PercentPrePay,
-                SaleId = data.CreateBooking.SaleId,
-                FullName = data.CreateBooking.FullName ?? user.FullName,
-                PhoneNumber = data.CreateBooking.PhoneNumber ?? user.PhoneNumber
-            };
+                var bookingEntity = new Booking
+                {
+                    Id = Guid.NewGuid(),
+                    BookingStatus = BookingStatusEnum.Pending,
+                    PaymentStatus = PaymentStatusEnum.Unpaid,
+                    UserId = data.UserId,
+                    BookingDate = idByDate.Date,
+                    BookingTotal = 0,
+                    OriginalPrice = 0,
+                    PercentPrePay = data.CreateBooking.PercentPrePay,
+                    SaleId = data.CreateBooking.SaleId,
+                    FullName = data.CreateBooking.FullName ?? user.FullName,
+                    PhoneNumber = data.CreateBooking.PhoneNumber ?? user.PhoneNumber
+                };
 
-            var billEntity = new Bill
-            {
-                Id = Guid.NewGuid(),
-                UserId = bookingEntity.UserId,
-                BookingId = bookingEntity.Id,
-                TotalPrice = 0,
-                Status = BillStatusEnum.BOOKED
-            };
+                var billEntity = new Bill
+                {
+                    Id = Guid.NewGuid(),
+                    UserId = bookingEntity.UserId,
+                    BookingId = bookingEntity.Id,
+                    TotalPrice = 0,
+                    Status = BillStatusEnum.BOOKED
+                };
 
-            await CreateBookingAsync(idByDate, bookingEntity, billEntity, cancellationToken);
+                await CreateBookingAsync(idByDate, bookingEntity, billEntity, cancellationToken);
 
-            bookingIds.Add(bookingEntity.Id);
+                bookingIds.Add(bookingEntity.Id);
+            }
+
+            await SignalRAndUpdateCacheAsync(idsByDate, cancellationToken);
+            await SendMailAsync(bookingIds, user, NotificationType.client, "send-mail-client-queue", cancellationToken);
+            await SendMailAsync(bookingIds, user, NotificationType.staff, "send-mail-staff-queue", cancellationToken);
         }
-
-        await SignalRAndUpdateCacheAsync(idsByDate, cancellationToken);
-        await SendMailAsync(bookingIds, user, NotificationType.client, "send-mail-client-queue", cancellationToken);
-        await SendMailAsync(bookingIds, user, NotificationType.staff, "send-mail-staff-queue", cancellationToken);
+        catch (Exception ex)
+        {
+            throw new ApplicationException($"Failed to create booking: {ex.Message}");
+        }
     }
 
     private async Task SendMailAsync

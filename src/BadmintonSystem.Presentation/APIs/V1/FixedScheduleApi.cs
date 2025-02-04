@@ -1,9 +1,7 @@
 ﻿using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.V1.FixedSchedule;
-using BadmintonSystem.Domain.Enumerations;
 using BadmintonSystem.Persistence.Helpers;
 using BadmintonSystem.Presentation.Abstractions;
-using BadmintonSystem.Presentation.Extensions;
 using Carter;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -26,16 +24,20 @@ public class FixedScheduleApi : ApiEndpoint, ICarterModule
             .RequireAuthorization();
 
         group1.MapPost(string.Empty, CreateFixedScheduleV1)
-            .RequireJwtAuthorize(FunctionEnum.FIXEDSCHEDULE.ToString(), (int)ActionEnum.CREATE);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.FIXEDSCHEDULE.ToString(), (int)ActionEnum.CREATE);
 
         group1.MapGet("filter-and-sort", GetFixedSchedulesFilterAndSortValueV1)
-            .RequireJwtAuthorize(FunctionEnum.FIXEDSCHEDULE.ToString(), (int)ActionEnum.READ);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.FIXEDSCHEDULE.ToString(), (int)ActionEnum.READ);
 
         group1.MapPut("{fixedScheduleId}", UpdateFixedScheduleV1)
-            .RequireJwtAuthorize(FunctionEnum.FIXEDSCHEDULE.ToString(), (int)ActionEnum.UPDATE);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.FIXEDSCHEDULE.ToString(), (int)ActionEnum.UPDATE);
 
         group1.MapDelete(string.Empty, DeleteFixedSchedulesV1)
-            .RequireJwtAuthorize(FunctionEnum.FIXEDSCHEDULE.ToString(), (int)ActionEnum.DELETE);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.FIXEDSCHEDULE.ToString(), (int)ActionEnum.DELETE);
     }
 
     private static async Task<IResult> CreateFixedScheduleV1

@@ -1,9 +1,7 @@
 ﻿using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.V1.InventoryReceipt;
-using BadmintonSystem.Domain.Enumerations;
 using BadmintonSystem.Persistence.Helpers;
 using BadmintonSystem.Presentation.Abstractions;
-using BadmintonSystem.Presentation.Extensions;
 using Carter;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -26,16 +24,20 @@ public class InventoryReceiptApi : ApiEndpoint, ICarterModule
             .RequireAuthorization();
 
         group1.MapPost(string.Empty, CreateInventoryReceiptV1)
-            .RequireJwtAuthorize(FunctionEnum.INVENTORYRECEIPT.ToString(), (int)ActionEnum.CREATE);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.INVENTORYRECEIPT.ToString(), (int)ActionEnum.CREATE);
 
         group1.MapPost("filter-and-sort", GetInventoryReceiptsFilterAndSortValueV1)
-            .RequireJwtAuthorize(FunctionEnum.INVENTORYRECEIPT.ToString(), (int)ActionEnum.READ);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.INVENTORYRECEIPT.ToString(), (int)ActionEnum.READ);
 
         group1.MapGet("{inventoryReceiptId}", GetInventoryReceiptByIdV1)
-            .RequireJwtAuthorize(FunctionEnum.INVENTORYRECEIPT.ToString(), (int)ActionEnum.READ);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.INVENTORYRECEIPT.ToString(), (int)ActionEnum.READ);
 
         group1.MapDelete("{inventoryReceiptId}", DeleteInventoryReceiptsV1)
-            .RequireJwtAuthorize(FunctionEnum.INVENTORYRECEIPT.ToString(), (int)ActionEnum.DELETE);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.INVENTORYRECEIPT.ToString(), (int)ActionEnum.DELETE);
     }
 
     private static async Task<IResult> CreateInventoryReceiptV1

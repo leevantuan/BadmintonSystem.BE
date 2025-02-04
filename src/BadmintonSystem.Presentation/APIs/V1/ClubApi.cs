@@ -1,9 +1,7 @@
 ﻿using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.V1.Club;
-using BadmintonSystem.Domain.Enumerations;
 using BadmintonSystem.Persistence.Helpers;
 using BadmintonSystem.Presentation.Abstractions;
-using BadmintonSystem.Presentation.Extensions;
 using Carter;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -26,21 +24,27 @@ public class ClubApi : ApiEndpoint, ICarterModule
             .RequireAuthorization();
 
         group1.MapPost(string.Empty, CreateClubV1)
-            .RequireJwtAuthorize(FunctionEnum.CLUB.ToString(), (int)ActionEnum.CREATE);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.CLUB.ToString(), (int)ActionEnum.CREATE);
 
         group1.MapGet(string.Empty, GetClubsV1)
-            .RequireJwtAuthorize(FunctionEnum.CLUB.ToString(), (int)ActionEnum.READ);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.CLUB.ToString(), (int)ActionEnum.READ);
         group1.MapGet("filter-and-sort", GetClubsFilterAndSortValueV1)
-            .RequireJwtAuthorize(FunctionEnum.CLUB.ToString(), (int)ActionEnum.READ);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.CLUB.ToString(), (int)ActionEnum.READ);
 
         group1.MapGet("{clubId}", GetClubByIdV1)
-            .RequireJwtAuthorize(FunctionEnum.CLUB.ToString(), (int)ActionEnum.READ);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.CLUB.ToString(), (int)ActionEnum.READ);
 
         group1.MapPut("{clubId}", UpdateClubV1)
-            .RequireJwtAuthorize(FunctionEnum.CLUB.ToString(), (int)ActionEnum.UPDATE);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.CLUB.ToString(), (int)ActionEnum.UPDATE);
 
         group1.MapDelete(string.Empty, DeleteClubsV1)
-            .RequireJwtAuthorize(FunctionEnum.CLUB.ToString(), (int)ActionEnum.DELETE);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.CLUB.ToString(), (int)ActionEnum.DELETE);
     }
 
     private static async Task<IResult> CreateClubV1

@@ -1,9 +1,7 @@
 ﻿using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.V1.Address;
-using BadmintonSystem.Domain.Enumerations;
 using BadmintonSystem.Persistence.Helpers;
 using BadmintonSystem.Presentation.Abstractions;
-using BadmintonSystem.Presentation.Extensions;
 using Carter;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -27,16 +25,20 @@ public class AddressApi : ApiEndpoint, ICarterModule
             .RequireAuthorization();
 
         group1.MapPost(string.Empty, CreateAddressV1)
-            .RequireJwtAuthorize(FunctionEnum.ADDRESS.ToString(), (int)ActionEnum.CREATE);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.ADDRESS.ToString(), (int)ActionEnum.CREATE);
 
         group1.MapGet("{addressId}", GetAddressByIdV1)
-            .RequireJwtAuthorize(FunctionEnum.ADDRESS.ToString(), (int)ActionEnum.READ);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.ADDRESS.ToString(), (int)ActionEnum.READ);
 
         group1.MapPut("{addressId}", UpdateAddressV1)
-            .RequireJwtAuthorize(FunctionEnum.ADDRESS.ToString(), (int)ActionEnum.UPDATE);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.ADDRESS.ToString(), (int)ActionEnum.UPDATE);
 
         group1.MapDelete("{addressId}", DeleteAddressByUserIdV1)
-            .RequireJwtAuthorize(FunctionEnum.ADDRESS.ToString(), (int)ActionEnum.DELETE);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.ADDRESS.ToString(), (int)ActionEnum.DELETE);
     }
 
     private static async Task<IResult> CreateAddressV1

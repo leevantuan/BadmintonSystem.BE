@@ -1,9 +1,7 @@
 ﻿using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.V1.Notification;
-using BadmintonSystem.Domain.Enumerations;
 using BadmintonSystem.Persistence.Helpers;
 using BadmintonSystem.Presentation.Abstractions;
-using BadmintonSystem.Presentation.Extensions;
 using Carter;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -26,19 +24,24 @@ public class NotificationApi : ApiEndpoint, ICarterModule
             .RequireAuthorization();
 
         group1.MapPost(string.Empty, CreateNotificationV1)
-            .RequireJwtAuthorize(FunctionEnum.NOTIFICATION.ToString(), (int)ActionEnum.CREATE);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.NOTIFICATION.ToString(), (int)ActionEnum.CREATE);
 
         group1.MapGet("{notificationId}", GetNotificationByIdV1)
-            .RequireJwtAuthorize(FunctionEnum.NOTIFICATION.ToString(), (int)ActionEnum.READ);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.NOTIFICATION.ToString(), (int)ActionEnum.READ);
 
         group1.MapPut("{notificationId}", UpdateNotificationV1)
-            .RequireJwtAuthorize(FunctionEnum.NOTIFICATION.ToString(), (int)ActionEnum.UPDATE);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.NOTIFICATION.ToString(), (int)ActionEnum.UPDATE);
 
         group1.MapDelete(string.Empty, DeleteNotificationsV1)
-            .RequireJwtAuthorize(FunctionEnum.NOTIFICATION.ToString(), (int)ActionEnum.DELETE);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.NOTIFICATION.ToString(), (int)ActionEnum.DELETE);
 
         group1.MapDelete("{notificationId}", DeleteNotificationByUserIdV1)
-            .RequireJwtAuthorize(FunctionEnum.NOTIFICATION.ToString(), (int)ActionEnum.DELETE);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.NOTIFICATION.ToString(), (int)ActionEnum.DELETE);
     }
 
     private static async Task<IResult> CreateNotificationV1

@@ -1,9 +1,7 @@
 ﻿using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.V1.Sale;
-using BadmintonSystem.Domain.Enumerations;
 using BadmintonSystem.Persistence.Helpers;
 using BadmintonSystem.Presentation.Abstractions;
-using BadmintonSystem.Presentation.Extensions;
 using Carter;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -26,21 +24,27 @@ public class SaleApi : ApiEndpoint, ICarterModule
             .RequireAuthorization();
 
         group1.MapPost(string.Empty, CreateSaleV1)
-            .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.CREATE);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.CREATE);
 
         group1.MapGet(string.Empty, GetSalesV1)
-            .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.READ);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.READ);
         group1.MapGet("filter-and-sort", GetSalesFilterAndSortValueV1)
-            .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.READ);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.READ);
 
         group1.MapGet("{saleId}", GetSaleByIdV1)
-            .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.READ);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.READ);
 
         group1.MapPut("{saleId}", UpdateSaleV1)
-            .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.UPDATE);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.UPDATE);
 
         group1.MapDelete(string.Empty, DeleteSalesV1)
-            .RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.DELETE);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.SALE.ToString(), (int)ActionEnum.DELETE);
     }
 
     private static async Task<IResult> CreateSaleV1

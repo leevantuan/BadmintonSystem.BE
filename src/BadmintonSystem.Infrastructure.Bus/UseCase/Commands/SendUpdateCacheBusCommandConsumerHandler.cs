@@ -18,21 +18,28 @@ public sealed class SendUpdateCacheBusCommandConsumerHandler(
 {
     public async Task Handle(BusCommand.SendUpdateCacheBusCommand request, CancellationToken cancellationToken)
     {
-        foreach (Response.GetIdsByDate yardPrice in request.YardPriceIds)
+        try
         {
-            // Real-time SignalR
-            await bookingHub.BookingByUserAsync(new Contract.Services.V1.Bill.Response.BookingHubResponse
+            foreach (Response.GetIdsByDate yardPrice in request.YardPriceIds)
             {
-                Ids = yardPrice.Ids,
-                Type = BookingEnum.BOOKED.ToString()
-            });
+                // Real-time SignalR
+                await bookingHub.BookingByUserAsync(new Contract.Services.V1.Bill.Response.BookingHubResponse
+                {
+                    Ids = yardPrice.Ids,
+                    Type = BookingEnum.BOOKED.ToString()
+                });
 
-            // Update Redis cache
-            string endpoint = "get-yard-prices-by-date";
-            string cacheKey = StringExtension.GenerateCacheKeyFromRequest(endpoint, yardPrice.Date);
-            await redisService.DeleteByKeyAsync(cacheKey);
+                // Update Redis cache
+                string endpoint = "get-yard-prices-by-date";
+                string cacheKey = StringExtension.GenerateCacheKeyFromRequest(endpoint, yardPrice.Date);
+                await redisService.DeleteByKeyAsync(cacheKey);
 
-            _ = await sender.Send(new Query.GetYardPricesByDateQuery(Guid.Empty, yardPrice.Date));
+                _ = await sender.Send(new Query.GetYardPricesByDateQuery(Guid.Empty, yardPrice.Date));
+            }
+        }
+        catch (Exception ex)
+        {
+            throw new ApplicationException($"An error occured while processing your request: {ex.Message}");
         }
     }
 }

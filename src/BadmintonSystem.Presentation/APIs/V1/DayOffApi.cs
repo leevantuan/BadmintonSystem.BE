@@ -1,9 +1,7 @@
 ﻿using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.V1.DayOff;
-using BadmintonSystem.Domain.Enumerations;
 using BadmintonSystem.Persistence.Helpers;
 using BadmintonSystem.Presentation.Abstractions;
-using BadmintonSystem.Presentation.Extensions;
 using Carter;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -26,16 +24,20 @@ public class DayOffApi : ApiEndpoint, ICarterModule
             .RequireAuthorization();
 
         group1.MapPost(string.Empty, CreateDayOffV1)
-            .RequireJwtAuthorize(FunctionEnum.DAYOFF.ToString(), (int)ActionEnum.CREATE);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.DAYOFF.ToString(), (int)ActionEnum.CREATE);
 
         group1.MapPost("find-by-date", GetDayOffByDateV1)
-            .RequireJwtAuthorize(FunctionEnum.DAYOFF.ToString(), (int)ActionEnum.READ);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.DAYOFF.ToString(), (int)ActionEnum.READ);
 
         group1.MapPut("{dayOffId}", UpdateDayOffV1)
-            .RequireJwtAuthorize(FunctionEnum.DAYOFF.ToString(), (int)ActionEnum.UPDATE);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.DAYOFF.ToString(), (int)ActionEnum.UPDATE);
 
         group1.MapDelete(string.Empty, DeleteDayOffsV1)
-            .RequireJwtAuthorize(FunctionEnum.DAYOFF.ToString(), (int)ActionEnum.DELETE);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.DAYOFF.ToString(), (int)ActionEnum.DELETE);
     }
 
     private static async Task<IResult> CreateDayOffV1

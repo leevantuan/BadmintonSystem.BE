@@ -1,9 +1,7 @@
 ﻿using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.V1.Price;
-using BadmintonSystem.Domain.Enumerations;
 using BadmintonSystem.Persistence.Helpers;
 using BadmintonSystem.Presentation.Abstractions;
-using BadmintonSystem.Presentation.Extensions;
 using Carter;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -26,22 +24,28 @@ public class PriceApi : ApiEndpoint, ICarterModule
             .RequireAuthorization();
 
         group1.MapPost(string.Empty, CreatePriceV1)
-            .RequireJwtAuthorize(FunctionEnum.PRICE.ToString(), (int)ActionEnum.CREATE);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.PRICE.ToString(), (int)ActionEnum.CREATE);
 
         group1.MapGet("filter-and-sort", GetPricesFilterAndSortValueV1)
-            .RequireJwtAuthorize(FunctionEnum.PRICE.ToString(), (int)ActionEnum.READ);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.PRICE.ToString(), (int)ActionEnum.READ);
 
         group1.MapGet("show-prices", GetShowPricesValueV1)
-            .RequireJwtAuthorize(FunctionEnum.PRICE.ToString(), (int)ActionEnum.READ);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.PRICE.ToString(), (int)ActionEnum.READ);
 
         group1.MapGet("{priceId}", GetPriceByIdV1)
-            .RequireJwtAuthorize(FunctionEnum.PRICE.ToString(), (int)ActionEnum.READ);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.PRICE.ToString(), (int)ActionEnum.READ);
 
         group1.MapPut("{priceId}", UpdatePriceV1)
-            .RequireJwtAuthorize(FunctionEnum.PRICE.ToString(), (int)ActionEnum.UPDATE);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.PRICE.ToString(), (int)ActionEnum.UPDATE);
 
         group1.MapDelete(string.Empty, DeletePricesV1)
-            .RequireJwtAuthorize(FunctionEnum.PRICE.ToString(), (int)ActionEnum.DELETE);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.PRICE.ToString(), (int)ActionEnum.DELETE);
     }
 
     private static async Task<IResult> CreatePriceV1

@@ -1,9 +1,7 @@
 ﻿using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.V1.PaymentMethod;
-using BadmintonSystem.Domain.Enumerations;
 using BadmintonSystem.Persistence.Helpers;
 using BadmintonSystem.Presentation.Abstractions;
-using BadmintonSystem.Presentation.Extensions;
 using Carter;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -26,16 +24,20 @@ public class PaymentMethodApi : ApiEndpoint, ICarterModule
             .RequireAuthorization();
 
         group1.MapPost(string.Empty, CreatePaymentMethodByUserIdV1)
-            .RequireJwtAuthorize(FunctionEnum.PAYMENTMETHOD.ToString(), (int)ActionEnum.CREATE);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.PAYMENTMETHOD.ToString(), (int)ActionEnum.CREATE);
 
         group1.MapGet("{paymentMethodId}", GetPaymentMethodByIdV1)
-            .RequireJwtAuthorize(FunctionEnum.PAYMENTMETHOD.ToString(), (int)ActionEnum.READ);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.PAYMENTMETHOD.ToString(), (int)ActionEnum.READ);
 
         group1.MapPut(string.Empty, UpdatePaymentMethodByUserIdV1)
-            .RequireJwtAuthorize(FunctionEnum.PAYMENTMETHOD.ToString(), (int)ActionEnum.UPDATE);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.PAYMENTMETHOD.ToString(), (int)ActionEnum.UPDATE);
 
         group1.MapDelete("{paymentMethodId}", DeletePaymentMethodByUserIdV1)
-            .RequireJwtAuthorize(FunctionEnum.PAYMENTMETHOD.ToString(), (int)ActionEnum.DELETE);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.PAYMENTMETHOD.ToString(), (int)ActionEnum.DELETE);
     }
 
     private static async Task<IResult> CreatePaymentMethodByUserIdV1

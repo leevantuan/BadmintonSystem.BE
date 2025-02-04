@@ -1,9 +1,7 @@
 ﻿using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.V1.Service;
-using BadmintonSystem.Domain.Enumerations;
 using BadmintonSystem.Persistence.Helpers;
 using BadmintonSystem.Presentation.Abstractions;
-using BadmintonSystem.Presentation.Extensions;
 using Carter;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -26,28 +24,36 @@ public class ServiceApi : ApiEndpoint, ICarterModule
             .RequireAuthorization();
 
         group1.MapPost(string.Empty, CreateServiceV1)
-            .RequireJwtAuthorize(FunctionEnum.SERVICE.ToString(), (int)ActionEnum.CREATE);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.SERVICE.ToString(), (int)ActionEnum.CREATE);
 
         group1.MapGet(string.Empty, GetServicesV1)
-            .RequireJwtAuthorize(FunctionEnum.SERVICE.ToString(), (int)ActionEnum.READ);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.SERVICE.ToString(), (int)ActionEnum.READ);
 
         group1.MapGet("filter-and-sort", GetServicesFilterAndSortValueV1)
-            .RequireJwtAuthorize(FunctionEnum.SERVICE.ToString(), (int)ActionEnum.READ);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.SERVICE.ToString(), (int)ActionEnum.READ);
 
         group1.MapGet("inventory-receipts/{serviceId}", GetInventoryReceiptByServiceIdFilterAndSortValueV1)
-            .RequireJwtAuthorize(FunctionEnum.SERVICE.ToString(), (int)ActionEnum.READ);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.SERVICE.ToString(), (int)ActionEnum.READ);
 
         group1.MapGet("{serviceId}", GetServiceByIdV1)
-            .RequireJwtAuthorize(FunctionEnum.SERVICE.ToString(), (int)ActionEnum.READ);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.SERVICE.ToString(), (int)ActionEnum.READ);
 
         group1.MapPut("{serviceId}", UpdateServiceV1)
-            .RequireJwtAuthorize(FunctionEnum.SERVICE.ToString(), (int)ActionEnum.UPDATE);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.SERVICE.ToString(), (int)ActionEnum.UPDATE);
 
         group1.MapPut("update-quantity", UpdateServiceQuantityV1)
-            .RequireJwtAuthorize(FunctionEnum.SERVICE.ToString(), (int)ActionEnum.UPDATE);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.SERVICE.ToString(), (int)ActionEnum.UPDATE);
 
         group1.MapDelete(string.Empty, DeleteServicesV1)
-            .RequireJwtAuthorize(FunctionEnum.SERVICE.ToString(), (int)ActionEnum.DELETE);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.SERVICE.ToString(), (int)ActionEnum.DELETE);
     }
 
     private static async Task<IResult> CreateServiceV1

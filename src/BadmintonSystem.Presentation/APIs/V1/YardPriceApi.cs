@@ -26,22 +26,28 @@ public class YardPriceApi : ApiEndpoint, ICarterModule
             .RequireAuthorization();
 
         group1.MapPost(string.Empty, CreateYardPriceV1)
-            .RequireJwtAuthorize(FunctionEnum.YARDPRICE.ToString(), (int)ActionEnum.CREATE);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.YARDPRICE.ToString(), (int)ActionEnum.CREATE);
 
         group1.MapGet("filter-and-sort", GetYardPricesFilterAndSortValueV1)
-            .RequireJwtAuthorize(FunctionEnum.YARDPRICE.ToString(), (int)ActionEnum.READ);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.YARDPRICE.ToString(), (int)ActionEnum.READ);
 
         group1.MapPost("filter-by-date", GetYardPricesFilterByDateV1)
-            .RequireJwtAuthorize(FunctionEnum.YARDPRICE.ToString(), (int)ActionEnum.READ);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.YARDPRICE.ToString(), (int)ActionEnum.READ);
 
         group1.MapGet("get-by-yard-id-today/{yardId}", GetYardPricesByYardIdInTodayV1)
-            .RequireJwtAuthorize(FunctionEnum.YARDPRICE.ToString(), (int)ActionEnum.READ);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.YARDPRICE.ToString(), (int)ActionEnum.READ);
 
         group1.MapGet("{yardPriceId}", GetYardPriceByIdV1)
-            .RequireJwtAuthorize(FunctionEnum.YARDPRICE.ToString(), (int)ActionEnum.READ);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.YARDPRICE.ToString(), (int)ActionEnum.READ);
 
         group1.MapPut("{yardPriceId}", UpdateYardPriceV1)
-            .RequireJwtAuthorize(FunctionEnum.YARDPRICE.ToString(), (int)ActionEnum.UPDATE);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.YARDPRICE.ToString(), (int)ActionEnum.UPDATE);
 
         group1.MapDelete(string.Empty, DeleteYardPricesV1)
             .RequireJwtAuthorize(FunctionEnum.YARDPRICE.ToString(), (int)ActionEnum.DELETE);

@@ -1,9 +1,7 @@
 ﻿using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.V1.Bill;
-using BadmintonSystem.Domain.Enumerations;
 using BadmintonSystem.Persistence.Helpers;
 using BadmintonSystem.Presentation.Abstractions;
-using BadmintonSystem.Presentation.Extensions;
 using Carter;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -27,41 +25,53 @@ public class BillApi : ApiEndpoint, ICarterModule
 
         // QUERY
         group1.MapPost("filter-and-sort-value", GetBillsFilterAndSortValueV1)
-            .RequireJwtAuthorize(FunctionEnum.BILL.ToString(), (int)ActionEnum.READ);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.BILL.ToString(), (int)ActionEnum.READ);
 
         group1.MapGet("{billId}", GetBillByIdV1)
-            .RequireJwtAuthorize(FunctionEnum.BILL.ToString(), (int)ActionEnum.READ);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.BILL.ToString(), (int)ActionEnum.READ);
 
         // Command
         group1.MapPost(string.Empty, CreateBillV1)
-            .RequireJwtAuthorize(FunctionEnum.BILL.ToString(), (int)ActionEnum.UPDATE);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.BILL.ToString(), (int)ActionEnum.UPDATE);
 
         group1.MapPut("update/{billId}", UpdateBillV1)
-            .RequireJwtAuthorize(FunctionEnum.BILL.ToString(), (int)ActionEnum.DELETE);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.BILL.ToString(), (int)ActionEnum.DELETE);
 
         group1.MapPut("close-bill/{billId}", CloseBillV1)
-            .RequireJwtAuthorize(FunctionEnum.BILL.ToString(), (int)ActionEnum.DELETE);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.BILL.ToString(), (int)ActionEnum.DELETE);
 
         group1.MapPut("open-yard", OpenYardByBillV1)
-            .RequireJwtAuthorize(FunctionEnum.BILL.ToString(), (int)ActionEnum.DELETE);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.BILL.ToString(), (int)ActionEnum.DELETE);
 
         group1.MapPut("close-yard", CloseYardByBillV1)
-            .RequireJwtAuthorize(FunctionEnum.BILL.ToString(), (int)ActionEnum.DELETE);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.BILL.ToString(), (int)ActionEnum.DELETE);
 
         group1.MapPut("update-quantity-service", UpdateQuantityServiceV1)
-            .RequireJwtAuthorize(FunctionEnum.BILL.ToString(), (int)ActionEnum.DELETE);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.BILL.ToString(), (int)ActionEnum.DELETE);
 
         group1.MapPost("create-service/{billId}", CreateServiceByBillV1)
-            .RequireJwtAuthorize(FunctionEnum.BILL.ToString(), (int)ActionEnum.DELETE);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.BILL.ToString(), (int)ActionEnum.DELETE);
 
         group1.MapDelete("{serviceLineId}", DeleteServiceBillV1)
-            .RequireJwtAuthorize(FunctionEnum.BILL.ToString(), (int)ActionEnum.DELETE);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.BILL.ToString(), (int)ActionEnum.DELETE);
 
         group1.MapPut("open-booking/{billId}", OpenYardByBillInBookingV1)
-            .RequireJwtAuthorize(FunctionEnum.BILL.ToString(), (int)ActionEnum.DELETE);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.BILL.ToString(), (int)ActionEnum.DELETE);
 
         group1.MapPut("cancel-booking/{billId}", CancelByBillInBookingV1)
-            .RequireJwtAuthorize(FunctionEnum.BILL.ToString(), (int)ActionEnum.DELETE);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.BILL.ToString(), (int)ActionEnum.DELETE);
     }
 
     private static async Task<IResult> CreateBillV1

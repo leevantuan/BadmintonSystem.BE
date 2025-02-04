@@ -2,10 +2,8 @@
 using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Enumerations;
 using BadmintonSystem.Contract.Services.V1.Booking;
-using BadmintonSystem.Domain.Enumerations;
 using BadmintonSystem.Persistence.Helpers;
 using BadmintonSystem.Presentation.Abstractions;
-using BadmintonSystem.Presentation.Extensions;
 using Carter;
 using MassTransit;
 using MediatR;
@@ -30,28 +28,36 @@ public class BookingApi : ApiEndpoint, ICarterModule
             .RequireAuthorization();
 
         group1.MapPost(string.Empty, CreateBookingV1)
-            .RequireJwtAuthorize(FunctionEnum.BOOKING.ToString(), (int)ActionEnum.CREATE);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.BOOKING.ToString(), (int)ActionEnum.CREATE);
 
         group1.MapPost("create-rabbitmq", CreateBookingRabbitmqV1)
-            .RequireJwtAuthorize(FunctionEnum.BOOKING.ToString(), (int)ActionEnum.CREATE);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.BOOKING.ToString(), (int)ActionEnum.CREATE);
 
         group1.MapGet("filter-and-sort-value", GetBookingsFilterAndSortValueV1)
-            .RequireJwtAuthorize(FunctionEnum.BOOKING.ToString(), (int)ActionEnum.READ);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.BOOKING.ToString(), (int)ActionEnum.READ);
 
         group1.MapPost("filter-and-sort-value-by-date", GetBookingsFilterAndSortValueByDateV1)
-            .RequireJwtAuthorize(FunctionEnum.BOOKING.ToString(), (int)ActionEnum.READ);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.BOOKING.ToString(), (int)ActionEnum.READ);
 
         group1.MapGet("{bookingId}", GetBookingByIdV1)
-            .RequireJwtAuthorize(FunctionEnum.BOOKING.ToString(), (int)ActionEnum.READ);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.BOOKING.ToString(), (int)ActionEnum.READ);
 
         group1.MapPut("{bookingId}", UpdateBookingV1)
-            .RequireJwtAuthorize(FunctionEnum.BOOKING.ToString(), (int)ActionEnum.UPDATE);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.BOOKING.ToString(), (int)ActionEnum.UPDATE);
 
         group1.MapPut("reserve/{bookingId}", ReserveBookingV1)
-            .RequireJwtAuthorize(FunctionEnum.BOOKING.ToString(), (int)ActionEnum.UPDATE);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.BOOKING.ToString(), (int)ActionEnum.UPDATE);
 
         group1.MapDelete("{bookingId}", DeleteBookingsV1)
-            .RequireJwtAuthorize(FunctionEnum.BOOKING.ToString(), (int)ActionEnum.DELETE);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.BOOKING.ToString(), (int)ActionEnum.DELETE);
 
         group1.MapPost("publish-email-rabbitmq", EmailPublishRabbitMqV1)
             .AllowAnonymous();
@@ -80,11 +86,6 @@ public class BookingApi : ApiEndpoint, ICarterModule
         await endPoint.Send(sendEmail);
 
         return Results.Ok();
-    }
-
-    private static Uri Address<T>()
-    {
-        return new Uri($"queue:{KebabCaseEndpointNameFormatter.Instance.SanitizeName(typeof(T).Name)}");
     }
 
     private static async Task<IResult> EmailPublishRabbitMqV1

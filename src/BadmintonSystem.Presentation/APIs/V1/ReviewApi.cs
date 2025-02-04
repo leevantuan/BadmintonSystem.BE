@@ -1,9 +1,7 @@
 ﻿using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.V1.Review;
-using BadmintonSystem.Domain.Enumerations;
 using BadmintonSystem.Persistence.Helpers;
 using BadmintonSystem.Presentation.Abstractions;
-using BadmintonSystem.Presentation.Extensions;
 using Carter;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -26,16 +24,20 @@ public class ReviewApi : ApiEndpoint, ICarterModule
             .RequireAuthorization();
 
         group1.MapPost(string.Empty, CreateReviewByUserIdV1)
-            .RequireJwtAuthorize(FunctionEnum.REVIEW.ToString(), (int)ActionEnum.CREATE);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.REVIEW.ToString(), (int)ActionEnum.CREATE);
 
         group1.MapGet("{reviewId}", GetReviewByIdV1)
-            .RequireJwtAuthorize(FunctionEnum.REVIEW.ToString(), (int)ActionEnum.READ);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.REVIEW.ToString(), (int)ActionEnum.READ);
 
         group1.MapPut(string.Empty, UpdateReviewByUserIdV1)
-            .RequireJwtAuthorize(FunctionEnum.REVIEW.ToString(), (int)ActionEnum.UPDATE);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.REVIEW.ToString(), (int)ActionEnum.UPDATE);
 
         group1.MapDelete("{reviewId}", DeleteReviewByUserIdV1)
-            .RequireJwtAuthorize(FunctionEnum.REVIEW.ToString(), (int)ActionEnum.DELETE);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.REVIEW.ToString(), (int)ActionEnum.DELETE);
     }
 
     private static async Task<IResult> CreateReviewByUserIdV1

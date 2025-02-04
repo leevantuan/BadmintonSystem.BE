@@ -1,9 +1,7 @@
 ﻿using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.V1.Yard;
-using BadmintonSystem.Domain.Enumerations;
 using BadmintonSystem.Persistence.Helpers;
 using BadmintonSystem.Presentation.Abstractions;
-using BadmintonSystem.Presentation.Extensions;
 using Carter;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -26,19 +24,24 @@ public class YardApi : ApiEndpoint, ICarterModule
             .RequireAuthorization();
 
         group1.MapPost(string.Empty, CreateYardV1)
-            .RequireJwtAuthorize(FunctionEnum.YARD.ToString(), (int)ActionEnum.CREATE);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.YARD.ToString(), (int)ActionEnum.CREATE);
 
         group1.MapGet("filter-and-sort", GetYardsFilterAndSortValueV1)
-            .RequireJwtAuthorize(FunctionEnum.YARD.ToString(), (int)ActionEnum.READ);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.YARD.ToString(), (int)ActionEnum.READ);
 
         group1.MapGet("{yardId}", GetYardByIdV1)
-            .RequireJwtAuthorize(FunctionEnum.YARD.ToString(), (int)ActionEnum.READ);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.YARD.ToString(), (int)ActionEnum.READ);
 
         group1.MapPut("{yardId}", UpdateYardV1)
-            .RequireJwtAuthorize(FunctionEnum.YARD.ToString(), (int)ActionEnum.UPDATE);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.YARD.ToString(), (int)ActionEnum.UPDATE);
 
         group1.MapDelete(string.Empty, DeleteYardsV1)
-            .RequireJwtAuthorize(FunctionEnum.YARD.ToString(), (int)ActionEnum.DELETE);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.YARD.ToString(), (int)ActionEnum.DELETE);
     }
 
     private static async Task<IResult> CreateYardV1

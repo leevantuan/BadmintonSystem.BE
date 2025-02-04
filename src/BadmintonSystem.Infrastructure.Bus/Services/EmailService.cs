@@ -9,20 +9,27 @@ public class EmailService(IMediator mediator) : IEmailService
 {
     public async Task SendEmailAsync(BusCommand.SendEmailBusCommand request, CancellationToken cancellationToken)
     {
-        // SEND_MAIL Notification Client
-        if (request.Type == NotificationType.client)
+        try
         {
-            await mediator.Publish(
-                new DomainEvent.BookingDone(request.BookingIds, request.Name, request.Email),
-                cancellationToken);
-        }
+            // SEND_MAIL Notification Client
+            if (request.Type == NotificationType.client)
+            {
+                await mediator.Publish(
+                    new DomainEvent.BookingDone(request.BookingIds, request.Name, request.Email),
+                    cancellationToken);
+            }
 
-        // SEND_MAIL Notification Staff
-        if (request.Type == NotificationType.staff)
+            // SEND_MAIL Notification Staff
+            if (request.Type == NotificationType.staff)
+            {
+                await mediator.Publish(
+                    new DomainEvent.BookingNotificationToStaff(request.BookingIds, request.Name, request.Email),
+                    cancellationToken);
+            }
+        }
+        catch (Exception ex)
         {
-            await mediator.Publish(
-                new DomainEvent.BookingNotificationToStaff(request.BookingIds, request.Name, request.Email),
-                cancellationToken);
+            throw new ApplicationException($"An error occurred sending an email: {ex.Message}");
         }
     }
 }

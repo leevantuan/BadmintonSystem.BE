@@ -1,9 +1,7 @@
 ﻿using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.V1.Provider;
-using BadmintonSystem.Domain.Enumerations;
 using BadmintonSystem.Persistence.Helpers;
 using BadmintonSystem.Presentation.Abstractions;
-using BadmintonSystem.Presentation.Extensions;
 using Carter;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -26,23 +24,29 @@ public class ProviderApi : ApiEndpoint, ICarterModule
             .RequireAuthorization();
 
         group1.MapPost(string.Empty, CreateProviderV1)
-            .RequireJwtAuthorize(FunctionEnum.PROVIDER.ToString(), (int)ActionEnum.CREATE);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.PROVIDER.ToString(), (int)ActionEnum.CREATE);
 
         group1.MapGet("inventory-receipts/{providerId}",
                 GetInventoryReceiptsByProviderIdWithFilterAndSort)
-            .RequireJwtAuthorize(FunctionEnum.PROVIDER.ToString(), (int)ActionEnum.READ);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.PROVIDER.ToString(), (int)ActionEnum.READ);
 
         group1.MapGet("filter-and-sort", GetProvidersFilterAndSortValueV1)
-            .RequireJwtAuthorize(FunctionEnum.PROVIDER.ToString(), (int)ActionEnum.READ);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.PROVIDER.ToString(), (int)ActionEnum.READ);
 
         group1.MapGet("{providerId}", GetProviderByIdV1)
-            .RequireJwtAuthorize(FunctionEnum.PROVIDER.ToString(), (int)ActionEnum.READ);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.PROVIDER.ToString(), (int)ActionEnum.READ);
 
         group1.MapPut("{providerId}", UpdateProviderV1)
-            .RequireJwtAuthorize(FunctionEnum.PROVIDER.ToString(), (int)ActionEnum.UPDATE);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.PROVIDER.ToString(), (int)ActionEnum.UPDATE);
 
         group1.MapDelete(string.Empty, DeleteProvidersV1)
-            .RequireJwtAuthorize(FunctionEnum.PROVIDER.ToString(), (int)ActionEnum.DELETE);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.PROVIDER.ToString(), (int)ActionEnum.DELETE);
     }
 
     private static async Task<IResult> CreateProviderV1

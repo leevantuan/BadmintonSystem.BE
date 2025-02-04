@@ -1,9 +1,7 @@
 ﻿using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.V1.TimeSlot;
-using BadmintonSystem.Domain.Enumerations;
 using BadmintonSystem.Persistence.Helpers;
 using BadmintonSystem.Presentation.Abstractions;
-using BadmintonSystem.Presentation.Extensions;
 using Carter;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -26,19 +24,24 @@ public class TimeSlotApi : ApiEndpoint, ICarterModule
             .RequireAuthorization();
 
         group1.MapPost(string.Empty, CreateTimeSlotV1)
-            .RequireJwtAuthorize(FunctionEnum.TIMESLOT.ToString(), (int)ActionEnum.CREATE);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.TIMESLOT.ToString(), (int)ActionEnum.CREATE);
 
         group1.MapGet("filter-and-sort", GetTimeSlotsFilterAndSortValueV1)
-            .RequireJwtAuthorize(FunctionEnum.TIMESLOT.ToString(), (int)ActionEnum.READ);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.TIMESLOT.ToString(), (int)ActionEnum.READ);
 
         group1.MapGet("{timeSlotId}", GetTimeSlotByIdV1)
-            .RequireJwtAuthorize(FunctionEnum.TIMESLOT.ToString(), (int)ActionEnum.READ);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.TIMESLOT.ToString(), (int)ActionEnum.READ);
 
         group1.MapPut("{timeSlotId}", UpdateTimeSlotV1)
-            .RequireJwtAuthorize(FunctionEnum.TIMESLOT.ToString(), (int)ActionEnum.UPDATE);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.TIMESLOT.ToString(), (int)ActionEnum.UPDATE);
 
         group1.MapDelete(string.Empty, DeleteTimeSlotsV1)
-            .RequireJwtAuthorize(FunctionEnum.TIMESLOT.ToString(), (int)ActionEnum.DELETE);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.TIMESLOT.ToString(), (int)ActionEnum.DELETE);
     }
 
     private static async Task<IResult> CreateTimeSlotV1
