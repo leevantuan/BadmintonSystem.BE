@@ -101,7 +101,8 @@ public class BookingService(
             Name = "Email Notification",
             TimeSpan = DateTime.Now,
             TransactionId = Guid.NewGuid(),
-            YardPriceIds = idsByDate
+            YardPriceIds = idsByDate,
+            Type = BookingEnum.BOOKED.ToString()
         };
 
         ISendEndpoint endPoint = await bus.GetSendEndpoint(new Uri("queue:send-update-cache-queue"));

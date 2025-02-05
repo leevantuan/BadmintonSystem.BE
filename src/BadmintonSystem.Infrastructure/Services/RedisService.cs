@@ -12,21 +12,6 @@ public class RedisService(
     IConnectionMultiplexer connectionMultiplexer)
     : IRedisService
 {
-    public async Task SetAsync<T>(string key, T value)
-    {
-        // Convert sang dạng string
-        string serializerResponse = JsonConvert.SerializeObject(value, new JsonSerializerSettings
-        {
-            ContractResolver = new CamelCasePropertyNamesContractResolver()
-        });
-
-        // Lưu trữ dữ liệu vào Redis cache
-        await distributedCache.SetStringAsync(key, serializerResponse, new DistributedCacheEntryOptions
-        {
-            AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30)
-        });
-    }
-
     public async Task<string> GetAsync(string key)
     {
         // Lấy dữ liệu từ Redis cache
@@ -58,6 +43,21 @@ public class RedisService(
             // Xoá các key tìm được
             await distributedCache.RemoveAsync(key);
         }
+    }
+
+    public async Task SetAsync<T>(string key, T value, TimeSpan? expiry)
+    {
+        // Convert sang dạng string
+        string serializerResponse = JsonConvert.SerializeObject(value, new JsonSerializerSettings
+        {
+            ContractResolver = new CamelCasePropertyNamesContractResolver()
+        });
+
+        // Lưu trữ dữ liệu vào Redis cache
+        await distributedCache.SetStringAsync(key, serializerResponse, new DistributedCacheEntryOptions
+        {
+            AbsoluteExpirationRelativeToNow = expiry ?? TimeSpan.FromMinutes(30)
+        });
     }
 
     private async IAsyncEnumerable<string> GetKeyAsync(string pattern)

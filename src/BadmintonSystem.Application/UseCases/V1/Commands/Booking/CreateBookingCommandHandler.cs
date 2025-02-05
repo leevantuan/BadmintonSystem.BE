@@ -60,14 +60,14 @@ public sealed class CreateBookingCommandHandler(
         }
 
         // REAL_TIME
-        await bookingHub.BookingByUserAsync(new Contract.Services.V1.Bill.Response.BookingHubResponse
-        {
-            Ids = request.Data.YardPriceIds,
-            Type = BookingEnum.BOOKED.ToString()
-        });
+        // await bookingHub.BookingByUserAsync(new Contract.Services.V1.Bill.Response.BookingHubResponse
+        // {
+        //     Ids = request.Data.YardPriceIds,
+        //     Type = BookingEnum.BOOKED.ToString()
+        // });
 
         // SEND_MAIL
-        await mediator.Publish(new DomainEvent.BookingDone(bookingIds, "", ""), cancellationToken);
+        // await mediator.Publish(new DomainEvent.BookingDone(bookingIds, "", ""), cancellationToken);
 
         return Result.Success();
     }

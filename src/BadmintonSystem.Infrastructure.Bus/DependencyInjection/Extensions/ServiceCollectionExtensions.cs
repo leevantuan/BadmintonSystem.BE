@@ -15,6 +15,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(AssemblyReference.Assembly))
             .AddTransient(typeof(IBookingService), typeof(BookingService))
+            .AddTransient(typeof(ICachingService), typeof(CachingService))
             .AddTransient(typeof(IEmailService), typeof(EmailService));
     }
 

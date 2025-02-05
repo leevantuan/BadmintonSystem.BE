@@ -175,4 +175,11 @@ public static class Response
 
         public string Type { get; set; }
     }
+
+    public class BookingReserveHubResponse
+    {
+        public Guid Id { get; set; }
+
+        public string Type { get; set; }
+    }
 }

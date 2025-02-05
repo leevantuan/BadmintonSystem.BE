@@ -48,6 +48,10 @@ public static class Response
         public TimeSpan EndTime { get; set; }
 
         public decimal Price { get; set; }
+
+        public string? IsToken { get; set; }
+
+        public DateTime? ExpirationTime { get; set; }
     }
 
     public class YardPriceDetailSql

@@ -2,6 +2,7 @@
 using BadmintonSystem.Contract.Abstractions.Message;
 using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.V1.Booking;
+using BadmintonSystem.Domain.Enumerations;
 using BadmintonSystem.Domain.Exceptions;
 using BadmintonSystem.Persistence;
 using MassTransit;
@@ -29,7 +30,8 @@ public sealed class CreateBookingRabbitMQCommandHandler(
             TimeSpan = DateTime.Now,
             TransactionId = Guid.NewGuid(),
             UserId = request.UserId,
-            CreateBooking = request.Data
+            CreateBooking = request.Data,
+            Type = BookingEnum.BOOKED.ToString()
         };
 
         ISendEndpoint endPoint = await bus.GetSendEndpoint(new Uri("queue:send-create-booking-queue"));

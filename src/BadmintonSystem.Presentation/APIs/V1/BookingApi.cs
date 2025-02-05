@@ -51,7 +51,7 @@ public class BookingApi : ApiEndpoint, ICarterModule
             .AllowAnonymous();
         //.RequireJwtAuthorize(FunctionEnum.BOOKING.ToString(), (int)ActionEnum.UPDATE);
 
-        group1.MapPut("reserve/{bookingId}", ReserveBookingV1)
+        group1.MapPut("reserve/{yardPriceId}", ReserveBookingV1)
             .AllowAnonymous();
         //.RequireJwtAuthorize(FunctionEnum.BOOKING.ToString(), (int)ActionEnum.UPDATE);
 
@@ -59,11 +59,11 @@ public class BookingApi : ApiEndpoint, ICarterModule
             .AllowAnonymous();
         //.RequireJwtAuthorize(FunctionEnum.BOOKING.ToString(), (int)ActionEnum.DELETE);
 
-        group1.MapPost("publish-email-rabbitmq", EmailPublishRabbitMqV1)
-            .AllowAnonymous();
-
-        group1.MapPost("command-email-rabbitmq", EmailCommandRabbitMqV1)
-            .AllowAnonymous();
+        // group1.MapPost("publish-email-rabbitmq", EmailPublishRabbitMqV1)
+        //     .AllowAnonymous();
+        //
+        // group1.MapPost("command-email-rabbitmq", EmailCommandRabbitMqV1)
+        //     .AllowAnonymous();
     }
 
     private static async Task<IResult> EmailCommandRabbitMqV1
@@ -154,11 +154,11 @@ public class BookingApi : ApiEndpoint, ICarterModule
     private static async Task<IResult> ReserveBookingV1
     (
         ISender sender,
-        Guid id,
+        Guid yardPriceId,
         [FromBody] Request.ReserveBookingRequest type
     )
     {
-        Result result = await sender.Send(new Command.ReserveBookingByIdCommand(id, type));
+        Result result = await sender.Send(new Command.ReserveBookingByIdCommand(yardPriceId, type));
 
         return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }

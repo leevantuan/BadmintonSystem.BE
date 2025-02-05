@@ -1,5 +1,6 @@
 ﻿using BadmintonSystem.Application.Abstractions;
 using BadmintonSystem.Infrastructure.Authentication;
+using BadmintonSystem.Infrastructure.Background;
 using BadmintonSystem.Infrastructure.DependencyInjection.Options;
 using BadmintonSystem.Infrastructure.Seed;
 using BadmintonSystem.Infrastructure.Services;
@@ -17,6 +18,9 @@ public static class ServiceCollectionExtensions
             .AddTransient<IGmailService, GmailService>()
             .AddTransient<IRedisService, RedisService>()
             .AddTransient<IDbSeeder, DbSeeder>();
+
+        // DI BackgroundService
+        services.AddHostedService<BookingExpirationWorker>();
     }
 
     public static void AddRedisInfrastructure(this IServiceCollection services, IConfiguration configuration)

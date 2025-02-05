@@ -130,7 +130,7 @@ public sealed class GetYardPricesByDateQueryHandler(
             }).OrderBy(x => x.Yard.Name)
             .ToList();
 
-        await redisService.SetAsync(cacheKey, results);
+        await redisService.SetAsync(cacheKey, results, TimeSpan.FromMinutes(30));
 
         return Result.Success(results);
     }

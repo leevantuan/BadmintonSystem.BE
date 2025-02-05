@@ -1,16 +1,19 @@
 ﻿using BadmintonSystem.Application.Abstractions;
+using BadmintonSystem.Contract.Abstractions.IntegrationEvents;
 using BadmintonSystem.Contract.Abstractions.Message;
 using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.V1.Booking;
 using BadmintonSystem.Domain.Abstractions.Repositories;
 using BadmintonSystem.Domain.Enumerations;
 using BadmintonSystem.Domain.Exceptions;
-using Response = BadmintonSystem.Contract.Services.V1.Bill.Response;
+using MassTransit;
+using Response = BadmintonSystem.Contract.Services.V1.Booking.Response;
 
 namespace BadmintonSystem.Application.UseCases.V1.Commands.Booking;
 
 public sealed class ReserveBookingByIdCommandHandler(
     IBookingHub bookingHub,
+    IBus bus,
     IRepositoryBase<Domain.Entities.YardPrice, Guid> yardPriceRepository)
     : ICommandHandler<Command.ReserveBookingByIdCommand>
 {
@@ -19,17 +22,30 @@ public sealed class ReserveBookingByIdCommandHandler(
         Domain.Entities.YardPrice yardPrice = await yardPriceRepository.FindByIdAsync(request.Id, cancellationToken)
                                               ?? throw new YardPriceException.YardPriceNotFoundException(request.Id);
 
-        yardPrice.IsBooking = request.Type.Type.ToUpper() == "RESERVED" ? BookingEnum.RESERVED : BookingEnum.UNBOOKED;
-
         var ids = new List<Guid> { request.Id };
-
-        await bookingHub.BookingByUserAsync(new Response.BookingHubResponse
+        var idByDate = new Response.GetIdsByDate
         {
             Ids = ids,
-            Type = request.Type.Type.ToUpper() == "RESERVED"
+            Date = yardPrice.EffectiveDate
+        };
+
+        var idsByDate = new List<Response.GetIdsByDate> { idByDate };
+
+        var sendSignalRAndUpdateCache = new BusCommand.SendUpdateCacheBusCommand
+        {
+            Id = Guid.NewGuid(),
+            Description = request.Data.IsToken,
+            Name = "Email Notification",
+            TimeSpan = DateTime.Now,
+            TransactionId = Guid.NewGuid(),
+            YardPriceIds = idsByDate,
+            Type = request.Data.Type.ToUpper() == "RESERVED"
                 ? BookingEnum.RESERVED.ToString()
                 : BookingEnum.UNBOOKED.ToString()
-        });
+        };
+
+        ISendEndpoint endPoint = await bus.GetSendEndpoint(new Uri("queue:send-update-cache-queue"));
+        await endPoint.Send(sendSignalRAndUpdateCache, cancellationToken);
 
         return Result.Success();
     }

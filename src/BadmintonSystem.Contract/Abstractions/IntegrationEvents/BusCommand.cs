@@ -30,6 +30,8 @@ public static class BusCommand
     {
         public List<Response.GetIdsByDate> YardPriceIds { get; set; }
 
+        public string Type { get; set; }
+
         public Guid Id { get; set; }
 
         public DateTime TimeSpan { get; set; }
@@ -46,6 +48,8 @@ public static class BusCommand
         public Request.CreateBookingRequest CreateBooking { get; set; }
 
         public Guid UserId { get; set; }
+
+        public string Type { get; set; }
 
         public Guid Id { get; set; }
 

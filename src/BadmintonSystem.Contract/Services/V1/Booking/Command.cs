@@ -13,7 +13,7 @@ public static class Command
     public record UpdateBookingCommand(Guid BookingId)
         : ICommand;
 
-    public record ReserveBookingByIdCommand(Guid Id, Request.ReserveBookingRequest Type)
+    public record ReserveBookingByIdCommand(Guid Id, Request.ReserveBookingRequest Data)
         : ICommand;
 
     public record DeleteBookingByIdCommand(Guid Id)

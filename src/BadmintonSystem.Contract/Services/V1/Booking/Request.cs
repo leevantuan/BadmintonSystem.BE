@@ -59,6 +59,8 @@ public static class Request
 
     public class ReserveBookingRequest
     {
+        public string IsToken { get; set; }
+
         public string Type { get; set; }
     }
 }
