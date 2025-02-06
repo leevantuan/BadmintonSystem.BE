@@ -56,4 +56,9 @@ public static class Request
 
         public string CurrentPassword { get; set; }
     }
+
+    public class GetChatMessageRequest
+    {
+        public Guid? UserId { get; set; }
+    }
 }

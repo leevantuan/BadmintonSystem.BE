@@ -7,12 +7,15 @@ using BadmintonSystem.Domain.Entities.Identity;
 using BadmintonSystem.Domain.Enumerations;
 using BadmintonSystem.Domain.Exceptions;
 using BadmintonSystem.Persistence;
+using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Command = BadmintonSystem.Contract.Services.V1.ChatRoom.Command;
 
 namespace BadmintonSystem.Application.UseCases.V1.Queries.User;
 
 public sealed class GetRegisterByCustomerQueryHandler(
     UserManager<AppUser> userManager,
+    ISender sender,
     ApplicationDbContext context)
     : IQueryHandler<Query.RegisterByCustomerQuery>
 {
@@ -83,6 +86,8 @@ public sealed class GetRegisterByCustomerQueryHandler(
         context.Address.Add(newAddress);
 
         context.UserAddress.Add(newAppUserAddress);
+
+        await sender.Send(new Command.CreateChatRoomCommand(newUser.Id), cancellationToken);
 
         await context.SaveChangesAsync(cancellationToken);
 

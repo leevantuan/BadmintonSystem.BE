@@ -61,6 +61,8 @@ public static class Request
 
     public record RegisterRequest(string Email, string UserName, string FirstName, string LastName, string Password);
 
+    public record GetByEmailRequest(string Email);
+
     public record CreateAppRoleClaimRequest(string RoleName, string FunctionKey, int ActionValue);
 
     public record UpdateRoleMultipleForUserRequest(string Email, List<string> Roles);

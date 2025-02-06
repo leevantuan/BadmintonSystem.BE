@@ -46,7 +46,8 @@ public class AuthApi : ApiEndpoint, ICarterModule
             .RequireJwtAuthorize(FunctionEnum.ADMINISTRATOR.ToString(), (int)ActionEnum.UPDATE);
 
         group1.MapPost("admin/email/get-authorization", GetUserAuthorizationByEmailV1)
-            .RequireJwtAuthorize(FunctionEnum.ADMINISTRATOR.ToString(), (int)ActionEnum.READ);
+            .AllowAnonymous();
+        //.RequireJwtAuthorize(FunctionEnum.ADMINISTRATOR.ToString(), (int)ActionEnum.READ);
 
         group1.MapPost("admin/role-names/get-authorization", GetUserAuthorizationByRoleNamesV1)
             .RequireJwtAuthorize(FunctionEnum.ADMINISTRATOR.ToString(), (int)ActionEnum.READ);
@@ -93,9 +94,9 @@ public class AuthApi : ApiEndpoint, ICarterModule
     private static async Task<IResult> GetUserAuthorizationByEmailV1
     (
         ISender sender,
-        [FromBody] string email)
+        [FromBody] Request.GetByEmailRequest request)
     {
-        Result result = await sender.Send(new Query.GetUserAuthorizationByEmailQuery(email));
+        Result result = await sender.Send(new Query.GetUserAuthorizationByEmailQuery(request.Email));
 
         return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
     }

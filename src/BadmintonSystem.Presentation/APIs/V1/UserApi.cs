@@ -52,6 +52,10 @@ public class UserApi : ApiEndpoint, ICarterModule
         // BOOKING
         group1.MapGet("bookings", GetBookingByUserIdWithFilterAndSortV1)
             .RequireJwtAuthorize(FunctionEnum.REVIEW.ToString(), (int)ActionEnum.READ);
+
+        // CHAT MESSAGE
+        group1.MapPost("chat-message", GetChatMessageByUserIdWithFilterAndSortV1)
+            .RequireJwtAuthorize(FunctionEnum.REVIEW.ToString(), (int)ActionEnum.READ);
     }
 
     private static async Task<IResult> LoginV1(ISender sender, [FromBody] Query.LoginQuery login)
@@ -174,6 +178,26 @@ public class UserApi : ApiEndpoint, ICarterModule
         Result<PagedResult<Contract.Services.V1.User.Response.GetBookingByUserIdResponse>> result =
             await sender.Send(
                 new Contract.Services.V1.User.Query.GetBookingsByUserIdWithFilterAndSortQuery(
+                    userIdCurrent ?? Guid.Empty, pagedQueryRequest));
+
+        return Results.Ok(result);
+    }
+
+    private static async Task<IResult> GetChatMessageByUserIdWithFilterAndSortV1
+    (
+        ISender sender,
+        [AsParameters] Contract.Abstractions.Shared.Request.PagedFilterAndSortRequest request,
+        [FromBody] Request.GetChatMessageRequest data,
+        IHttpContextAccessor httpContextAccessor)
+    {
+        Guid? userIdCurrent = data.UserId ?? httpContextAccessor.HttpContext?.GetCurrentUserId();
+
+        var pagedQueryRequest =
+            new Contract.Abstractions.Shared.Request.PagedFilterAndSortQueryRequest(request);
+
+        Result<PagedResult<Contract.Services.V1.User.Response.GetChatMessageByUserIdResponse>> result =
+            await sender.Send(
+                new Contract.Services.V1.User.Query.GetChatMessagesByUserIdWithFilterAndSortQuery(
                     userIdCurrent ?? Guid.Empty, pagedQueryRequest));
 
         return Results.Ok(result);
