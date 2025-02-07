@@ -143,6 +143,7 @@ app.MapControllers();
 // Add Map Hub
 app.MapHub<BookingHubBase>(HubsPath.BookingUrl);
 app.MapHub<ChatHubBase>(HubsPath.ChatUrl);
+app.MapHub<RegisterHubBase>(HubsPath.RegisterUrl);
 
 try
 {

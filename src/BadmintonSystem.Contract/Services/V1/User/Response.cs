@@ -52,4 +52,11 @@ public static class Response
     public class GetChatMessageByUserIdSqlResponse : ChatMessage.Response.GetChatMessageByIdSqlResponse
     {
     }
+
+    public class VerifyResponseHub
+    {
+        public string Email { get; set; }
+
+        public int IsVerified { get; set; }
+    }
 }

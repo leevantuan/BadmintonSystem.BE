@@ -1,95 +1,25 @@
-﻿using BadmintonSystem.Contract.Abstractions.Message;
+﻿using BadmintonSystem.Application.Abstractions;
+using BadmintonSystem.Contract.Abstractions.Message;
 using BadmintonSystem.Contract.Abstractions.Shared;
-using BadmintonSystem.Contract.Extensions;
 using BadmintonSystem.Contract.Services.V1.User;
-using BadmintonSystem.Domain.Entities;
-using BadmintonSystem.Domain.Entities.Identity;
-using BadmintonSystem.Domain.Enumerations;
-using BadmintonSystem.Domain.Exceptions;
-using BadmintonSystem.Persistence;
-using MediatR;
-using Microsoft.AspNetCore.Identity;
-using Command = BadmintonSystem.Contract.Services.V1.ChatRoom.Command;
 
 namespace BadmintonSystem.Application.UseCases.V1.Queries.User;
 
 public sealed class GetRegisterByCustomerQueryHandler(
-    UserManager<AppUser> userManager,
-    ISender sender,
-    ApplicationDbContext context)
+    IGmailService mailService,
+    IRedisService redisService)
     : IQueryHandler<Query.RegisterByCustomerQuery>
 {
     public async Task<Result> Handle(Query.RegisterByCustomerQuery request, CancellationToken cancellationToken)
     {
-        // check exist
-        AppUser? userByEmail = await userManager.FindByEmailAsync(request.Data.Email);
+        var userId = Guid.NewGuid();
 
-        if (userByEmail != null)
-        {
-            throw new IdentityException.AppUserAlreadyExistException(request.Data.Email);
-        }
+        await redisService.SetAsync(userId.ToString(), request.Data, TimeSpan.FromMinutes(10));
 
-        // valid user => add new user
-        var newUser = new AppUser
-        {
-            Id = Guid.NewGuid(),
-            UserName = request.Data.UserName.Trim(),
-            Email = request.Data.Email.Trim(),
-            FirstName = request.Data.FirstName.Trim(),
-            LastName = request.Data.LastName.Trim(),
-            PhoneNumber = request.Data.PhoneNumber.Trim(),
-            Gender = (GenderEnum)request.Data.Gender,
-            DateOfBirth = request.Data.DateOfBirth,
-            FullName = StringExtension.GetFullNameFromFirstNameAndLastName(request.Data.FirstName,
-                request.Data.LastName),
-            SecurityStamp = Guid.NewGuid().ToString() // Set a unique security stamp
-        };
+        string verificationLink = $"https://localhost:44368/api/v1/users/verify-email?userId={userId}";
 
-        var newAddress = new Domain.Entities.Address
-        {
-            Id = Guid.NewGuid(),
-            AddressLine1 = request.Data.AddressLine1,
-            AddressLine2 = request.Data.AddressLine2,
-            Street = request.Data.Street,
-            City = request.Data.City,
-            Unit = request.Data.Unit,
-            Province = request.Data.Province
-        };
-
-        var newAppUserAddress = new UserAddress
-        {
-            AddressId = newAddress.Id,
-            UserId = newUser.Id,
-            IsDefault = DefaultEnum.TRUE
-        };
-
-        IdentityResult createUserResult = await userManager.CreateAsync(newUser, request.Data.Password);
-
-        if (!createUserResult.Succeeded)
-        {
-            string errors = string.Join(", ", createUserResult.Errors.Select(e => e.Description));
-
-            throw new IdentityException.AppUserException(errors);
-        }
-
-        // add default role => CUSTOMER
-        IdentityResult addDefaultRoleOfUserResult = await userManager.AddToRoleAsync(newUser,
-            StringExtension.CapitalizeFirstLetter(AppRoleEnum.CUSTOMER.ToString()));
-
-        if (!addDefaultRoleOfUserResult.Succeeded)
-        {
-            string errors = string.Join(", ", createUserResult.Errors.Select(e => e.Description));
-
-            throw new IdentityException.AppRoleException(errors);
-        }
-
-        context.Address.Add(newAddress);
-
-        context.UserAddress.Add(newAppUserAddress);
-
-        await sender.Send(new Command.CreateChatRoomCommand(newUser.Id), cancellationToken);
-
-        await context.SaveChangesAsync(cancellationToken);
+        // Gửi email xác thực
+        await mailService.SendVerificationEmailAsync(request.Data.Email, verificationLink);
 
         return Result.Success();
     }

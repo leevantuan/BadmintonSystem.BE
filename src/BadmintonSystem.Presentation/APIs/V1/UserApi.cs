@@ -56,6 +56,18 @@ public class UserApi : ApiEndpoint, ICarterModule
         // CHAT MESSAGE
         group1.MapPost("chat-message", GetChatMessageByUserIdWithFilterAndSortV1)
             .RequireJwtAuthorize(FunctionEnum.REVIEW.ToString(), (int)ActionEnum.READ);
+
+        // VERIFICATION EMAIL
+        group1.MapGet("verify-email", VerificationEmailV1)
+            .AllowAnonymous();
+    }
+
+    private static async Task<IResult> VerificationEmailV1(ISender sender, [FromQuery] Guid userId)
+    {
+        Result result =
+            await sender.Send(new Contract.Services.V1.User.Query.VerificationEmailWhenRegisterQuery(userId));
+
+        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> LoginV1(ISender sender, [FromBody] Query.LoginQuery login)

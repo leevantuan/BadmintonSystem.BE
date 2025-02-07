@@ -10,6 +10,7 @@ public static class ServiceCollectionExtensions
     {
         return services.AddTransient<ExceptionHandlingMiddleware>()
             .AddScoped<IBookingHub, BookingHub>()
+            .AddScoped<IRegisterHub, RegisterHub>()
             .AddScoped<IChatHub, ChatHub>();
     }
 }

@@ -3,10 +3,10 @@ using BadmintonSystem.Application.Abstractions;
 using BadmintonSystem.Contract.Services.V1.Gmail;
 using BadmintonSystem.Contract.Source;
 using BadmintonSystem.Infrastructure.DependencyInjection.Options;
-using MailKit.Net.Smtp;
 using MailKit.Security;
 using Microsoft.Extensions.Configuration;
 using MimeKit;
+using SmtpClient = MailKit.Net.Smtp.SmtpClient;
 
 namespace BadmintonSystem.Infrastructure.Services;
 
@@ -184,6 +184,38 @@ public class GmailService : IGmailService
         catch (Exception ex)
         {
             throw new NotImplementedException(ex.Message);
+        }
+    }
+
+    public async Task SendVerificationEmailAsync(string email, string verificationLink)
+    {
+        try
+        {
+            var message = new MimeMessage();
+            message.From.Add(new MailboxAddress("BOOKING WEB", _mailOption.SenderEmail));
+            message.To.Add(new MailboxAddress("Recipient Name", email));
+            message.Subject = "Email Verification";
+
+            var bodyBuilder = new BodyBuilder
+            {
+                HtmlBody =
+                    $"Please verify your email by clicking the following link: <a href='{verificationLink}'>Verify Email</a>",
+                TextBody = $"Please verify your email by clicking the following link: {verificationLink}"
+            };
+
+            message.Body = bodyBuilder.ToMessageBody();
+
+            using (var client = new SmtpClient())
+            {
+                await client.ConnectAsync(_mailOption.Server, _mailOption.Port, SecureSocketOptions.StartTls);
+                await client.AuthenticateAsync(_mailOption.UserName, _mailOption.Password);
+                await client.SendAsync(message);
+                await client.DisconnectAsync(true);
+            }
+        }
+        catch (Exception ex)
+        {
+            throw new ApplicationException($"Email erorr: {ex.Message}.");
         }
     }
 

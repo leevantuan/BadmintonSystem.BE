@@ -7,6 +7,8 @@ public static class Query
 {
     public record RegisterByCustomerQuery(Request.CreateUserAndAddress Data) : IQuery;
 
+    public record VerificationEmailWhenRegisterQuery(Guid UserId) : IQuery;
+
     // GET ALLS
     public record GetAddressesByEmailWithFilterAndSortQuery(
         Guid UserId,
