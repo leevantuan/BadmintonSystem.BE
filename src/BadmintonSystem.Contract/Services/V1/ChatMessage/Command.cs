@@ -9,4 +9,7 @@ public static class Command
 
     public record CreateChatMessageByChatbotCommand(Request.CreateChatMessageByChatbotRequest Data)
         : ICommand<Response.ChatbotResponse>;
+
+    public record ReadAllByUserIdCommand(Guid ChatRoomId, Guid UserId)
+        : ICommand;
 }

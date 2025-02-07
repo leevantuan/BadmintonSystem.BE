@@ -43,7 +43,7 @@ public sealed class
             ImageUrl = request.Data.ImageUrl,
             Content = request.Data.Content,
             IsAdmin = request.IsAdmin,
-            IsRead = true,
+            IsRead = false,
             ReadDate = DateTime.Now,
             ChatRoomId = chatRoom.Id
         };

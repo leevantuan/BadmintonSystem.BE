@@ -28,6 +28,8 @@ public class ChatMessageApi : ApiEndpoint, ICarterModule
         // Chat
         group1.MapPost(string.Empty, CreateChatMessageV1);
 
+        group1.MapGet(string.Empty, ReadAllMessageV1);
+
         // Chatbot
         group1.MapPost("chatbot", CreateChatMessageByChatbotV1).AllowAnonymous();
     }
@@ -56,6 +58,19 @@ public class ChatMessageApi : ApiEndpoint, ICarterModule
 
         Result<Response.ChatMessageResponse> result =
             await sender.Send(new Command.CreateChatMessageCommand(isAdmin, request));
+
+        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+    }
+
+    private static async Task<IResult> ReadAllMessageV1
+    (
+        ISender sender,
+        IHttpContextAccessor httpContextAccessor,
+        [FromQuery] Guid chatRoomId)
+    {
+        Guid? userId = httpContextAccessor.HttpContext?.GetCurrentUserId();
+
+        Result result = await sender.Send(new Command.ReadAllByUserIdCommand(chatRoomId, userId ?? Guid.Empty));
 
         return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
     }
