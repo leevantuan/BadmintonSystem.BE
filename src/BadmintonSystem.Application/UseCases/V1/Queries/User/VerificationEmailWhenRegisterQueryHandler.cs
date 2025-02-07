@@ -50,11 +50,11 @@ public sealed class VerificationEmailWhenRegisterQueryHandler(
             Id = Guid.NewGuid(),
             UserName = userRequest.UserName.Trim(),
             Email = userRequest.Email.Trim(),
-            FirstName = userRequest.FirstName.Trim(),
-            LastName = userRequest.LastName.Trim(),
-            PhoneNumber = userRequest.PhoneNumber.Trim(),
+            FirstName = userRequest.FirstName.Trim() ?? string.Empty,
+            LastName = userRequest.LastName.Trim() ?? string.Empty,
+            PhoneNumber = userRequest.PhoneNumber.Trim() ?? string.Empty,
             Gender = (GenderEnum)userRequest.Gender,
-            DateOfBirth = userRequest.DateOfBirth,
+            DateOfBirth = userRequest.DateOfBirth ?? DateTime.Now,
             FullName = StringExtension.GetFullNameFromFirstNameAndLastName(userRequest.FirstName,
                 userRequest.LastName),
             SecurityStamp = Guid.NewGuid().ToString() // Set a unique security stamp
@@ -63,12 +63,12 @@ public sealed class VerificationEmailWhenRegisterQueryHandler(
         var newAddress = new Domain.Entities.Address
         {
             Id = request.UserId,
-            AddressLine1 = userRequest.AddressLine1,
-            AddressLine2 = userRequest.AddressLine2,
-            Street = userRequest.Street,
-            City = userRequest.City,
-            Unit = userRequest.Unit,
-            Province = userRequest.Province
+            AddressLine1 = userRequest.AddressLine1 ?? string.Empty,
+            AddressLine2 = userRequest.AddressLine2 ?? string.Empty,
+            Street = userRequest.Street ?? string.Empty,
+            City = userRequest.City ?? string.Empty,
+            Unit = userRequest.Unit ?? string.Empty,
+            Province = userRequest.Province ?? string.Empty
         };
 
         var newAppUserAddress = new UserAddress

@@ -67,7 +67,14 @@ public class UserApi : ApiEndpoint, ICarterModule
         Result result =
             await sender.Send(new Contract.Services.V1.User.Query.VerificationEmailWhenRegisterQuery(userId));
 
-        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
+        if (result.IsFailure)
+        {
+            return HandleFailure(result);
+        }
+
+        string redirectUrl = "http://localhost:4200/verify-email";
+
+        return Results.Redirect(redirectUrl);
     }
 
     private static async Task<IResult> LoginV1(ISender sender, [FromBody] Query.LoginQuery login)
