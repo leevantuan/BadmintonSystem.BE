@@ -60,21 +60,34 @@ public class UserApi : ApiEndpoint, ICarterModule
         // VERIFICATION EMAIL
         group1.MapGet("verify-email", VerificationEmailV1)
             .AllowAnonymous();
+
+        group1.MapGet("cancel-verify-email", CancelVerificationEmailV1)
+            .AllowAnonymous();
     }
 
-    private static async Task<IResult> VerificationEmailV1(ISender sender, [FromQuery] Guid userId)
+    private static async Task<IResult> VerificationEmailV1(ISender sender, [FromQuery] string email)
     {
         Result result =
-            await sender.Send(new Contract.Services.V1.User.Query.VerificationEmailWhenRegisterQuery(userId));
+            await sender.Send(new Contract.Services.V1.User.Query.VerificationEmailWhenRegisterQuery(email));
 
         if (result.IsFailure)
         {
-            return HandleFailure(result);
+            string notFoundUrl = "https://bookingweb.shop/not-found";
+
+            return Results.Redirect(notFoundUrl);
         }
 
         string redirectUrl = "https://bookingweb.shop/verify-email";
 
         return Results.Redirect(redirectUrl);
+    }
+
+    private static async Task<IResult> CancelVerificationEmailV1(ISender sender, [FromQuery] string email)
+    {
+        Result result =
+            await sender.Send(new Contract.Services.V1.User.Query.CancelVerificationEmailWhenRegisterQuery(email));
+
+        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> LoginV1(ISender sender, [FromBody] Query.LoginQuery login)

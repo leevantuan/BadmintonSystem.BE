@@ -5,15 +5,12 @@ using BadmintonSystem.Contract.Services.V1.Identity;
 using BadmintonSystem.Domain.Entities.Identity;
 using BadmintonSystem.Domain.Enumerations;
 using BadmintonSystem.Domain.Exceptions;
-using BadmintonSystem.Persistence;
 using Microsoft.AspNetCore.Identity;
 
 namespace BadmintonSystem.Application.UseCases.V1.Queries.Identity;
 
 public sealed class GetRegisterQueryHandler(
-    UserManager<AppUser> userManager,
-    RoleManager<AppRole> roleManager,
-    ApplicationDbContext context)
+    UserManager<AppUser> userManager)
     : IQueryHandler<Query.RegisterQuery>
 {
     public async Task<Result> Handle(Query.RegisterQuery request, CancellationToken cancellationToken)

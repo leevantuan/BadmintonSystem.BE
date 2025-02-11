@@ -27,7 +27,7 @@ public sealed class VerificationEmailWhenRegisterQueryHandler(
     public async Task<Result> Handle
         (Query.VerificationEmailWhenRegisterQuery request, CancellationToken cancellationToken)
     {
-        string userRequestJson = await redisService.GetAsync(request.UserId.ToString());
+        string userRequestJson = await redisService.GetAsync(request.Email);
         if (string.IsNullOrEmpty(userRequestJson))
         {
             throw new ApplicationException("Đã quá hạn thời gian Verification Email");
@@ -37,11 +37,11 @@ public sealed class VerificationEmailWhenRegisterQueryHandler(
             JsonConvert.DeserializeObject<Request.CreateUserAndAddress>(userRequestJson);
 
         // check exist
-        AppUser? userByEmail = await userManager.FindByEmailAsync(userRequest.Email);
+        AppUser? userByEmail = await userManager.FindByEmailAsync(request.Email);
 
         if (userByEmail != null)
         {
-            throw new IdentityException.AppUserAlreadyExistException(userRequest.Email);
+            throw new IdentityException.AppUserAlreadyExistException(request.Email);
         }
 
         // valid user => add new user
@@ -49,7 +49,7 @@ public sealed class VerificationEmailWhenRegisterQueryHandler(
         {
             Id = Guid.NewGuid(),
             UserName = userRequest.UserName.Trim(),
-            Email = userRequest.Email.Trim(),
+            Email = request.Email.Trim(),
             FirstName = userRequest.FirstName.Trim() ?? string.Empty,
             LastName = userRequest.LastName.Trim() ?? string.Empty,
             PhoneNumber = userRequest.PhoneNumber.Trim() ?? string.Empty,
@@ -62,7 +62,7 @@ public sealed class VerificationEmailWhenRegisterQueryHandler(
 
         var newAddress = new Domain.Entities.Address
         {
-            Id = request.UserId,
+            Id = newUser.Id,
             AddressLine1 = userRequest.AddressLine1 ?? string.Empty,
             AddressLine2 = userRequest.AddressLine2 ?? string.Empty,
             Street = userRequest.Street ?? string.Empty,
@@ -105,6 +105,8 @@ public sealed class VerificationEmailWhenRegisterQueryHandler(
         await sender.Send(new Command.CreateChatRoomCommand(newUser.Id), cancellationToken);
 
         await context.SaveChangesAsync(cancellationToken);
+
+        await redisService.DeleteByKeyAsync(request.Email);
 
         // SIGNALR
         await registerHub.VerificationEmailAsync(new Response.VerifyResponseHub
