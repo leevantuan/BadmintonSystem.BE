@@ -187,7 +187,7 @@ public class GmailService : IGmailService
         }
     }
 
-    public async Task SendVerificationEmailAsync(string email, string verificationLink)
+    public async Task SendVerificationEmailAsync(string userName, string email, string verificationLink)
     {
         try
         {
@@ -196,10 +196,11 @@ public class GmailService : IGmailService
             message.To.Add(new MailboxAddress("Recipient Name", email));
             message.Subject = "Email Verification";
 
+            string emailTemplateText = TemplateEmail.EmailTemplate.ConfirmEmail(userName, verificationLink);
+
             var bodyBuilder = new BodyBuilder
             {
-                HtmlBody =
-                    $"Please verify your email by clicking the following link: <a href='{verificationLink}'>Verify Email</a>",
+                HtmlBody = emailTemplateText,
                 TextBody = $"Please verify your email by clicking the following link: {verificationLink}"
             };
 

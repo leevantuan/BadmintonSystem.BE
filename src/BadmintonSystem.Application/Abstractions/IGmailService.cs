@@ -12,5 +12,5 @@ public interface IGmailService
 
     Task<bool> SendBookingInformationMailToStaff(Request.BookingInformationInGmailRequest request);
 
-    Task SendVerificationEmailAsync(string email, string verificationLink);
+    Task SendVerificationEmailAsync(string userName, string email, string verificationLink);
 }

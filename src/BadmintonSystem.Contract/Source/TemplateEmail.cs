@@ -122,5 +122,97 @@ public static class TemplateEmail
         </html>
         ";
         }
+
+        public static string ConfirmEmail(string username, string verifyLink)
+        {
+            return $@"
+        <html lang=""en"">
+<head>
+    <meta charset=""UTF-8"">
+    <meta content=""width=device-width, initial-scale=1.0"" name=""viewport"">
+    <title>Xác Nhận Địa Chỉ Email</title>
+    <style>
+        body {{
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }}
+
+        .container {{
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }}
+
+        .header {{
+            text-align: center;
+            padding: 20px;
+            background-color: #007bff;
+            color: white;
+            border-radius: 8px 8px 0 0;
+        }}
+
+        .header h1 {{
+            margin: 0;
+            font-size: 24px;
+        }}
+
+        .content {{
+            padding: 20px;
+            color: #333;
+        }}
+
+        .content p {{
+            line-height: 1.5;
+        }}
+
+        .btn {{
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 20px 0;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+        }}
+
+        .footer {{
+            text-align: center;
+            padding: 10px;
+            font-size: 12px;
+            color: #777;
+        }}
+    </style>
+</head>
+<body>
+
+<div class=""container"">
+    <div class=""header"">
+        <h1>Xác Nhận Địa Chỉ Email</h1>
+    </div>
+    <div class=""content"">
+        <p>Kính gửi <strong>{username}</strong>,</p>
+        <p>Cảm ơn bạn đã đăng ký tài khoản tại <strong>BOOKING WEB</strong>! Để hoàn tất quá trình đăng ký,
+            vui lòng xác nhận địa chỉ email của bạn bằng cách nhấp vào liên kết bên dưới:</p>
+        <a class=""btn"" href=""{verifyLink}"">Xác Nhận Email</a>
+        <p>Nếu bạn không thể nhấp vào liên kết, hãy sao chép và dán URL sau vào trình duyệt của bạn:</p>
+        <p><a href=""{verifyLink}"">{verifyLink}</a>
+        </p>
+        <p>Nếu bạn không phải là người đã đăng ký tài khoản này, bạn có thể bỏ qua email này.</p>
+    </div>
+    <div class=""footer"">
+        <p>Cảm ơn bạn,<br>Đội ngũ hỗ trợ của <strong>BOOKING WEB</strong></p>
+    </div>
+</div>
+
+</body>
+</html>
+        ";
+        }
     }
 }

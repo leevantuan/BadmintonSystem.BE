@@ -16,10 +16,10 @@ public sealed class GetRegisterByCustomerQueryHandler(
 
         await redisService.SetAsync(userId.ToString(), request.Data, TimeSpan.FromMinutes(10));
 
-        string verificationLink = $"https://localhost:44368/api/v1/users/verify-email?userId={userId}";
+        string verificationLink = $"https://bookingweb.shop/api/v1/users/verify-email?userId={userId}";
 
         // Gửi email xác thực
-        await mailService.SendVerificationEmailAsync(request.Data.Email, verificationLink);
+        await mailService.SendVerificationEmailAsync(request.Data.UserName, request.Data.Email, verificationLink);
 
         return Result.Success();
     }

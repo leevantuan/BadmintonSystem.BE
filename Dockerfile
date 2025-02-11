@@ -32,4 +32,4 @@ COPY --from=publish /app/publish .
 
 RUN find /app -name "*.pdb" -delete
 
-ENTRYPOINT ["dotnet", "BadmintonSystem.API.dll"]
+# ENTRYPOINT ["dotnet", "BadmintonSystem.API.dll"]

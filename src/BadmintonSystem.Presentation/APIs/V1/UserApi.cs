@@ -72,7 +72,7 @@ public class UserApi : ApiEndpoint, ICarterModule
             return HandleFailure(result);
         }
 
-        string redirectUrl = "http://localhost:4200/verify-email";
+        string redirectUrl = "https://bookingweb.shop/verify-email";
 
         return Results.Redirect(redirectUrl);
     }
