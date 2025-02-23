@@ -5,11 +5,13 @@ using BadmintonSystem.Contract.Services.V1.Bill;
 using BadmintonSystem.Domain.Abstractions.Repositories;
 using BadmintonSystem.Domain.Entities;
 using BadmintonSystem.Domain.Exceptions;
+using BadmintonSystem.Persistence;
 
 namespace BadmintonSystem.Application.UseCases.V1.Commands.Bill;
 
 public sealed class UpdateQuantityServiceByBillCommandHandler(
     IServiceLineService serviceLineService,
+    ApplicationDbContext context,
     IRepositoryBase<ServiceLine, Guid> serviceLineRepository)
     : ICommandHandler<Command.UpdateQuantityServiceByBillCommand>
 {

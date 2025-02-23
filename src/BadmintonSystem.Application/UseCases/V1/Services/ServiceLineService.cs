@@ -29,7 +29,8 @@ public class ServiceLineService(
 
         await context.SaveChangesAsync(cancellationToken);
 
-        await originalQuantityService.UpdateQuantityService(serviceLineId, quantityChange, cancellationToken);
+        await originalQuantityService.UpdateQuantityService(serviceLineEntities.ServiceId ?? Guid.Empty, quantityChange,
+            cancellationToken);
     }
 
     public async Task CreateServiceLine
