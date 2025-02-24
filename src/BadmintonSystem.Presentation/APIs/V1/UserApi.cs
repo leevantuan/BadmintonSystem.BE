@@ -55,7 +55,7 @@ public class UserApi : ApiEndpoint, ICarterModule
 
         // CHAT MESSAGE
         group1.MapPost("chat-message", GetChatMessageByUserIdWithFilterAndSortV1)
-            .RequireJwtAuthorize(FunctionEnum.REVIEW.ToString(), (int)ActionEnum.READ);
+            .AllowAnonymous();
 
         // VERIFICATION EMAIL
         group1.MapGet("verify-email", VerificationEmailV1)

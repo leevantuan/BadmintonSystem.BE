@@ -23,8 +23,8 @@ public class ChatRoomApi : ApiEndpoint, ICarterModule
             .HasApiVersion(1)
             .RequireAuthorization();
 
-        group1.MapPost("filter-and-sort", GetChatRoomsWithFilterAndSortV1);
-        group1.MapPost(string.Empty, CreateChatRoomV1);
+        group1.MapPost("filter-and-sort", GetChatRoomsWithFilterAndSortV1).AllowAnonymous();
+        group1.MapPost(string.Empty, CreateChatRoomV1).AllowAnonymous();
     }
 
     private static async Task<IResult> GetChatRoomsWithFilterAndSortV1

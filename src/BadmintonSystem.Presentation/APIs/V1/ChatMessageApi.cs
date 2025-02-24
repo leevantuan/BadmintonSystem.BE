@@ -26,9 +26,9 @@ public class ChatMessageApi : ApiEndpoint, ICarterModule
             .RequireAuthorization();
 
         // Chat
-        group1.MapPost(string.Empty, CreateChatMessageV1);
+        group1.MapPost(string.Empty, CreateChatMessageV1).AllowAnonymous();
 
-        group1.MapGet(string.Empty, ReadAllMessageV1);
+        group1.MapGet(string.Empty, ReadAllMessageV1).AllowAnonymous();
 
         // Chatbot
         group1.MapPost("chatbot", CreateChatMessageByChatbotV1).AllowAnonymous();
