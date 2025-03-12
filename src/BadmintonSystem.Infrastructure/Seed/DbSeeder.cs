@@ -91,11 +91,11 @@ public sealed class DbSeeder(
         {
             var yardNames = new List<string>
             {
-                "Yard 1",
-                "Yard 2",
-                "Yard 3",
-                "Yard 4",
-                "Yard 5"
+                "A",
+                "B",
+                "C",
+                "D",
+                "E"
             };
 
             Guid yardTypeId = context.YardType.FirstOrDefault(x => x.Name == YardTypeEnum.NORMAL.ToString()).Id;

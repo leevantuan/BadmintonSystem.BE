@@ -1,4 +1,5 @@
-﻿using BadmintonSystem.Contract.Abstractions.Message;
+﻿using BadmintonSystem.Application.Abstractions;
+using BadmintonSystem.Contract.Abstractions.Message;
 using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.V1.Price;
 using BadmintonSystem.Domain.Abstractions.Repositories;
@@ -7,11 +8,14 @@ using BadmintonSystem.Domain.Exceptions;
 namespace BadmintonSystem.Application.UseCases.V1.Commands.Price;
 
 public sealed class DeletePricesCommandHandler(
+    IRedisService redisService,
     IRepositoryBase<Domain.Entities.Price, Guid> priceRepository)
     : ICommandHandler<Command.DeletePricesCommand>
 {
     public async Task<Result> Handle(Command.DeletePricesCommand request, CancellationToken cancellationToken)
     {
+        await redisService.DeletesAsync("BMTSYS_");
+
         List<Domain.Entities.Price> prices = new();
 
         foreach (string id in request.Ids)

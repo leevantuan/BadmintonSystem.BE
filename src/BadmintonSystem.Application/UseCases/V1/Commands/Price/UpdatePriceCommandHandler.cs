@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using BadmintonSystem.Application.Abstractions;
 using BadmintonSystem.Contract.Abstractions.Message;
 using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.V1.Price;
@@ -11,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 namespace BadmintonSystem.Application.UseCases.V1.Commands.Price;
 
 public sealed class UpdatePriceCommandHandler(
+    IRedisService redisService,
     ApplicationDbContext context,
     IMapper mapper,
     IRepositoryBase<Domain.Entities.Price, Guid> priceRepository)
@@ -19,6 +21,8 @@ public sealed class UpdatePriceCommandHandler(
     public async Task<Result<Response.PriceResponse>> Handle
         (Command.UpdatePriceCommand request, CancellationToken cancellationToken)
     {
+        await redisService.DeletesAsync("BMTSYS_");
+
         Domain.Entities.Price? priceDefaultExists =
             await context.Price.FirstOrDefaultAsync(x => x.IsDefault == DefaultEnum.TRUE, cancellationToken);
 

@@ -14,14 +14,5 @@ public enum TimeSlotEnum
     TimeSlot10,
     TimeSlot11,
     TimeSlot12,
-    TimeSlot13,
-    TimeSlot14,
-    TimeSlot15,
-    TimeSlot16,
-    TimeSlot17,
-    TimeSlot18,
-    TimeSlot19,
-    TimeSlot20,
-    TimeSlot21,
-    TimeSlot22
+    TimeSlot13
 }

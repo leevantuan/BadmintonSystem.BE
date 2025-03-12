@@ -18,9 +18,7 @@ public sealed class UpdateYardCommandHandler(
     public async Task<Result<Response.YardResponse>> Handle
         (Command.UpdateYardCommand request, CancellationToken cancellationToken)
     {
-        string endpoint = "BMTSYS_";
-
-        await redisService.DeletesAsync(endpoint);
+        await redisService.DeletesAsync("BMTSYS_");
 
         Domain.Entities.Yard yard = await yardRepository.FindByIdAsync(request.Data.Id, cancellationToken)
                                     ?? throw new YardException.YardNotFoundException(request.Data.Id);

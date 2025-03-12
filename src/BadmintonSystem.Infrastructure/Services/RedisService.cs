@@ -40,8 +40,9 @@ public class RedisService(
         // Tìm kiếm tất cả các key có first: pattern
         await foreach (string key in GetKeyAsync(pattern + "*"))
         {
-            // Xoá các key tìm được
-            await distributedCache.RemoveAsync(key);
+            string newKey = key.Replace("BMTSYS_", "");
+
+            await distributedCache.RemoveAsync(newKey);
         }
     }
 

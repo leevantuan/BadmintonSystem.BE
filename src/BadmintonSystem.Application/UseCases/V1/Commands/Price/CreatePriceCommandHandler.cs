@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using BadmintonSystem.Application.Abstractions;
 using BadmintonSystem.Contract.Abstractions.Message;
 using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.V1.Price;
@@ -12,12 +13,15 @@ namespace BadmintonSystem.Application.UseCases.V1.Commands.Price;
 public sealed class CreatePriceCommandHandler(
     ApplicationDbContext context,
     IMapper mapper,
+    IRedisService redisService,
     IRepositoryBase<Domain.Entities.Price, Guid> priceRepository)
     : ICommandHandler<Command.CreatePriceCommand, Response.PriceResponse>
 {
     public async Task<Result<Response.PriceResponse>> Handle
         (Command.CreatePriceCommand request, CancellationToken cancellationToken)
     {
+        await redisService.DeletesAsync("BMTSYS_");
+
         Domain.Entities.Price? priceDefaultExists =
             await context.Price.FirstOrDefaultAsync(x => x.IsDefault == DefaultEnum.TRUE, cancellationToken);
 
