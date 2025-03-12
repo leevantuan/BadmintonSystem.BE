@@ -16,6 +16,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddTransient<IJwtTokenService, JwtTokenService>()
             .AddTransient<IGmailService, GmailService>()
+            .AddScoped<IMomoService, MomoService>()
             .AddTransient<IRedisService, RedisService>()
             .AddTransient<IDbSeeder, DbSeeder>();
 
@@ -48,5 +49,12 @@ public static class ServiceCollectionExtensions
 
             services.AddTransient<IRedisService, RedisService>();
         }
+    }
+
+    public static IServiceCollection AddMomoOption(this IServiceCollection services, IConfiguration configuration)
+    {
+        // Đăng ký MomoOption từ cấu hình
+        services.Configure<MomoOption>(configuration.GetSection("MomoOption"));
+        return services;
     }
 }

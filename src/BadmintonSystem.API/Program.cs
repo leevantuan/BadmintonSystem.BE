@@ -40,6 +40,9 @@ builder.Host.UseSerilog();
 // Add SignalR
 builder.Services.AddSignalR();
 
+// Add Momo
+builder.Services.AddMomoOption(builder.Configuration);
+
 // Add Authentication
 builder.Services.AddJwtAuthenticationConfigurationAPI(builder.Configuration);
 
