@@ -16,15 +16,13 @@ namespace BadmintonSystem.Persistence.DependencyInjection.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    private const string DefaultConnection = "PostgresConnectionStrings";
-
     public static void AddPostgresConfigurationPersistence(this IServiceCollection services)
     {
         // Enable legacy timestamp behavior for Npgsql
         AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
-        RegisterDbContextWithPool<ApplicationDbContext>(services, nameof(DefaultConnection));
-        RegisterDbContextWithPool<TenantDbContext>(services, nameof(DefaultConnection));
+        RegisterDbContextWithPool<ApplicationDbContext>(services, "PostgresConnectionStrings");
+        RegisterDbContextWithPool<TenantDbContext>(services, "PostgresConnectionStrings");
 
         // Configure Identity
         services.AddIdentityCore<AppUser>()
@@ -115,7 +113,7 @@ public static class ServiceCollectionExtensions
         // Get of list tenants
         List<Tenant> tenants = tenantDbContext.Tenants.ToList();
         // Read default connection string
-        string defaultConnection = configuration.GetConnectionString("DefaultConnection");
+        string defaultConnection = configuration.GetConnectionString("PostgresConnectionStrings");
 
         // Loop through tenants, apply migration on applicationContext
         foreach (Tenant tenant in tenants)

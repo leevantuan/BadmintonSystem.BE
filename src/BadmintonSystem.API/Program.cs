@@ -66,7 +66,7 @@ builder.Services.AddPostgresServerRetryOptionsConfigurationPersistence(
 builder.Services.AddPostgresConfigurationPersistence();
 
 // Add migration ignore
-//builder.Services.AddMultipleDatabases(builder.Configuration);
+builder.Services.AddMultipleDatabases(builder.Configuration);
 
 // Add Repository Base
 builder.Services.AddRepositoryBaseConfigurationPersistence();
