@@ -81,6 +81,7 @@ dotnet_diagnostic.IDE0058.severity = none
 dotnet_diagnostic.IDE0053.severity = none
 csharp_using_directive_placement = outside_namespace:error
 csharp_prefer_simple_using_statement = true:suggestion
+csharp_prefer_system_threading_lock = true:suggestion
 
 [*.{cs,vb}]
 dotnet_style_prefer_simplified_boolean_expressions = true:suggestion

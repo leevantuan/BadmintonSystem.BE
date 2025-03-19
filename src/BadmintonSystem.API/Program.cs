@@ -5,7 +5,6 @@ using BadmintonSystem.Application.DependencyInjection.Extensions;
 using BadmintonSystem.Contract.Constants;
 using BadmintonSystem.Infrastructure.Bus.DependencyInjection.Extensions;
 using BadmintonSystem.Infrastructure.DependencyInjection.Extensions;
-using BadmintonSystem.Infrastructure.Seed;
 using BadmintonSystem.Persistence.DependencyInjection.Extensions;
 using BadmintonSystem.Persistence.DependencyInjection.Options;
 using Carter;
@@ -61,14 +60,13 @@ builder.Services.AddMediatRConfigurationApplication();
 // Add Interceptor Persistence
 builder.Services.AddInterceptorConfigurationPersistence();
 
-// Add Connection SQL
-//builder.Services.AddSqlServerRetryOptionsConfigurationPersistence(builder.Configuration.GetSection(nameof(SqlServerRetryOptions)));
-//builder.Services.AddSqlConfigurationPersistence();
-
 // Add Connection POSTGRES
 builder.Services.AddPostgresServerRetryOptionsConfigurationPersistence(
-    builder.Configuration.GetSection(nameof(SqlServerRetryOptions)));
+    builder.Configuration.GetSection(nameof(PostgresServerRetryOptions)));
 builder.Services.AddPostgresConfigurationPersistence();
+
+// Add migration ignore
+//builder.Services.AddMultipleDatabases(builder.Configuration);
 
 // Add Repository Base
 builder.Services.AddRepositoryBaseConfigurationPersistence();
@@ -120,14 +118,14 @@ app.MapCarter();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment() || app.Environment.IsStaging() || app.Environment.IsProduction())
 {
-    app.AddMigrations();
+    //app.AddMigrations();
 
-    // Seed data
-    using (IServiceScope scope = app.Services.CreateScope())
-    {
-        IDbSeeder databaseSeeder = scope.ServiceProvider.GetRequiredService<IDbSeeder>();
-        await databaseSeeder.SeedAsync();
-    }
+    //// Seed data
+    //using (IServiceScope scope = app.Services.CreateScope())
+    //{
+    //    IDbSeeder databaseSeeder = scope.ServiceProvider.GetRequiredService<IDbSeeder>();
+    //    await databaseSeeder.SeedAsync();
+    //}
 
     app.AddSwaggerConfigurationAPI();
 }

@@ -1,5 +1,6 @@
 ﻿using System.Linq.Expressions;
 using BadmintonSystem.Contract.Abstractions.Entities;
+using BadmintonSystem.Contract.Abstractions.Services;
 using BadmintonSystem.Domain.Entities;
 using BadmintonSystem.Domain.Entities.Identity;
 using Microsoft.AspNetCore.Identity;
@@ -14,9 +15,19 @@ public sealed class ApplicationDbContext
     : IdentityDbContext<AppUser, AppRole, Guid, IdentityUserClaim<Guid>,
         AppUserRole, IdentityUserLogin<Guid>, IdentityRoleClaim<Guid>, IdentityUserToken<Guid>>
 {
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+    private readonly ICurrentTenantService _currentTenantService;
+
+    public string CurrentConnectionString { get; set; }
+
+    public string Name { get; set; }
+
+    public ApplicationDbContext
+        (DbContextOptions<ApplicationDbContext> options, ICurrentTenantService currentTenantService)
         : base(options)
     {
+        _currentTenantService = currentTenantService;
+        Name = _currentTenantService.Name;
+        CurrentConnectionString = _currentTenantService.ConnectionString;
     }
 
     public DbSet<AppUser> AppUsers { get; set; }
@@ -108,6 +119,16 @@ public sealed class ApplicationDbContext
         }
 
         builder.ApplyConfigurationsFromAssembly(AssemblyReference.Assembly);
+    }
+
+    // COnfig connection string
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        string connectionString = _currentTenantService.ConnectionString;
+        if (!string.IsNullOrEmpty(connectionString))
+        {
+            optionsBuilder.UseNpgsql(connectionString);
+        }
     }
 
     private LambdaExpression? GenerateQueryFilterLambda(Type type)

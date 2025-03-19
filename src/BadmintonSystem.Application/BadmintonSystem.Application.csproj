@@ -7,31 +7,31 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="AutoMapper" Version="13.0.1"/>
-        <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.9.2"/>
-        <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0"/>
-        <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.2"/>
+        <PackageReference Include="AutoMapper" Version="13.0.1" />
+        <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.9.2" />
+        <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
+        <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.2" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\BadmintonSystem.Contract\BadmintonSystem.Contract.csproj"/>
-        <ProjectReference Include="..\BadmintonSystem.Domain\BadmintonSystem.Domain.csproj"/>
-        <ProjectReference Include="..\BadmintonSystem.Persistence\BadmintonSystem.Persistence.csproj"/>
+        <ProjectReference Include="..\BadmintonSystem.Contract\BadmintonSystem.Contract.csproj" />
+        <ProjectReference Include="..\BadmintonSystem.Domain\BadmintonSystem.Domain.csproj" />
+        <ProjectReference Include="..\BadmintonSystem.Persistence\BadmintonSystem.Persistence.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Update="SonarAnalyzer.CSharp" Version="9.32.0.97167"/>
+        <PackageReference Update="SonarAnalyzer.CSharp" Version="9.32.0.97167" />
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="UseCases\V1\Commands\Category\"/>
-        <Folder Include="UseCases\V1\Commands\Club\"/>
-        <Folder Include="UseCases\V1\Commands\Price\"/>
-        <Folder Include="UseCases\V1\Commands\Sale\"/>
-        <Folder Include="UseCases\V1\Commands\TimeSlot\"/>
-        <Folder Include="UseCases\V1\Commands\YardPrice\"/>
-        <Folder Include="UseCases\V1\Commands\YardType\"/>
-        <Folder Include="UseCases\V1\Commands\Yard\"/>
+        <Folder Include="UseCases\V1\Commands\Category\" />
+        <Folder Include="UseCases\V1\Commands\Club\" />
+        <Folder Include="UseCases\V1\Commands\Price\" />
+        <Folder Include="UseCases\V1\Commands\Sale\" />
+        <Folder Include="UseCases\V1\Commands\TimeSlot\" />
+        <Folder Include="UseCases\V1\Commands\YardPrice\" />
+        <Folder Include="UseCases\V1\Commands\YardType\" />
+        <Folder Include="UseCases\V1\Commands\Yard\" />
     </ItemGroup>
 
 </Project>

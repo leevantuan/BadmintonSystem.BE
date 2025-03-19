@@ -51,4 +51,6 @@ internal static class TableNames
     internal const string OriginalQuantity = nameof(OriginalQuantity);
     internal const string ChatRoom = nameof(ChatRoom);
     internal const string ChatMessage = nameof(ChatMessage);
+
+    internal const string Tenant = nameof(Tenant);
 }

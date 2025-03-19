@@ -1,4 +1,5 @@
 ﻿using BadmintonSystem.Application.Abstractions;
+using BadmintonSystem.Contract.Abstractions.Services;
 using BadmintonSystem.Infrastructure.Authentication;
 using BadmintonSystem.Infrastructure.Background;
 using BadmintonSystem.Infrastructure.DependencyInjection.Options;
@@ -17,6 +18,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<IJwtTokenService, JwtTokenService>()
             .AddTransient<IGmailService, GmailService>()
             .AddScoped<IMomoService, MomoService>()
+            .AddScoped<ICurrentTenantService, CurrentTenantService>()
             .AddTransient<IRedisService, RedisService>()
             .AddTransient<IDbSeeder, DbSeeder>();
 

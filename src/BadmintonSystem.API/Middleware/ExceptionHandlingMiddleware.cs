@@ -1,20 +1,31 @@
 ﻿using System.Text.Json;
+using BadmintonSystem.Contract.Abstractions.Services;
 using BadmintonSystem.Domain.Exceptions;
 
 namespace BadmintonSystem.API.Middleware;
 
-internal sealed class ExceptionHandlingMiddleware : IMiddleware
+internal sealed class ExceptionHandlingMiddleware
 {
+    private readonly RequestDelegate _next;
     private readonly ILogger<ExceptionHandlingMiddleware> _logger;
 
-    public ExceptionHandlingMiddleware(ILogger<ExceptionHandlingMiddleware> logger)
-        => _logger = logger;
+    public ExceptionHandlingMiddleware(RequestDelegate next, ILogger<ExceptionHandlingMiddleware> logger)
+    {
+        _next = next;
+        _logger = logger;
+    }
 
-    public async Task InvokeAsync(HttpContext context, RequestDelegate next)
+    public async Task Invoke(HttpContext context, ICurrentTenantService currentTenantService)
     {
         try
         {
-            await next(context);
+            context.Request.Headers.TryGetValue("tenant", out var tenantFromHeader);
+            if (string.IsNullOrEmpty(tenantFromHeader) == false)
+            {
+                await currentTenantService.SetTenant(tenantFromHeader);
+            }
+
+            await _next(context);
         }
         catch (Exception e)
         {
