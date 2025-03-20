@@ -15,6 +15,9 @@ public class ServiceV1Profile : Profile
 {
     public ServiceV1Profile()
     {
+        // Tenant
+        CreateMap<Tenant, V1.Tenant.Response.TenantResponse>().ReverseMap();
+
         // ChatRoom
         CreateMap<ChatRoom, Response.ChatRoomResponse>().ReverseMap();
 

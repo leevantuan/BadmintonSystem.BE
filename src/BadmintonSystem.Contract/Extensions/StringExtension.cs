@@ -64,4 +64,18 @@ public static class StringExtension
 
         return keyBuilder.ToString();
     }
+
+    public static string GenerateCodeTenantFromRequest(DateTime date)
+    {
+        var formattedDate = date.ToString("ddMMyy");
+
+        // Tạo chuỗi ngẫu nhiên gồm 8 ký tự (chữ cái và chữ số)
+        var random = new Random();
+        const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        var randomString = new string(Enumerable.Repeat(chars, 8)
+            .Select(s => s[random.Next(s.Length)]).ToArray());
+
+        // Kết hợp chuỗi ngày và chuỗi ngẫu nhiên
+        return $"{formattedDate}_{randomString}";
+    }
 }

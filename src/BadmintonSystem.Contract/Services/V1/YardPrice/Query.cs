@@ -14,7 +14,8 @@ public static class Query
 
     public record GetYardPricesByDateQuery(
         Guid UserId,
-        DateTime Date)
+        DateTime Date,
+        string Tenant)
         : IQuery<List<Response.YardPricesByDateDetailResponse>>;
 
     public record GetYardPricesByYardIdInTodayQuery(

@@ -1,5 +1,6 @@
 ﻿using BadmintonSystem.Application.Abstractions;
 using BadmintonSystem.Contract.Abstractions.Services;
+using BadmintonSystem.Contract.Services;
 using BadmintonSystem.Infrastructure.Authentication;
 using BadmintonSystem.Infrastructure.Background;
 using BadmintonSystem.Infrastructure.DependencyInjection.Options;

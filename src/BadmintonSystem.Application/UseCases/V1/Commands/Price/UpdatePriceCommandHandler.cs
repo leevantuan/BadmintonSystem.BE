@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using BadmintonSystem.Application.Abstractions;
 using BadmintonSystem.Contract.Abstractions.Message;
+using BadmintonSystem.Contract.Abstractions.Services;
 using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.V1.Price;
 using BadmintonSystem.Domain.Abstractions.Repositories;
@@ -15,13 +16,16 @@ public sealed class UpdatePriceCommandHandler(
     IRedisService redisService,
     ApplicationDbContext context,
     IMapper mapper,
+    ICurrentTenantService currentTenantService,
     IRepositoryBase<Domain.Entities.Price, Guid> priceRepository)
     : ICommandHandler<Command.UpdatePriceCommand, Response.PriceResponse>
 {
     public async Task<Result<Response.PriceResponse>> Handle
         (Command.UpdatePriceCommand request, CancellationToken cancellationToken)
     {
-        await redisService.DeletesAsync("BMTSYS_");
+        string endpoint = $"BMTSYS_{currentTenantService.Code.ToString()}-get-yard-prices-by-date";
+
+        await redisService.DeletesAsync(endpoint);
 
         Domain.Entities.Price? priceDefaultExists =
             await context.Price.FirstOrDefaultAsync(x => x.IsDefault == DefaultEnum.TRUE, cancellationToken);

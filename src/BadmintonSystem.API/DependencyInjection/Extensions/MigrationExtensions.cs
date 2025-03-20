@@ -9,6 +9,10 @@ public static class MigrationExtensions
     {
         using IServiceScope scope = app.ApplicationServices.CreateScope();
 
+        using TenantDbContext tenantDbContext = scope.ServiceProvider.GetRequiredService<TenantDbContext>();
+
+        tenantDbContext.Database.Migrate();
+
         using ApplicationDbContext dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
         dbContext.Database.Migrate();

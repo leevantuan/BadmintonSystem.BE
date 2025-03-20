@@ -61,6 +61,26 @@ public class RedisService(
         });
     }
 
+    public async Task<List<string>> GetBeforeAsync(string pattern)
+    {
+        // Sử dụng SCAN để lấy key
+        List<string> matchedKeys = new List<string>();
+
+        // Tìm kiếm tất cả các key có first: pattern
+        await foreach (string key in GetKeyAsync("*" + pattern))
+        {
+            string newKey = key.Replace("BMTSYS_", "");
+
+            string? cacheResponse = await distributedCache.GetStringAsync(newKey);
+            if (!string.IsNullOrEmpty(cacheResponse))
+            {
+                matchedKeys.Add(cacheResponse);
+            }
+        }
+
+        return matchedKeys;
+    }
+
     private async IAsyncEnumerable<string> GetKeyAsync(string pattern)
     {
         if (string.IsNullOrWhiteSpace(pattern))

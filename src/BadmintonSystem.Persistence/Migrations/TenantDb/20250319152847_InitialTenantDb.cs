@@ -5,7 +5,7 @@
 namespace BadmintonSystem.Persistence.Migrations.TenantDb;
 
 /// <inheritdoc />
-public partial class InittialTenantDb : Migration
+public partial class InitialTenantDb : Migration
 {
     /// <inheritdoc />
     protected override void Up(MigrationBuilder migrationBuilder)
@@ -16,6 +16,7 @@ public partial class InittialTenantDb : Migration
             {
                 Id = table.Column<Guid>(type: "uuid", nullable: false),
                 Name = table.Column<string>(type: "text", nullable: false),
+                Code = table.Column<string>(type: "text", nullable: false),
                 Email = table.Column<string>(type: "text", nullable: false),
                 HotLine = table.Column<string>(type: "text", nullable: true),
                 City = table.Column<string>(type: "text", nullable: true),

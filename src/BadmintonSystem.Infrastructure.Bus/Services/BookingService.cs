@@ -2,7 +2,6 @@
 using BadmintonSystem.Contract.Abstractions.IntegrationEvents;
 using BadmintonSystem.Contract.Enumerations;
 using BadmintonSystem.Domain.Entities;
-using BadmintonSystem.Domain.Entities.Identity;
 using BadmintonSystem.Domain.Enumerations;
 using BadmintonSystem.Domain.Exceptions;
 using BadmintonSystem.Persistence;
@@ -23,10 +22,6 @@ public class BookingService(
     {
         try
         {
-            AppUser user = await context.AppUsers
-                               .FirstOrDefaultAsync(x => x.Id == data.UserId, cancellationToken)
-                           ?? throw new IdentityException.AppUserNotFoundException(data.UserId);
-
             List<Response.GetIdsByDate> idsByDate =
                 await GetIdsByDateAsync(data.CreateBooking.YardPriceIds, cancellationToken);
 
@@ -44,8 +39,8 @@ public class BookingService(
                     OriginalPrice = 0,
                     PercentPrePay = data.CreateBooking.PercentPrePay,
                     SaleId = data.CreateBooking.SaleId,
-                    FullName = data.CreateBooking.FullName ?? user.FullName,
-                    PhoneNumber = data.CreateBooking.PhoneNumber ?? user.PhoneNumber
+                    FullName = data.CreateBooking.FullName ?? "User",
+                    PhoneNumber = data.CreateBooking.PhoneNumber ?? "PhoneNumber"
                 };
 
                 var billEntity = new Bill
@@ -63,8 +58,8 @@ public class BookingService(
             }
 
             await SignalRAndUpdateCacheAsync(idsByDate, cancellationToken);
-            await SendMailAsync(bookingIds, user, NotificationType.client, "send-mail-client-queue", cancellationToken);
-            await SendMailAsync(bookingIds, user, NotificationType.staff, "send-mail-staff-queue", cancellationToken);
+            await SendMailAsync(bookingIds, data.CreateBooking.FullName, data.CreateBooking.Email, NotificationType.client, "send-mail-client-queue", cancellationToken);
+            await SendMailAsync(bookingIds, data.CreateBooking.FullName, data.CreateBooking.Email, NotificationType.staff, "send-mail-staff-queue", cancellationToken);
         }
         catch (Exception ex)
         {
@@ -73,14 +68,14 @@ public class BookingService(
     }
 
     private async Task SendMailAsync
-        (List<Guid> bookingIds, AppUser user, string type, string queue, CancellationToken cancellationToken)
+        (List<Guid> bookingIds, string fullName, string email, string type, string queue, CancellationToken cancellationToken)
     {
         var sendEmailClient = new BusCommand.SendEmailBusCommand
         {
             Id = Guid.NewGuid(),
             Description = "Email Description",
-            Name = user.FullName,
-            Email = type == NotificationType.staff ? "managersystem.net@gmail.com" : user.Email,
+            Name = fullName,
+            Email = type == NotificationType.staff ? "managersystem.net@gmail.com" : email,
             TimeSpan = DateTime.Now,
             TransactionId = Guid.NewGuid(),
             BookingIds = bookingIds,
@@ -130,7 +125,6 @@ public class BookingService(
     {
         context.Booking.Add(bookingEntity);
         await context.SaveChangesAsync(cancellationToken);
-
 
         context.Bill.Add(billEntity);
         await context.SaveChangesAsync(cancellationToken);

@@ -1,5 +1,6 @@
 ﻿using BadmintonSystem.Application.Abstractions;
 using BadmintonSystem.Contract.Abstractions.Message;
+using BadmintonSystem.Contract.Abstractions.Services;
 using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.V1.Booking;
 using BadmintonSystem.Persistence;
@@ -13,6 +14,7 @@ public sealed class SendEmailByBookingDoneEventHandler(
     ApplicationDbContext context,
     ISender sender,
     IGmailService mailService,
+    ICurrentTenantService currentTenantService,
     IHttpContextAccessor httpContextAccessor)
     : IDomainEventHandler<DomainEvent.BookingDone>
 {
@@ -52,7 +54,7 @@ public sealed class SendEmailByBookingDoneEventHandler(
         {
             MailTo = notification.Email,
             MailSubject =
-                $"WELCOME TO BADMINTON BOOKING WEB, THIS IS EMAIL CONFIRM INFORMATION BOOKING - Date: {DateTime.Now.Date:dd/MM/yyyy}",
+                $"WELCOME TO {currentTenantService.Name}, THIS IS EMAIL CONFIRM INFORMATION BOOKING - Date: {DateTime.Now.Date:dd/MM/yyyy}",
             MailBody = string.Empty,
             BookingLines = bookingLines,
             FullName = notification.Name,

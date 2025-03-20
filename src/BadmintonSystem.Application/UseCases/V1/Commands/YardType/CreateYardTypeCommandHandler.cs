@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using BadmintonSystem.Application.Abstractions;
 using BadmintonSystem.Contract.Abstractions.Message;
+using BadmintonSystem.Contract.Abstractions.Services;
 using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.V1.YardType;
 using BadmintonSystem.Domain.Abstractions.Repositories;
@@ -10,13 +11,16 @@ namespace BadmintonSystem.Application.UseCases.V1.Commands.YardType;
 public sealed class CreateYardTypeCommandHandler(
     IMapper mapper,
     IRedisService redisService,
+    ICurrentTenantService currentTenantService,
     IRepositoryBase<Domain.Entities.YardType, Guid> yardTypeRepository)
     : ICommandHandler<Command.CreateYardTypeCommand, Response.YardTypeResponse>
 {
     public async Task<Result<Response.YardTypeResponse>> Handle
         (Command.CreateYardTypeCommand request, CancellationToken cancellationToken)
     {
-        await redisService.DeletesAsync("BMTSYS_");
+        string endpoint = $"BMTSYS_{currentTenantService.Code.ToString()}-get-yard-prices-by-date";
+
+        await redisService.DeletesAsync(endpoint);
 
         Domain.Entities.YardType? isNameExists =
             await yardTypeRepository.FindSingleAsync(x => x.Name == request.Data.Name, cancellationToken);

@@ -1,5 +1,7 @@
 ﻿using BadmintonSystem.Contract.Abstractions.Message;
 using BadmintonSystem.Contract.Abstractions.Shared;
+using BadmintonSystem.Contract.Extensions;
+using BadmintonSystem.Contract.Services;
 using BadmintonSystem.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -24,10 +26,11 @@ public sealed class CreateTenantCommandHandler : ICommandHandler<CreateTenantCom
     public async Task<Result> Handle(CreateTenantCommand request, CancellationToken cancellationToken)
     {
         Guid tenantId = Guid.NewGuid();
+        string codeTenant = StringExtension.GenerateCodeTenantFromRequest(DateTime.Now);
         string newConnectionString = null;
         if (request.Data.Isolated == true)
         {
-            string dbName = $"BMTSYS_DATABASE_Tenant_{request.Data.Name}";
+            string dbName = $"BMTSYS_{codeTenant}";
             var defaultConnectionString = _configuration.GetConnectionString("PostgresConnectionStrings");
             newConnectionString = defaultConnectionString.Replace("BMTSYS_DATABASE", dbName);
 
@@ -36,9 +39,15 @@ public sealed class CreateTenantCommandHandler : ICommandHandler<CreateTenantCom
                 using IServiceScope scope = _serviceProvider.CreateScope();
                 ApplicationDbContext dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
                 dbContext.Database.SetConnectionString(newConnectionString);
+
+                // Áp dụng migration cho tenant database
                 if (dbContext.Database.GetPendingMigrations().Any())
                 {
                     dbContext.Database.Migrate();
+
+                    // Seed data cho tenant sau khi tạo database
+                    IDbSeeder databaseSeeder = scope.ServiceProvider.GetRequiredService<IDbSeeder>();
+                    await databaseSeeder.SeedAsync();
                 }
             }
             catch (Exception ex)
@@ -51,6 +60,7 @@ public sealed class CreateTenantCommandHandler : ICommandHandler<CreateTenantCom
         {
             Id = tenantId,
             Name = request.Data.Name,
+            Code = codeTenant,
             Email = request.Data.Email,
             ConnectionString = newConnectionString
         };
@@ -58,6 +68,6 @@ public sealed class CreateTenantCommandHandler : ICommandHandler<CreateTenantCom
         _context.Tenants.Add(tenant);
         await _context.SaveChangesAsync(cancellationToken);
 
-        return Result.Success();
+        return Result.Success(tenant);
     }
 }

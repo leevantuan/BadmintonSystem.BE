@@ -6,4 +6,7 @@ public class Command
 {
     public record CreateTenantCommand(Request.CreateTenantRequest Data)
         : ICommand;
+
+    public record UpdaterTenantCommand(Request.UpdateTenantRequest Data)
+    : ICommand;
 }

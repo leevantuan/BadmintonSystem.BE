@@ -1,4 +1,5 @@
 ﻿using BadmintonSystem.Application.Abstractions;
+using BadmintonSystem.Contract.Abstractions.Services;
 using BadmintonSystem.Contract.Extensions;
 using BadmintonSystem.Contract.Services.V1.YardPrice;
 using BadmintonSystem.Domain.Enumerations;
@@ -8,7 +9,9 @@ using Newtonsoft.Json;
 
 namespace BadmintonSystem.Infrastructure.Background;
 
-public class BookingExpirationWorker(IServiceScopeFactory scopeFactory) : BackgroundService
+public class BookingExpirationWorker(
+    IServiceScopeFactory scopeFactory)
+    : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -18,6 +21,7 @@ public class BookingExpirationWorker(IServiceScopeFactory scopeFactory) : Backgr
             {
                 IRedisService redisService = scope.ServiceProvider.GetRequiredService<IRedisService>();
                 IBookingHub bookingHub = scope.ServiceProvider.GetRequiredService<IBookingHub>();
+                var currentTenantService = scope.ServiceProvider.GetRequiredService<ICurrentTenantService>();
 
                 string endpoint = "get-yard-prices-by-date";
                 DateTime today = DateTime.Now;
@@ -28,13 +32,16 @@ public class BookingExpirationWorker(IServiceScopeFactory scopeFactory) : Backgr
                 {
                     string cacheKey = StringExtension.GenerateCacheKeyFromRequest(endpoint, date);
 
-                    string yardPriceJson = await redisService.GetAsync(cacheKey);
+                    List<string> yardPriceJsons = await redisService.GetBeforeAsync(cacheKey);
 
-                    await UpdateCachingAsync(yardPriceJson, cacheKey, bookingHub, redisService);
+                    foreach (string yardPriceJson in yardPriceJsons)
+                    {
+                        await UpdateCachingAsync(yardPriceJson, cacheKey, bookingHub, redisService);
+                    }
                 }
             }
 
-            await Task.Delay(TimeSpan.FromSeconds(15), stoppingToken);
+            await Task.Delay(TimeSpan.FromSeconds(30), stoppingToken);
         }
     }
 

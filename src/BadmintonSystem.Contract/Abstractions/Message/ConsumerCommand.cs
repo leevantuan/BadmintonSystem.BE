@@ -9,6 +9,6 @@ public abstract class ConsumerCommand<TMessage>(ISender sender)
 {
     public async Task Consume(ConsumeContext<TMessage> context)
     {
-        await sender.Send(context.Message);
+        await sender.Send(context);
     }
 }

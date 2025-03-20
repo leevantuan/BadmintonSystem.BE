@@ -6,6 +6,7 @@ using BadmintonSystem.Domain.Entities.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Action = BadmintonSystem.Domain.Entities.Identity.Action;
 using DayOfWeek = BadmintonSystem.Domain.Entities.DayOfWeek;
 
@@ -19,14 +20,11 @@ public sealed class ApplicationDbContext
 
     public string CurrentConnectionString { get; set; }
 
-    public string Name { get; set; }
-
     public ApplicationDbContext
         (DbContextOptions<ApplicationDbContext> options, ICurrentTenantService currentTenantService)
         : base(options)
     {
         _currentTenantService = currentTenantService;
-        Name = _currentTenantService.Name;
         CurrentConnectionString = _currentTenantService.ConnectionString;
     }
 
@@ -125,6 +123,18 @@ public sealed class ApplicationDbContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         string connectionString = _currentTenantService.ConnectionString;
+
+        if (string.IsNullOrEmpty(connectionString))
+        {
+            // Sử dụng cấu hình từ file appsettings.json
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.Development.json")
+                .Build();
+
+            connectionString = configuration.GetConnectionString("PostgresConnectionStrings");
+        }
+
         if (!string.IsNullOrEmpty(connectionString))
         {
             optionsBuilder.UseNpgsql(connectionString);

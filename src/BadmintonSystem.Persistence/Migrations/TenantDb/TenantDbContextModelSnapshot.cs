@@ -37,6 +37,10 @@ namespace BadmintonSystem.Persistence.Migrations.TenantDb
                     b.Property<string>("City")
                         .HasColumnType("text");
 
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("ConnectionString")
                         .HasColumnType("text");
 

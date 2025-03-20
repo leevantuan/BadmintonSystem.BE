@@ -30,13 +30,14 @@ public class CachingService(
                 });
 
                 // UPDATE CACHE
-                string endpoint = "get-yard-prices-by-date";
+                string endpoint = $"{request.Name}-get-yard-prices-by-date";
+                //string endpoint = "get-yard-prices-by-date";
                 string cacheKey = StringExtension.GenerateCacheKeyFromRequest(endpoint, yardPrice.Date);
                 string yardPriceJson = await redisService.GetAsync(cacheKey);
                 if (string.IsNullOrEmpty(yardPriceJson))
                 {
                     await sender.Send(
-                        new Query.GetYardPricesByDateQuery(Guid.Empty, yardPrice.Date),
+                        new Query.GetYardPricesByDateQuery(Guid.Empty, yardPrice.Date, request.Name),
                         cancellationToken);
                     yardPriceJson = await redisService.GetAsync(cacheKey);
                 }

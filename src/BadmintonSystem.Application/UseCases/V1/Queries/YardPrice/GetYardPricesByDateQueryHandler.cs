@@ -4,6 +4,7 @@ using AutoMapper;
 using BadmintonSystem.Application.Abstractions;
 using BadmintonSystem.Application.UseCases.V1.Services;
 using BadmintonSystem.Contract.Abstractions.Message;
+using BadmintonSystem.Contract.Abstractions.Services;
 using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Extensions;
 using BadmintonSystem.Contract.Services.V1.YardPrice;
@@ -17,6 +18,7 @@ namespace BadmintonSystem.Application.UseCases.V1.Queries.YardPrice;
 
 public sealed class GetYardPricesByDateQueryHandler(
     ApplicationDbContext context,
+    ICurrentTenantService currentTenantService,
     IMapper mapper,
     IRedisService redisService,
     IHttpContextAccessor httpContextAccessor,
@@ -27,8 +29,11 @@ public sealed class GetYardPricesByDateQueryHandler(
     public async Task<Result<List<Response.YardPricesByDateDetailResponse>>> Handle
         (Query.GetYardPricesByDateQuery request, CancellationToken cancellationToken)
     {
-        // string endpoint = httpContextAccessor.HttpContext.GetEndpoint();
-        string endpoint = "get-yard-prices-by-date";
+        string endpoint = !string.IsNullOrEmpty(request.Tenant)
+            ? $"{request.Tenant}-get-yard-prices-by-date"
+            : $"{currentTenantService.Code.ToString()}-get-yard-prices-by-date";
+
+        //endpoint = $"{currentTenantService.Code.ToString()}-get-yard-prices-by-date";
 
         string cacheKey = StringExtension.GenerateCacheKeyFromRequest(endpoint, request.Date);
 

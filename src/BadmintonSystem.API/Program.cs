@@ -3,6 +3,7 @@ using BadmintonSystem.API.Hubs;
 using BadmintonSystem.API.Middleware;
 using BadmintonSystem.Application.DependencyInjection.Extensions;
 using BadmintonSystem.Contract.Constants;
+using BadmintonSystem.Contract.Services;
 using BadmintonSystem.Infrastructure.Bus.DependencyInjection.Extensions;
 using BadmintonSystem.Infrastructure.DependencyInjection.Extensions;
 using BadmintonSystem.Persistence.DependencyInjection.Extensions;
@@ -116,16 +117,17 @@ app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.MapCarter();
 
 // Configure the HTTP request pipeline.
+// Sheet data
 if (app.Environment.IsDevelopment() || app.Environment.IsStaging() || app.Environment.IsProduction())
 {
-    //app.AddMigrations();
+    app.AddMigrations();
 
-    //// Seed data
-    //using (IServiceScope scope = app.Services.CreateScope())
-    //{
-    //    IDbSeeder databaseSeeder = scope.ServiceProvider.GetRequiredService<IDbSeeder>();
-    //    await databaseSeeder.SeedAsync();
-    //}
+    // Seed data
+    using (IServiceScope scope = app.Services.CreateScope())
+    {
+        IDbSeeder databaseSeeder = scope.ServiceProvider.GetRequiredService<IDbSeeder>();
+        await databaseSeeder.SeedAsync();
+    }
 
     app.AddSwaggerConfigurationAPI();
 }

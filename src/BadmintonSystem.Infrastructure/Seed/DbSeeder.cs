@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using BadmintonSystem.Application.Extensions;
 using BadmintonSystem.Contract.Extensions;
+using BadmintonSystem.Contract.Services;
 using BadmintonSystem.Domain.Entities;
 using BadmintonSystem.Domain.Entities.Identity;
 using BadmintonSystem.Domain.Enumerations;

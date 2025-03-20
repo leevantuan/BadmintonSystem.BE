@@ -112,11 +112,12 @@ public class YardPriceApi : ApiEndpoint, ICarterModule
     (
         ISender sender,
         [FromBody] DateTime date,
+        string? tenant,
         IHttpContextAccessor httpContextAccessor)
     {
         Guid? userId = httpContextAccessor.HttpContext?.GetCurrentUserId();
         Result<List<Response.YardPricesByDateDetailResponse>> result =
-            await sender.Send(new Query.GetYardPricesByDateQuery(userId ?? Guid.Empty, date));
+            await sender.Send(new Query.GetYardPricesByDateQuery(userId ?? Guid.Empty, date, tenant));
 
         return Results.Ok(result);
     }

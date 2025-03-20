@@ -1,4 +1,4 @@
-﻿namespace BadmintonSystem.Infrastructure.Seed;
+﻿namespace BadmintonSystem.Contract.Services;
 
 public interface IDbSeeder
 {

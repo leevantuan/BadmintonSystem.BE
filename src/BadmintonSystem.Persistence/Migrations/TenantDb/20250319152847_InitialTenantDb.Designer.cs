@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BadmintonSystem.Persistence.Migrations.TenantDb
 {
     [DbContext(typeof(TenantDbContext))]
-    [Migration("20250319091504_InittialTenantDb")]
-    partial class InittialTenantDb
+    [Migration("20250319152847_InitialTenantDb")]
+    partial class InitialTenantDb
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -38,6 +38,10 @@ namespace BadmintonSystem.Persistence.Migrations.TenantDb
                         .HasColumnType("text");
 
                     b.Property<string>("City")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("ConnectionString")

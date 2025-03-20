@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using BadmintonSystem.Application.Abstractions;
+using BadmintonSystem.Contract.Abstractions.Services;
 using BadmintonSystem.Contract.Services.V1.Gmail;
 using BadmintonSystem.Contract.Source;
 using BadmintonSystem.Infrastructure.DependencyInjection.Options;
@@ -14,9 +15,12 @@ public class GmailService : IGmailService
 {
     private readonly MailOption _mailOption = new();
 
-    public GmailService(IConfiguration configuration)
+    private readonly ICurrentTenantService _currentTenantService;
+
+    public GmailService(IConfiguration configuration, ICurrentTenantService currentTenantService)
     {
         configuration.GetSection(nameof(MailOption)).Bind(_mailOption);
+        _currentTenantService = currentTenantService;
     }
 
     public Task<bool> SendMail(Request.GmailRequest request)
@@ -150,7 +154,7 @@ public class GmailService : IGmailService
                 var emailFrom = new MailboxAddress(_mailOption.SenderName, _mailOption.SenderEmail);
                 emailMessage.From.Add(emailFrom);
 
-                emailMessage.To.Add(emailFrom);
+                emailMessage.To.Add(MailboxAddress.Parse(_currentTenantService.Email));
 
                 emailMessage.Subject = request.MailSubject;
 

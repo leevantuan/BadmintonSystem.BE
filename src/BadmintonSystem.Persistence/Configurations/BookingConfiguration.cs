@@ -23,7 +23,7 @@ internal sealed class BookingConfiguration : IEntityTypeConfiguration<Booking>
 
         builder.Property(x => x.PaymentStatus).IsRequired();
 
-        builder.Property(x => x.UserId).IsRequired();
+        builder.Property(x => x.UserId).HasDefaultValue(null);
 
         builder.Property(x => x.SaleId).HasDefaultValue(null);
 

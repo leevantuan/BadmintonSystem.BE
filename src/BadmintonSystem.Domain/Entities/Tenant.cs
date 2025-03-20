@@ -1,12 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using BadmintonSystem.Contract.Abstractions.Entities;
+﻿using BadmintonSystem.Contract.Abstractions.Entities;
 
 namespace BadmintonSystem.Domain.Entities;
 
 public class Tenant : EntityBase<Guid>
 {
     public string Name { get; set; }
+
+    public string Code { get; set; }
 
     public string Email { get; set; }
 
