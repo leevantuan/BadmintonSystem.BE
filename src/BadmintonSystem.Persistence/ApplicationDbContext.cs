@@ -129,7 +129,7 @@ public sealed class ApplicationDbContext
             // Sử dụng cấu hình từ file appsettings.json
             var configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.Development.json")
+                .AddJsonFile("appsettings.Production.json")
                 .Build();
 
             connectionString = configuration.GetConnectionString("PostgresConnectionStrings");

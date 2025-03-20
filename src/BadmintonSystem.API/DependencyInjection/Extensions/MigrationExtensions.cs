@@ -11,10 +11,15 @@ public static class MigrationExtensions
 
         using TenantDbContext tenantDbContext = scope.ServiceProvider.GetRequiredService<TenantDbContext>();
 
-        tenantDbContext.Database.Migrate();
+        if (tenantDbContext.Database.GetPendingMigrations().Any() || !tenantDbContext.Database.CanConnect())
+        {
+            tenantDbContext.Database.Migrate();
+        }
 
         using ApplicationDbContext dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-
-        dbContext.Database.Migrate();
+        if (dbContext.Database.GetPendingMigrations().Any() || !dbContext.Database.CanConnect())
+        {
+            dbContext.Database.Migrate();
+        }
     }
 }

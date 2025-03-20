@@ -1,4 +1,5 @@
-﻿using BadmintonSystem.Application.UseCases.V1.Services;
+﻿using BadmintonSystem.Application.Abstractions;
+using BadmintonSystem.Application.UseCases.V1.Services;
 using BadmintonSystem.Contract.Abstractions.IntegrationEvents;
 using BadmintonSystem.Contract.Abstractions.Message;
 using BadmintonSystem.Contract.Abstractions.Services;
@@ -18,6 +19,7 @@ public sealed class CreateBookingRabbitMQCommandHandler(
     ApplicationDbContext context,
     IBus bus,
     IMediator mediator,
+    IRedisService redisService,
     ICurrentTenantService currentTenantService,
     IBookingLineService bookingLineService)
     : ICommandHandler<Command.CreateBookingRabbitMQCommand>
@@ -83,6 +85,10 @@ public sealed class CreateBookingRabbitMQCommandHandler(
         await SignalRAndUpdateCacheAsync(idsByDate, request.Data.Tenant, cancellationToken);
         await SendMailAsync(bookingIds, request.Data.FullName, request.Data.Email, NotificationType.client, cancellationToken);
         await SendMailAsync(bookingIds, request.Data.FullName, request.Data.Email, NotificationType.staff, cancellationToken);
+
+        string endpoint = $"BMTSYS_{currentTenantService.Code.ToString()}-get-yard-prices-by-date";
+
+        await redisService.DeletesAsync(endpoint);
 
         return Result.Success();
     }
