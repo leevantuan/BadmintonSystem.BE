@@ -127,15 +127,15 @@ public sealed class ApplicationDbContext
         if (string.IsNullOrEmpty(connectionString))
         {
             // Sử dụng cấu hình từ file appsettings.json
-            var configuration = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.Production.json")
-                .Build();
-
             //var configuration = new ConfigurationBuilder()
             //    .SetBasePath(Directory.GetCurrentDirectory())
-            //    .AddJsonFile("appsettings.Development.json")
+            //    .AddJsonFile("appsettings.Production.json")
             //    .Build();
+
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.Development.json")
+                .Build();
 
             connectionString = configuration.GetConnectionString("PostgresConnectionStrings");
         }
