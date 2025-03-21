@@ -9,6 +9,7 @@ public static class ServiceCollectionExtensions
     {
         return services.AddScoped<IBookingHub, BookingHub>()
             .AddScoped<IRegisterHub, RegisterHub>()
+            .AddScoped<IPaymentHub, PaymentHub>()
             .AddScoped<IChatHub, ChatHub>();
     }
 }

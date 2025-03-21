@@ -21,7 +21,6 @@ public static class Response
 
     public class GetChatMessageByIdResponse : ChatMessageResponse
     {
-        public User.Response.AppUserResponse? User { get; set; }
     }
 
     public class GetBaseChatMessageByIdSqlResponse
@@ -45,17 +44,6 @@ public static class Response
 
     public class GetChatMessageByIdSqlResponse : GetBaseChatMessageByIdSqlResponse
     {
-        public Guid? AppUser_Id { get; set; }
-
-        public string? AppUser_UserName { get; set; }
-
-        public string? AppUser_Email { get; set; }
-
-        public string? AppUser_FullName { get; set; }
-
-        public DateTime? AppUser_DateOfBirth { get; set; }
-
-        public string? AppUser_AvatarUrl { get; set; }
     }
 
     public class ChatbotResponse : EntityBase<Guid>

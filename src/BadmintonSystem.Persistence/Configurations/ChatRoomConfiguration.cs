@@ -15,9 +15,9 @@ internal sealed class ChatRoomConfiguration : IEntityTypeConfiguration<ChatRoom>
 
         builder.Property(x => x.UserId).HasDefaultValue(null).IsRequired();
 
-        //builder.HasMany(x => x.ChatMessages)
-        //    .WithOne()
-        //    .HasForeignKey(x => x.ChatRoomId)
-        //    .OnDelete(DeleteBehavior.NoAction);
+        builder.HasMany(x => x.ChatMessages)
+            .WithOne()
+            .HasForeignKey(x => x.ChatRoomId)
+            .OnDelete(DeleteBehavior.NoAction);
     }
 }

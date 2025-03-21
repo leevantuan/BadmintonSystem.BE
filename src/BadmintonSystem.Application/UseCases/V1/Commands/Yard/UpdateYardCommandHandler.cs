@@ -39,6 +39,7 @@ public sealed class UpdateYardCommandHandler(
         }
 
         yard.Name = request.Data.Name ?? yard.Name;
+        yard.ImageLink = request.Data.ImageLink ?? yard.ImageLink;
         yard.YardTypeId = request.Data.YardTypeId;
         yard.IsStatus = (StatusEnum)request.Data.IsStatus;
 

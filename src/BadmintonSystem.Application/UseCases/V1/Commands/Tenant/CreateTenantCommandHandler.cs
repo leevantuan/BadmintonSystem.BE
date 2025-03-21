@@ -1,8 +1,11 @@
-﻿using BadmintonSystem.Contract.Abstractions.Message;
+﻿using AutoMapper;
+using BadmintonSystem.Contract.Abstractions.Message;
 using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Extensions;
 using BadmintonSystem.Contract.Services;
+using BadmintonSystem.Domain.Entities.Identity;
 using BadmintonSystem.Persistence;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,19 +13,14 @@ using static BadmintonSystem.Contract.Services.V1.Tenant.Command;
 
 namespace BadmintonSystem.Application.UseCases.V1.Commands.Tenant;
 
-public sealed class CreateTenantCommandHandler : ICommandHandler<CreateTenantCommand>
+public sealed class CreateTenantCommandHandler(
+    TenantDbContext context,
+    IConfiguration configuration,
+    IServiceProvider serviceProvider,
+    IMapper mapper,
+    UserManager<AppUser> userManager)
+    : ICommandHandler<CreateTenantCommand>
 {
-    private readonly TenantDbContext _context;
-    private readonly IConfiguration _configuration;
-    private readonly IServiceProvider _serviceProvider;
-
-    public CreateTenantCommandHandler(TenantDbContext context, IConfiguration configuration, IServiceProvider serviceProvider)
-    {
-        _context = context;
-        _configuration = configuration;
-        _serviceProvider = serviceProvider;
-    }
-
     public async Task<Result> Handle(CreateTenantCommand request, CancellationToken cancellationToken)
     {
         Guid tenantId = Guid.NewGuid();
@@ -31,12 +29,12 @@ public sealed class CreateTenantCommandHandler : ICommandHandler<CreateTenantCom
         if (request.Data.Isolated == true)
         {
             string dbName = $"BMTSYS_{codeTenant}";
-            var defaultConnectionString = _configuration.GetConnectionString("PostgresConnectionStrings");
+            var defaultConnectionString = configuration.GetConnectionString("PostgresConnectionStrings");
             newConnectionString = defaultConnectionString.Replace("BMTSYS_DATABASE", dbName);
 
             try
             {
-                using IServiceScope scope = _serviceProvider.CreateScope();
+                using IServiceScope scope = serviceProvider.CreateScope();
                 ApplicationDbContext dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
                 dbContext.Database.SetConnectionString(newConnectionString);
 
@@ -56,17 +54,15 @@ public sealed class CreateTenantCommandHandler : ICommandHandler<CreateTenantCom
             }
         }
 
-        Domain.Entities.Tenant tenant = new Domain.Entities.Tenant
-        {
-            Id = tenantId,
-            Name = request.Data.Name,
-            Code = codeTenant,
-            Email = request.Data.Email,
-            ConnectionString = newConnectionString
-        };
+        var tenant = mapper.Map<Domain.Entities.Tenant>(request.Data);
+        tenant.Id = tenantId;
+        tenant.Name = request.Data.Name;
+        tenant.Code = codeTenant;
+        tenant.Email = request.Data.Email;
+        tenant.ConnectionString = newConnectionString;
 
-        _context.Tenants.Add(tenant);
-        await _context.SaveChangesAsync(cancellationToken);
+        context.Tenants.Add(tenant);
+        await context.SaveChangesAsync(cancellationToken);
 
         return Result.Success(tenant);
     }

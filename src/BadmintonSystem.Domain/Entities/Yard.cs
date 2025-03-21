@@ -7,6 +7,8 @@ public class Yard : EntityAuditBase<Guid>
 {
     public string Name { get; set; }
 
+    public string? ImageLink { get; set; }
+
     public Guid YardTypeId { get; set; }
 
     public StatusEnum IsStatus { get; set; }

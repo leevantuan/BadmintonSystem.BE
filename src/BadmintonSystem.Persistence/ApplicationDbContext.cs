@@ -132,6 +132,11 @@ public sealed class ApplicationDbContext
                 .AddJsonFile("appsettings.Production.json")
                 .Build();
 
+            //var configuration = new ConfigurationBuilder()
+            //    .SetBasePath(Directory.GetCurrentDirectory())
+            //    .AddJsonFile("appsettings.Development.json")
+            //    .Build();
+
             connectionString = configuration.GetConnectionString("PostgresConnectionStrings");
         }
 

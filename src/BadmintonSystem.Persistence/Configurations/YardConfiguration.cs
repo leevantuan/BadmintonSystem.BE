@@ -15,6 +15,8 @@ internal sealed class YardConfiguration : IEntityTypeConfiguration<Yard>
 
         builder.Property(x => x.Name).HasDefaultValue(null).IsRequired();
 
+        builder.Property(x => x.ImageLink).HasDefaultValue(null);
+
         builder.Property(x => x.IsStatus).HasDefaultValue(null).IsRequired();
 
         builder.Property(x => x.YardTypeId).HasDefaultValue(null).IsRequired();

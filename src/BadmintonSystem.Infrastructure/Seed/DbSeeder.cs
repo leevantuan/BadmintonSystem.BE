@@ -109,6 +109,7 @@ public sealed class DbSeeder(
                 {
                     Id = Guid.NewGuid(),
                     Name = yardName,
+                    ImageLink = "https://",
                     YardTypeId = yardTypeId,
                     IsStatus = StatusEnum.TRUE
                 };

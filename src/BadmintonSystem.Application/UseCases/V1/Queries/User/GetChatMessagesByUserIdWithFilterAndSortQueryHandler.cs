@@ -8,7 +8,6 @@ using BadmintonSystem.Contract.Extensions;
 using BadmintonSystem.Contract.Services.V1.User;
 using BadmintonSystem.Domain.Abstractions.Repositories;
 using BadmintonSystem.Domain.Entities;
-using BadmintonSystem.Domain.Entities.Identity;
 using BadmintonSystem.Domain.Exceptions;
 using BadmintonSystem.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -49,15 +48,9 @@ public sealed class GetChatMessagesByUserIdWithFilterAndSortQueryHandler(
             .TransformPropertiesToSqlAliases<ChatMessage,
                 Contract.Services.V1.ChatMessage.Response.ChatMessageResponse>();
 
-        string appUserColumns = StringExtension
-            .TransformPropertiesToSqlAliases<AppUser, Response.AppUserResponse>();
-
         var baseQueryBuilder = new StringBuilder();
         baseQueryBuilder.Append(
             $@"FROM ""{nameof(ChatMessage)}"" AS chatMessage
-                LEFT JOIN ""{nameof(context.AppUsers)}"" AS appUser
-                ON appUser.""{nameof(AppUser.Id)}"" = chatMessage.""{nameof(ChatMessage.CreatedBy)}""
-                AND appUser.""{nameof(AppUser.IsDeleted)}"" = false 
                 WHERE chatMessage.""{nameof(ChatMessage.IsDeleted)}"" = false
                 AND chatMessage.""{nameof(ChatMessage.ChatRoomId)}"" = '{chatRoom.Id}' ");
 
@@ -103,7 +96,7 @@ public sealed class GetChatMessagesByUserIdWithFilterAndSortQueryHandler(
 
         // Handle chat message query
         var chatMessagesQueryBuilder = new StringBuilder();
-        chatMessagesQueryBuilder.Append($@"SELECT {chatMessageColumns}, {appUserColumns}");
+        chatMessagesQueryBuilder.Append($@"SELECT {chatMessageColumns}");
         chatMessagesQueryBuilder.Append(" \n");
         chatMessagesQueryBuilder.Append(baseQueryBuilder);
 
@@ -147,17 +140,6 @@ public sealed class GetChatMessagesByUserIdWithFilterAndSortQueryHandler(
                 ReadDate = g.First().ChatMessage_ReadDate,
                 ChatRoomId = g.First().ChatMessage_ChatRoomId ?? chatRoom.Id,
                 CreatedDate = g.First().ChatMessage_CreatedDate,
-
-                User = g.Select(s => new Response.AppUserResponse
-                    {
-                        Id = s.AppUser_Id ?? Guid.Empty,
-                        UserName = s.AppUser_UserName ?? string.Empty,
-                        Email = s.AppUser_Email ?? string.Empty,
-                        FullName = s.AppUser_FullName ?? string.Empty,
-                        DateOfBirth = s.AppUser_DateOfBirth,
-                        AvatarUrl = s.AppUser_AvatarUrl ?? string.Empty
-                    })
-                    .FirstOrDefault()
             })
             .ToList();
 

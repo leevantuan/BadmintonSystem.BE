@@ -1,7 +1,5 @@
 ﻿using BadmintonSystem.Contract.Abstractions.Shared;
-using BadmintonSystem.Contract.Extensions;
 using BadmintonSystem.Contract.Services.V1.ChatMessage;
-using BadmintonSystem.Domain.Enumerations;
 using BadmintonSystem.Persistence.Helpers;
 using BadmintonSystem.Presentation.Abstractions;
 using Carter;
@@ -37,27 +35,10 @@ public class ChatMessageApi : ApiEndpoint, ICarterModule
     private static async Task<IResult> CreateChatMessageV1
     (
         ISender sender,
-        IHttpContextAccessor httpContextAccessor,
         [FromBody] Request.CreateChatMessageRequest request)
     {
-        bool isAdmin = false;
-
-        List<string>? roles = httpContextAccessor.HttpContext?.GetCurrentRoles();
-
-        if (roles != null && roles.Contains(StringExtension.CapitalizeFirstLetter(AppRoleEnum.ADMIN.ToString())))
-        {
-            isAdmin = true;
-        }
-
-        if (!isAdmin)
-        {
-            Guid? userId = httpContextAccessor.HttpContext?.GetCurrentUserId();
-
-            request.UserId = userId ?? Guid.Empty;
-        }
-
         Result<Response.ChatMessageResponse> result =
-            await sender.Send(new Command.CreateChatMessageCommand(isAdmin, request));
+            await sender.Send(new Command.CreateChatMessageCommand(request));
 
         return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
     }

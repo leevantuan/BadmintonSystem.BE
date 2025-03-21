@@ -7,12 +7,16 @@ public static class Response
     public class ChatRoomResponse : EntityAuditBase<Guid>
     {
         public Guid UserId { get; set; }
+
+        public string UserName { get; set; }
+
+        public string Email { get; set; }
+
+        public string Avatar { get; set; }
     }
 
     public class GetChatRoomByIdResponse : ChatRoomResponse
     {
-        public User.Response.AppUserResponse? User { get; set; }
-
         public ChatMessage.Response.ChatMessageResponse? ChatMessage { get; set; }
     }
 
@@ -21,6 +25,12 @@ public static class Response
         public Guid ChatRoom_Id { get; set; }
 
         public Guid ChatRoom_UserId { get; set; }
+
+        public string ChatRoom_UserName { get; set; }
+
+        public string ChatRoom_Email { get; set; }
+
+        public string ChatRoom_Avatar { get; set; }
 
         public DateTime ChatRoom_CreatedDate { get; set; }
     }
@@ -43,16 +53,16 @@ public static class Response
 
         public DateTime? ChatMessage_CreatedDate { get; set; }
 
-        public Guid? AppUser_Id { get; set; }
+        //public Guid? AppUser_Id { get; set; }
 
-        public string? AppUser_UserName { get; set; }
+        //public string? AppUser_UserName { get; set; }
 
-        public string? AppUser_Email { get; set; }
+        //public string? AppUser_Email { get; set; }
 
-        public string? AppUser_FullName { get; set; }
+        //public string? AppUser_FullName { get; set; }
 
-        public DateTime? AppUser_DateOfBirth { get; set; }
+        //public DateTime? AppUser_DateOfBirth { get; set; }
 
-        public string? AppUser_AvatarUrl { get; set; }
+        //public string? AppUser_AvatarUrl { get; set; }
     }
 }

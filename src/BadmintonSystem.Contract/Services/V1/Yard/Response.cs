@@ -10,6 +10,8 @@ public static class Response
 
         public string Name { get; set; }
 
+        public string? ImageLink { get; set; }
+
         public Guid? YardTypeId { get; set; }
 
         public int? IsStatus { get; set; }
@@ -18,6 +20,8 @@ public static class Response
     public class YardDetailResponse : EntityAuditBase<Guid>
     {
         public string? Name { get; set; }
+
+        public string? ImageLink { get; set; }
 
         public Guid YardTypeId { get; set; }
 

@@ -42,7 +42,7 @@ public sealed class
         {
             ImageUrl = request.Data.ImageUrl,
             Content = request.Data.Content,
-            IsAdmin = request.IsAdmin,
+            IsAdmin = request.Data.IsAdmin,
             IsRead = false,
             ReadDate = DateTime.Now,
             ChatRoomId = chatRoom.Id

@@ -9,6 +9,8 @@ public static class Request
         public string? Content { get; set; }
 
         public Guid? UserId { get; set; }
+
+        public bool IsAdmin { get; set; }
     }
 
     public class CreateChatMessageByChatbotRequest
