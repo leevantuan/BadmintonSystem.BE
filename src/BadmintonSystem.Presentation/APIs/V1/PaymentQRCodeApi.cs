@@ -1,6 +1,5 @@
 ﻿using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.V1.Momo;
-using BadmintonSystem.Persistence.Helpers;
 using BadmintonSystem.Presentation.Abstractions;
 using Carter;
 using MediatR;
@@ -31,24 +30,35 @@ public class PaymentQRCodeApi : ApiEndpoint, ICarterModule
             .AllowAnonymous();
     }
 
-    private static Task<IResult> VerifyPaymentMomoV1
+    private static async Task<IResult> VerifyPaymentMomoV1
     (
+        ISender sender,
         HttpRequest request)
     {
         var query = request.Query;
 
         string amount = query["amount"];
+        string orderId = query["orderId"];
         string orderInfo = query["orderInfo"];
         string resultCode = query["resultCode"];
         string message = query["message"];
         string signature = query["signature"];
 
-        if (resultCode == "0")
+        var momoPaymentResponse = new Contract.Services.V1.Payment.Request.PaymentRequest
         {
-            return Task.FromResult(Results.Redirect("https://bookingweb.shop"));
-        }
+            OrderId = orderId,
+            Type = !(resultCode == "0")
+        };
 
-        return Task.FromResult(Results.Ok("OK"));
+        var result = await sender.Send(new Contract.Services.V1.Payment.Command.ReturnPaymentCommand(momoPaymentResponse));
+
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
+        //if (resultCode == "0")
+        //{
+        //    return Task.FromResult(Results.Redirect("https://bookingweb.shop"));
+        //}
+
+        //return Task.FromResult(Results.Ok("OK"));
     }
 
     private static async Task<IResult> CreateNotificationV1

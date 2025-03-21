@@ -62,6 +62,7 @@ public static class JwtExtensions
                         if (!string.IsNullOrEmpty(accessToken) &&
                             (path.StartsWithSegments(HubsPath.ChatUrl)
                              || path.StartsWithSegments(HubsPath.BookingUrl)
+                             || path.StartsWithSegments(HubsPath.PaymentUrl)
                              || path.StartsWithSegments(HubsPath.RegisterUrl)))
                         {
                             // Read the token out of the query string

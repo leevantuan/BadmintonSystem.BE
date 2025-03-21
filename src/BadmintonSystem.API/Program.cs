@@ -147,6 +147,7 @@ app.MapControllers();
 app.MapHub<BookingHubBase>(HubsPath.BookingUrl);
 app.MapHub<ChatHubBase>(HubsPath.ChatUrl);
 app.MapHub<RegisterHubBase>(HubsPath.RegisterUrl);
+app.MapHub<PaymentHubBase>(HubsPath.PaymentUrl);
 
 try
 {

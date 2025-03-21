@@ -7,4 +7,6 @@ public static class HubsPath
     public const string BookingUrl = "/hubs/booking";
 
     public const string RegisterUrl = "/hubs/register";
+
+    public const string PaymentUrl = "/hubs/payment";
 }
