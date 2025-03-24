@@ -1,11 +1,12 @@
-﻿using System.Text;
+﻿using System.Runtime.CompilerServices;
+using System.Text;
 using AutoMapper;
 using BadmintonSystem.Contract.Abstractions.Message;
 using BadmintonSystem.Contract.Abstractions.Shared;
-using BadmintonSystem.Contract.Enumerations;
 using BadmintonSystem.Contract.Extensions;
 using BadmintonSystem.Contract.Services.V1.Club;
 using BadmintonSystem.Domain.Abstractions.Repositories;
+using BadmintonSystem.Domain.Entities;
 using BadmintonSystem.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,65 +22,98 @@ public sealed class GetClubsWithFilterAndSortValueQueryHandler(
         (Query.GetClubsWithFilterAndSortValueQuery request, CancellationToken cancellationToken)
     {
         // Page Index and Page Size
-        int PageIndex = request.Data.PageIndex <= 0
-            ? PagedResult<Domain.Entities.Club>.DefaultPageIndex
+        int pageIndex = request.Data.PageIndex <= 0
+            ? PagedResult<Domain.Entities.Notification>.DefaultPageIndex
             : request.Data.PageIndex;
-        int PageSize = request.Data.PageSize <= 0
-            ? PagedResult<Domain.Entities.Club>.DefaultPageSize
-            : request.Data.PageSize > PagedResult<Domain.Entities.Club>.UpperPageSize
-                ? PagedResult<Domain.Entities.Club>.UpperPageSize
+        int pageSize = request.Data.PageSize <= 0
+            ? PagedResult<Domain.Entities.Notification>.DefaultPageSize
+            : request.Data.PageSize > PagedResult<Domain.Entities.Notification>.UpperPageSize
+                ? PagedResult<Domain.Entities.Notification>.UpperPageSize
                 : request.Data.PageSize;
 
         // Handle Query SQL
-        var clubsQuery = new StringBuilder();
+        string clubColumns = StringExtension
+             .TransformPropertiesToSqlAliases<Domain.Entities.Club,
+                 Response.ClubDetail>();
 
-        clubsQuery.Append($@"SELECT * FROM ""{nameof(Domain.Entities.Club)}""
-                             WHERE ""{nameof(Domain.Entities.Club.Name)}"" ILIKE '%{request.Data.SearchTerm}%'");
+        string clubInformationColumns = StringExtension
+            .TransformPropertiesToSqlAliases<ClubInformation,
+                Contract.Services.V1.ClubInformation.Response.ClubInformationDetailResponse>();
 
-        if (request.Data.FilterColumnAndMultipleValue.Any())
-        {
-            foreach (KeyValuePair<string, List<string>> item in request.Data.FilterColumnAndMultipleValue)
+        string clubImageColumns = StringExtension
+            .TransformPropertiesToSqlAliases<ClubImage,
+                Contract.Services.V1.ClubImage.Response.ClubImageDetailResponse>();
+
+        string clubAddressColumns = StringExtension
+            .TransformPropertiesToSqlAliases<Domain.Entities.Address,
+                Contract.Services.V1.Address.Response.AddressDetailResponse>();
+
+        var queryBuilder = new StringBuilder();
+        queryBuilder.Append($@"SELECT {clubColumns}, {clubInformationColumns}, {clubImageColumns}, {clubAddressColumns}
+                                FROM ""{nameof(Domain.Entities.Club)}"" AS club
+                                JOIN ""{nameof(ClubInformation)}"" AS clubInformation
+                                ON clubInformation.""{nameof(ClubInformation.ClubId)}"" = club.""{nameof(Domain.Entities.Club.Id)}""
+                                JOIN ""{nameof(ClubImage)}"" AS clubImage
+                                ON clubImage.""{nameof(ClubImage.ClubId)}"" = club.""{nameof(Domain.Entities.Club.Id)}""
+                                JOIN ""{nameof(ClubAddress)}"" AS clubAddress
+                                ON clubAddress.""{nameof(ClubAddress.ClubId)}"" = club.""{nameof(Domain.Entities.Club.Id)}""
+                                JOIN ""{nameof(Domain.Entities.Address)}"" AS address
+                                ON address.""{nameof(Domain.Entities.Address.Id)}"" = clubAddress.""{nameof(ClubAddress.AddressId)}""");
+
+        List<Response.GetClubDetailSql> queryResult = await clubRepository
+            .ExecuteSqlQuery<Response.GetClubDetailSql>(
+                FormattableStringFactory.Create(queryBuilder.ToString()))
+            .ToListAsync(cancellationToken);
+
+        // Group By
+        List<Response.ClubDetailResponse>? resultClub = queryResult.GroupBy(p => p.Club_Id)
+            .Select(g => new Response.ClubDetailResponse
             {
-                string key = ClubExtension.GetSortClubProperty(item.Key);
-                clubsQuery.Append($@"AND ""{nameof(Domain.Entities.Club)}"".""{key}""::TEXT ILIKE ANY (ARRAY[");
+                Id = g.Key ?? Guid.Empty,
+                Name = g.First().Club_Name,
+                Hotline = g.First().Club_Hotline,
+                OpeningTime = g.First().Club_OpeningTime,
+                ClosingTime = g.First().Club_ClosingTime,
+                Code = g.First().Club_Code,
+                ClubInformation = g.Where(x => x.ClubInformation_Id != null)
+                    .Select(s => new Contract.Services.V1.ClubInformation.Response.ClubInformationDetailResponse
+                    {
+                        Id = s.ClubInformation_Id,
+                        FacebookPageLink = s.ClubInformation_FacebookPageLink,
+                        InstagramLink = s.ClubInformation_InstagramLink,
+                        MapLink = s.ClubInformation_MapLink
+                    })
+                    .DistinctBy(s => s.Id)
+                    .FirstOrDefault(),
 
-                foreach (string value in item.Value)
-                {
-                    clubsQuery.Append($@"'%{value}%', ");
-                }
+                ClubImages = g.Where(x => x.ClubImage_Id != null)
+                    .Select(s => new Contract.Services.V1.ClubImage.Response.ClubImageDetailResponse
+                    {
+                        Id = s.ClubImage_Id ?? Guid.Empty,
+                        ImageLink = s.ClubImage_ImageLink
+                    })
+                    .Distinct()
+                    .ToList(),
 
-                clubsQuery.Length -= 2;
+                ClubAddress = g.Where(x => x.Address_Id != null)
+                    .Select(s => new Contract.Services.V1.Address.Response.AddressDetailResponse
+                    {
+                        Id = s.Address_Id ?? Guid.Empty,
+                        Unit = s.Address_Unit,
+                        Street = s.Address_Street,
+                        AddressLine1 = s.Address_AddressLine1,
+                        AddressLine2 = s.Address_AddressLine2,
+                        City = s.Address_City,
+                        Province = s.Address_Province
+                    })
+                    .DistinctBy(s => s.Id)
+                    .FirstOrDefault()
+            })
+            .ToList();
 
-                clubsQuery.Append("]) ");
-            }
-        }
+        var results =
+            PagedResult<Response.ClubDetailResponse>.Create(resultClub, pageIndex, pageSize, resultClub.Count());
 
-        if (request.Data.SortColumnAndOrder.Any())
-        {
-            clubsQuery.Append("ORDER BY ");
-            foreach (KeyValuePair<string, SortOrder> item in request.Data.SortColumnAndOrder)
-            {
-                string key = ReviewExtension.GetSortReviewProperty(item.Key);
-                clubsQuery.Append(item.Value == SortOrder.Descending
-                    ? $@" ""{nameof(Domain.Entities.Club)}"".""{key}"" DESC, "
-                    : $@" ""{nameof(Domain.Entities.Club)}"".""{key}"" ASC, ");
-            }
-
-            clubsQuery.Length -= 2;
-        }
-
-        clubsQuery.Append($"\nOFFSET {(PageIndex - 1) * PageSize} ROWS FETCH NEXT {PageSize} ROWS ONLY");
-
-        List<Domain.Entities.Club> clubs =
-            await context.Club.FromSqlRaw(clubsQuery.ToString()).ToListAsync(cancellationToken);
-
-        int totalCount = clubs.Count();
-
-        var clubPagedResult = PagedResult<Domain.Entities.Club>.Create(clubs, PageIndex, PageSize, totalCount);
-
-        PagedResult<Response.ClubDetailResponse>? result =
-            mapper.Map<PagedResult<Response.ClubDetailResponse>>(clubPagedResult);
-
-        return Result.Success(result);
+        return Result.Success(results);
     }
 }

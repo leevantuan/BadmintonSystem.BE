@@ -72,16 +72,6 @@ public static class Response
 
     public class ClubDetailResponse : ClubDetail
     {
-        public string? Name { get; set; }
-
-        public string? Hotline { get; set; }
-
-        public TimeSpan? OpeningTime { get; set; }
-
-        public TimeSpan? ClosingTime { get; set; }
-
-        public string? Code { get; set; }
-
         public ClubInformation.Response.ClubInformationDetailResponse? ClubInformation { get; set; }
 
         public List<ClubImage.Response.ClubImageDetailResponse>? ClubImages { get; set; }
