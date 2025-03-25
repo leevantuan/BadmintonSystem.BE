@@ -15,8 +15,8 @@ public sealed class GetYardPricesFreeByDateQueryHandler(
     public async Task<Result<List<Response.YardPricesFreeByDateDetailResponse>>> Handle(Query.GetYardPricesFreeByDateQuery request, CancellationToken cancellationToken)
     {
         DateTime filterDate = request.Data.Date;
-        TimeSpan currentTime = DateTime.Now.TimeOfDay;
-        string currentTimeString = currentTime.ToString(@"hh\:mm\:ss");
+        //TimeSpan currentTime = DateTime.Now.TimeOfDay;
+        //string currentTimeString = currentTime.ToString(@"hh\:mm\:ss");
 
         var baseQueryBuilder = new StringBuilder();
         baseQueryBuilder.Append($@"
@@ -33,7 +33,7 @@ public sealed class GetYardPricesFreeByDateQueryHandler(
                       AND yardPrice.""{nameof(Domain.Entities.YardPrice.EffectiveDate)}""::DATE = '{filterDate}'
                       AND yardPrice.""{nameof(Domain.Entities.YardPrice.IsBooking)}"" = 0
                       AND timeSlot.""{nameof(Domain.Entities.TimeSlot.EndTime)}"" BETWEEN '{request.Data.StartTime}' AND '{request.Data.EndTime}'
-                      AND timeSlot.""{nameof(Domain.Entities.TimeSlot.EndTime)}"" >= '{currentTimeString}'
+                      AND timeSlot.""{nameof(Domain.Entities.TimeSlot.EndTime)}"" >= '{request.Data.TimeNow}'
                     ORDER BY timeSlot.""{nameof(Domain.Entities.TimeSlot.StartTime)}""");
 
         List<Response.YardPricesFreeByDateDetailResponseSql> queryResult = await yardPriceRepository

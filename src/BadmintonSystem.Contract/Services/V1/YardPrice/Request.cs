@@ -32,6 +32,8 @@ public static class Request
 
         public TimeSpan EndTime { get; set; }
 
+        public TimeSpan TimeNow { get; set; }
+
         public string Tenant { get; set; }
     }
 }

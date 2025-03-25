@@ -67,6 +67,7 @@ public class YardPriceApi : ApiEndpoint, ICarterModule
         string Date = query["date"];
         string StartTime = query["startTime"];
         string EndTime = query["endTime"];
+        string TimeNow = query["timeNow"];
         string Tenant = query["tenant"];
 
         var requestData = new Request.GetYardPricesFreeByDateRequest
@@ -74,6 +75,7 @@ public class YardPriceApi : ApiEndpoint, ICarterModule
             Date = DateTime.Parse(Date),
             StartTime = TimeSpan.Parse(StartTime),
             EndTime = TimeSpan.Parse(EndTime),
+            TimeNow = TimeSpan.Parse(TimeNow),
             Tenant = Tenant
         };
 
