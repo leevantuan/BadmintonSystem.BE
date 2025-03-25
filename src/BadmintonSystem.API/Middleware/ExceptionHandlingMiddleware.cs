@@ -19,10 +19,21 @@ internal sealed class ExceptionHandlingMiddleware
     {
         try
         {
-            context.Request.Headers.TryGetValue("tenant", out var tenantFromHeader);
-            if (string.IsNullOrEmpty(tenantFromHeader) == false)
+            var request = context.Request;
+            var query = request.Query;
+            string Tenant = query["tenant"];
+
+            if (!string.IsNullOrEmpty(Tenant))
             {
-                await currentTenantService.SetTenant(tenantFromHeader);
+                await currentTenantService.SetTenant(Tenant);
+            }
+            else
+            {
+                context.Request.Headers.TryGetValue("tenant", out var tenantFromHeader);
+                if (string.IsNullOrEmpty(tenantFromHeader) == false)
+                {
+                    await currentTenantService.SetTenant(tenantFromHeader);
+                }
             }
 
             await _next(context);

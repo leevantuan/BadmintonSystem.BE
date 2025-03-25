@@ -1,5 +1,6 @@
 ﻿using BadmintonSystem.Contract.Abstractions.Message;
 using BadmintonSystem.Contract.Abstractions.Shared;
+using static BadmintonSystem.Contract.Services.V1.YardPrice.Request;
 
 namespace BadmintonSystem.Contract.Services.V1.YardPrice;
 
@@ -22,4 +23,9 @@ public static class Query
         Guid UserId,
         Guid YardId)
         : IQuery<Response.YardPricesByDateDetailResponse>;
+
+    // API chatbot
+    public record GetYardPricesFreeByDateQuery(
+        GetYardPricesFreeByDateRequest Data)
+        : IQuery<List<Response.YardPricesFreeByDateDetailResponse>>;
 }

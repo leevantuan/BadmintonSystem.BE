@@ -12,9 +12,9 @@ namespace BadmintonSystem.Application.UseCases.V1.Queries.Club;
 
 public sealed class GetClubByIdQueryHandler(
     IRepositoryBase<Domain.Entities.Club, Guid> clubRepository)
-    : IQueryHandler<Query.GetClubByIdQuery, Response.ClubDetailResponse>
+    : IQueryHandler<Query.GetClubByIdQuery, Response.ClubDetailByIdResponse>
 {
-    public async Task<Result<Response.ClubDetailResponse>> Handle
+    public async Task<Result<Response.ClubDetailByIdResponse>> Handle
         (Query.GetClubByIdQuery request, CancellationToken cancellationToken)
     {
         string clubColumns = StringExtension
@@ -33,8 +33,16 @@ public sealed class GetClubByIdQueryHandler(
             .TransformPropertiesToSqlAliases<Domain.Entities.Address,
                 Contract.Services.V1.Address.Response.AddressDetailResponse>();
 
+        string reviewColumns = StringExtension
+            .TransformPropertiesToSqlAliases<Domain.Entities.Review,
+                Contract.Services.V1.Review.Response.ReviewDetailResponse>();
+
+        string reviewImageColumns = StringExtension
+            .TransformPropertiesToSqlAliases<Domain.Entities.ReviewImage,
+                Contract.Services.V1.ReviewImage.Response.ReviewImageDetailResponse>();
+
         var queryBuilder = new StringBuilder();
-        queryBuilder.Append($@"SELECT {clubColumns}, {clubInformationColumns}, {clubImageColumns}, {clubAddressColumns}
+        queryBuilder.Append($@"SELECT {clubColumns}, {clubInformationColumns}, {clubImageColumns}, {clubAddressColumns}, {reviewColumns}, {reviewImageColumns}
                                 FROM ""{nameof(Domain.Entities.Club)}"" AS club
                                 JOIN ""{nameof(ClubInformation)}"" AS clubInformation
                                 ON clubInformation.""{nameof(ClubInformation.ClubId)}"" = club.""{nameof(Domain.Entities.Club.Id)}""
@@ -44,16 +52,20 @@ public sealed class GetClubByIdQueryHandler(
                                 ON clubAddress.""{nameof(ClubAddress.ClubId)}"" = club.""{nameof(Domain.Entities.Club.Id)}""
                                 JOIN ""{nameof(Domain.Entities.Address)}"" AS address
                                 ON address.""{nameof(Domain.Entities.Address.Id)}"" = clubAddress.""{nameof(ClubAddress.AddressId)}""
+                                LEFT JOIN ""{nameof(Domain.Entities.Review)}"" AS review
+                                ON review.""{nameof(Domain.Entities.Review.ClubId)}"" = club.""{nameof(Domain.Entities.Club.Id)}""
+                                JOIN ""{nameof(Domain.Entities.ReviewImage)}"" AS reviewImage
+                                ON reviewImage.""{nameof(Domain.Entities.ReviewImage.ReviewId)}"" = review.""{nameof(Domain.Entities.Review.Id)}""
                                 WHERE club.""{nameof(Domain.Entities.Club.Id)}"" = '{request.Id.ToString()}'");
 
-        List<Response.GetClubDetailSql> queryResult = await clubRepository
-            .ExecuteSqlQuery<Response.GetClubDetailSql>(
+        List<Response.GetClubByIdDetailSql> queryResult = await clubRepository
+            .ExecuteSqlQuery<Response.GetClubByIdDetailSql>(
                 FormattableStringFactory.Create(queryBuilder.ToString()))
             .ToListAsync(cancellationToken);
 
         // Group By
-        Response.ClubDetailResponse? result = queryResult.GroupBy(p => p.Club_Id)
-            .Select(g => new Response.ClubDetailResponse
+        Response.ClubDetailByIdResponse? result = queryResult.GroupBy(p => p.Club_Id)
+            .Select(g => new Response.ClubDetailByIdResponse
             {
                 Id = g.Key ?? Guid.Empty,
                 Name = g.First().Club_Name,
@@ -93,7 +105,28 @@ public sealed class GetClubByIdQueryHandler(
                         Province = s.Address_Province
                     })
                     .DistinctBy(s => s.Id)
-                    .FirstOrDefault()
+                    .FirstOrDefault(),
+
+                Reviews = g.Where(x => x.Review_Id != null)
+                    .Select(s => new Contract.Services.V1.Review.Response.GetReviewDetailResponse
+                    {
+                        Id = s.Review_Id ?? Guid.Empty,
+                        RatingValue = s.Review_RatingValue,
+                        Comment = s.Review_Comment,
+                        UserId = s.Review_UserId,
+                        ClubId = s.Review_ClubId,
+                        ReviewImages = g.Where(x => x.Review_Id == s.Review_Id)
+                            .Select(x => new Contract.Services.V1.ReviewImage.Response.ReviewImageDetailResponse
+                            {
+                                Id = x.ReviewImage_Id ?? Guid.Empty,
+                                ImageLink = x.ReviewImage_ImageLink,
+                                ReviewId = x.ReviewImage_ReviewId
+                            })
+                            .DistinctBy(x => x.Id)
+                            .ToList()
+                    })
+                    .DistinctBy(s => s.Id)
+                    .ToList()
             })
             .FirstOrDefault();
 

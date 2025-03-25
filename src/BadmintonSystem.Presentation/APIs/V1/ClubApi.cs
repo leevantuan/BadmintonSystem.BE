@@ -45,6 +45,20 @@ public class ClubApi : ApiEndpoint, ICarterModule
         group1.MapDelete(string.Empty, DeleteClubsV1)
             .AllowAnonymous();
         //.RequireJwtAuthorize(FunctionEnum.CLUB.ToString(), (int)ActionEnum.DELETE);
+
+        group1.MapGet("top-club/{quantity}", GetTopClubsV1)
+            .AllowAnonymous();
+    }
+
+    private static async Task<IResult> GetTopClubsV1
+    (
+        ISender sender,
+        int quantity)
+    {
+        Result<List<Response.ClubDetailResponseChatBot>> result =
+            await sender.Send(new Query.GetTopClubsQuery(quantity));
+
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> CreateClubV1
@@ -94,7 +108,7 @@ public class ClubApi : ApiEndpoint, ICarterModule
 
     private static async Task<IResult> GetClubByIdV1(ISender sender, Guid clubId)
     {
-        Result<Response.ClubDetailResponse> result = await sender.Send(new Query.GetClubByIdQuery(clubId));
+        Result<Response.ClubDetailByIdResponse> result = await sender.Send(new Query.GetClubByIdQuery(clubId));
 
         return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }

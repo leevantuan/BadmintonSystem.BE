@@ -51,6 +51,36 @@ public class YardPriceApi : ApiEndpoint, ICarterModule
 
         group1.MapDelete(string.Empty, DeleteYardPricesV1)
             .RequireJwtAuthorize(FunctionEnum.YARDPRICE.ToString(), (int)ActionEnum.DELETE);
+
+        group1.MapPost("filter-by-date/free-yard", GetYardPricesFilterFreeByDateV1)
+            .AllowAnonymous();
+
+    }
+
+    private static async Task<IResult> GetYardPricesFilterFreeByDateV1
+    (
+        ISender sender,
+        HttpRequest request)
+    {
+        var query = request.Query;
+
+        string Date = query["date"];
+        string StartTime = query["startTime"];
+        string EndTime = query["endTime"];
+        string Tenant = query["tenant"];
+
+        var requestData = new Request.GetYardPricesFreeByDateRequest
+        {
+            Date = DateTime.Parse(Date),
+            StartTime = TimeSpan.Parse(StartTime),
+            EndTime = TimeSpan.Parse(EndTime),
+            Tenant = Tenant
+        };
+
+        Result<List<Response.YardPricesFreeByDateDetailResponse>> result =
+            await sender.Send(new Query.GetYardPricesFreeByDateQuery(requestData));
+
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> CreateYardPriceV1

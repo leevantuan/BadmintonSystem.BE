@@ -1,4 +1,5 @@
 ﻿using BadmintonSystem.Contract.Abstractions.Entities;
+using static BadmintonSystem.Contract.Services.V1.Review.Response;
 
 namespace BadmintonSystem.Contract.Services.V1.Club;
 
@@ -77,5 +78,67 @@ public static class Response
         public List<ClubImage.Response.ClubImageDetailResponse>? ClubImages { get; set; }
 
         public Address.Response.AddressDetailResponse? ClubAddress { get; set; }
+    }
+
+    // API CHat bot
+    public class ClubDetailResponseChatBot
+    {
+        public string? Name { get; set; }
+
+        public string? Hotline { get; set; }
+
+        public TimeSpan? OpeningTime { get; set; }
+
+        public TimeSpan? ClosingTime { get; set; }
+
+        public string? Code { get; set; }
+
+        public Guid? Id { get; set; }
+
+        public decimal? AverageRating { get; set; }
+    }
+
+    public class ClubDetailResponseChatBotSql
+    {
+        public string? Club_Name { get; set; }
+
+        public string? Club_Hotline { get; set; }
+
+        public TimeSpan? Club_OpeningTime { get; set; }
+
+        public TimeSpan? Club_ClosingTime { get; set; }
+
+        public string? Club_Code { get; set; }
+
+        public Guid? Club_Id { get; set; }
+
+        public decimal? Average_Rating { get; set; }
+    }
+
+    // Detail full options
+    public class ClubDetailByIdResponse : ClubDetailResponse
+    {
+        public List<GetReviewDetailResponse>? Reviews { get; set; }
+    }
+
+    public class GetClubByIdDetailSql : GetClubDetailSql
+    {
+        // REVIEW
+        public Guid? Review_Id { get; set; }
+
+        public string? Review_Comment { get; set; }
+
+        public int Review_RatingValue { get; set; }
+
+        public Guid Review_UserId { get; set; }
+
+        public Guid Review_ClubId { get; set; }
+
+        // REVIEW IMAGE
+        public Guid? ReviewImage_Id { get; set; }
+
+        public string? ReviewImage_ImageLink { get; set; }
+
+        public Guid ReviewImage_ReviewId { get; set; }
     }
 }

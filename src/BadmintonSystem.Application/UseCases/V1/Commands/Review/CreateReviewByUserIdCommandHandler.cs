@@ -16,8 +16,8 @@ public sealed class CreateReviewByUserIdCommandHandler(
 {
     public async Task<Result> Handle(Command.CreateReviewByUserIdCommand request, CancellationToken cancellationToken)
     {
-        _ = await context.AppUsers.FirstOrDefaultAsync(x => x.Id == request.UserId, cancellationToken)
-            ?? throw new IdentityException.AppUserNotFoundException(request.UserId);
+        _ = await context.AppUsers.FirstOrDefaultAsync(x => x.Id == request.Data.UserId, cancellationToken)
+            ?? throw new IdentityException.AppUserNotFoundException(request.Data.UserId);
 
         Domain.Entities.Club? club = await context.Club.FirstOrDefaultAsync(x => x.Id != null, cancellationToken);
 
@@ -27,7 +27,7 @@ public sealed class CreateReviewByUserIdCommandHandler(
             request.Data.ReviewImages.Select(x => mapper.Map<ReviewImage>(x));
 
         review.Id = Guid.NewGuid();
-        review.UserId = request.UserId;
+        review.UserId = request.Data.UserId;
         review.ClubId = club?.Id ?? request.Data.ClubId;
 
         context.Review.Add(review);
