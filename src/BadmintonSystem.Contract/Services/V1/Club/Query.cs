@@ -18,4 +18,7 @@ public static class Query
     // API chat bot
     public record GetTopClubsQuery(int quantity)
     : IQuery<List<Response.ClubDetailResponseChatBot>>;
+
+    public record GetCodeClubQuery(string Name)
+        : IQuery<string>;
 }

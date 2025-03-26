@@ -48,6 +48,20 @@ public class ClubApi : ApiEndpoint, ICarterModule
 
         group1.MapGet("top-club/{quantity}", GetTopClubsV1)
             .AllowAnonymous();
+
+        group1.MapGet("get-code/{tenantName}", GetCodeClubsV1)
+            .AllowAnonymous();
+    }
+
+    private static async Task<IResult> GetCodeClubsV1
+    (
+        ISender sender,
+        string tenantName)
+    {
+        Result<string> result =
+            await sender.Send(new Query.GetCodeClubQuery(tenantName));
+
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> GetTopClubsV1
