@@ -9,4 +9,7 @@ public class Query
 
     public record GetTenantByIdQuery(Guid tenantId)
     : IQuery<Response.TenantResponse>;
+
+    public record GetTenantContainTenantNameQuery(string tenantName)
+    : IQuery<Response.TenantResponse>;
 }

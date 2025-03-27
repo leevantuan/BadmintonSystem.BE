@@ -44,17 +44,17 @@ public sealed class GetClubByIdQueryHandler(
         var queryBuilder = new StringBuilder();
         queryBuilder.Append($@"SELECT {clubColumns}, {clubInformationColumns}, {clubImageColumns}, {clubAddressColumns}, {reviewColumns}, {reviewImageColumns}
                                 FROM ""{nameof(Domain.Entities.Club)}"" AS club
-                                JOIN ""{nameof(ClubInformation)}"" AS clubInformation
+                                LEFT JOIN ""{nameof(ClubInformation)}"" AS clubInformation
                                 ON clubInformation.""{nameof(ClubInformation.ClubId)}"" = club.""{nameof(Domain.Entities.Club.Id)}""
-                                JOIN ""{nameof(ClubImage)}"" AS clubImage
+                                LEFT JOIN ""{nameof(ClubImage)}"" AS clubImage
                                 ON clubImage.""{nameof(ClubImage.ClubId)}"" = club.""{nameof(Domain.Entities.Club.Id)}""
-                                JOIN ""{nameof(ClubAddress)}"" AS clubAddress
+                                LEFT JOIN ""{nameof(ClubAddress)}"" AS clubAddress
                                 ON clubAddress.""{nameof(ClubAddress.ClubId)}"" = club.""{nameof(Domain.Entities.Club.Id)}""
-                                JOIN ""{nameof(Domain.Entities.Address)}"" AS address
+                                LEFT JOIN ""{nameof(Domain.Entities.Address)}"" AS address
                                 ON address.""{nameof(Domain.Entities.Address.Id)}"" = clubAddress.""{nameof(ClubAddress.AddressId)}""
                                 LEFT JOIN ""{nameof(Domain.Entities.Review)}"" AS review
                                 ON review.""{nameof(Domain.Entities.Review.ClubId)}"" = club.""{nameof(Domain.Entities.Club.Id)}""
-                                JOIN ""{nameof(Domain.Entities.ReviewImage)}"" AS reviewImage
+                                LEFT JOIN ""{nameof(Domain.Entities.ReviewImage)}"" AS reviewImage
                                 ON reviewImage.""{nameof(Domain.Entities.ReviewImage.ReviewId)}"" = review.""{nameof(Domain.Entities.Review.Id)}""
                                 WHERE club.""{nameof(Domain.Entities.Club.Id)}"" = '{request.Id.ToString()}'");
 
@@ -69,6 +69,7 @@ public sealed class GetClubByIdQueryHandler(
             {
                 Id = g.Key ?? Guid.Empty,
                 Name = g.First().Club_Name,
+                Description = g.First().Club_Description,
                 Hotline = g.First().Club_Hotline,
                 OpeningTime = g.First().Club_OpeningTime,
                 ClosingTime = g.First().Club_ClosingTime,

@@ -14,6 +14,7 @@ internal sealed class ClubConfiguration : IEntityTypeConfiguration<Club>
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.Name).IsRequired();
+        builder.Property(x => x.Description).IsRequired();
         builder.Property(x => x.Code).HasDefaultValue(null);
         builder.Property(x => x.Hotline).HasDefaultValue(null);
         builder.Property(x => x.OpeningTime).IsRequired();

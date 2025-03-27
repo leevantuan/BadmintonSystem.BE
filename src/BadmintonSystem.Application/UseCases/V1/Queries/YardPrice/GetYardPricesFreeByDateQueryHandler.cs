@@ -21,6 +21,7 @@ public sealed class GetYardPricesFreeByDateQueryHandler(
         var baseQueryBuilder = new StringBuilder();
         baseQueryBuilder.Append($@"
                     SELECT yard.""{nameof(Domain.Entities.Yard.Name)}"" AS Yard_Name,
+                           timeSlot.""{nameof(Domain.Entities.TimeSlot.Id)}"" AS TimeSlot_Id,
                            timeSlot.""{nameof(Domain.Entities.TimeSlot.StartTime)}"" AS TimeSlot_StartTime,
                            timeSlot.""{nameof(Domain.Entities.TimeSlot.EndTime)}"" AS TimeSlot_EndTime
                     FROM ""{nameof(Domain.Entities.YardPrice)}"" AS yardPrice
@@ -42,16 +43,13 @@ public sealed class GetYardPricesFreeByDateQueryHandler(
             .ToListAsync(cancellationToken);
 
         // Group by
-        var results = queryResult.GroupBy(p => p.Yard_Name)
+        var results = queryResult.GroupBy(p => p.TimeSlot_Id)
             .Select(g => new Response.YardPricesFreeByDateDetailResponse
             {
-                YardName = g.First().Yard_Name,
-                YardPrices = g.Select(p => new Response.YardPricesDetail
-                {
-                    StartTime = p.TimeSlot_StartTime ?? TimeSpan.Zero,
-                    EndTime = p.TimeSlot_EndTime ?? TimeSpan.Zero,
-                }).ToList()
-            }).OrderBy(x => x.YardName)
+                StartTime = g.First().TimeSlot_StartTime ?? TimeSpan.Zero,
+                EndTime = g.First().TimeSlot_EndTime ?? TimeSpan.Zero,
+                YardNames = g.Select(p => new string(p.Yard_Name)).ToList()
+            }).OrderBy(x => x.StartTime)
             .ToList();
 
         return Result.Success(results);

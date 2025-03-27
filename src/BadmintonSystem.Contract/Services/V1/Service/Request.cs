@@ -6,6 +6,10 @@ public static class Request
     {
         public decimal QuantityInStock { get; set; }
 
+        public string? ImageLink { get; set; }
+
+        public string? Description { get; set; }
+
         public Guid CategoryId { get; set; }
 
         public int IsWholeSale { get; set; }
@@ -16,6 +20,10 @@ public static class Request
     public class ServiceDetail
     {
         public string Name { get; set; }
+
+        public string? ImageLink { get; set; }
+
+        public string? Description { get; set; }
 
         public decimal PurchasePrice { get; set; }
 
@@ -33,6 +41,10 @@ public static class Request
         public string? Name { get; set; }
 
         public decimal? PurchasePrice { get; set; }
+
+        public string? ImageLink { get; set; }
+
+        public string? Description { get; set; }
 
         public decimal? SellingPrice { get; set; }
 

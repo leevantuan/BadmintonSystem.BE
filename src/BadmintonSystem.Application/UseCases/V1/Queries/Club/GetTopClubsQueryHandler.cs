@@ -46,6 +46,7 @@ public sealed class GetTopClubsQueryHandler(
             {
                 Id = g.Key ?? Guid.Empty,
                 Name = g.First().Club_Name,
+                Description = g.First().Club_Description,
                 Hotline = g.First().Club_Hotline,
                 OpeningTime = g.First().Club_OpeningTime,
                 ClosingTime = g.First().Club_ClosingTime,

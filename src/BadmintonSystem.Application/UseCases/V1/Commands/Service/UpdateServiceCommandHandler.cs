@@ -25,6 +25,8 @@ public sealed class UpdateServiceCommandHandler(
         }
 
         service.Name = request.Data.Name ?? service.Name;
+        service.Description = request.Data.Description ?? service.Description;
+        service.ImageLink = request.Data.ImageLink ?? service.ImageLink;
         service.SellingPrice = request.Data.SellingPrice ?? service.SellingPrice;
         service.PurchasePrice = request.Data.PurchasePrice ?? service.PurchasePrice;
         service.Unit = request.Data.Unit ?? service.Unit;

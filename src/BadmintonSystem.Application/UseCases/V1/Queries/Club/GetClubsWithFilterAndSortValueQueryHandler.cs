@@ -51,13 +51,13 @@ public sealed class GetClubsWithFilterAndSortValueQueryHandler(
         var queryBuilder = new StringBuilder();
         queryBuilder.Append($@"SELECT {clubColumns}, {clubInformationColumns}, {clubImageColumns}, {clubAddressColumns}
                                 FROM ""{nameof(Domain.Entities.Club)}"" AS club
-                                JOIN ""{nameof(ClubInformation)}"" AS clubInformation
+                                LEFT JOIN ""{nameof(ClubInformation)}"" AS clubInformation
                                 ON clubInformation.""{nameof(ClubInformation.ClubId)}"" = club.""{nameof(Domain.Entities.Club.Id)}""
-                                JOIN ""{nameof(ClubImage)}"" AS clubImage
+                                LEFT JOIN ""{nameof(ClubImage)}"" AS clubImage
                                 ON clubImage.""{nameof(ClubImage.ClubId)}"" = club.""{nameof(Domain.Entities.Club.Id)}""
-                                JOIN ""{nameof(ClubAddress)}"" AS clubAddress
+                                LEFT JOIN ""{nameof(ClubAddress)}"" AS clubAddress
                                 ON clubAddress.""{nameof(ClubAddress.ClubId)}"" = club.""{nameof(Domain.Entities.Club.Id)}""
-                                JOIN ""{nameof(Domain.Entities.Address)}"" AS address
+                                LEFT JOIN ""{nameof(Domain.Entities.Address)}"" AS address
                                 ON address.""{nameof(Domain.Entities.Address.Id)}"" = clubAddress.""{nameof(ClubAddress.AddressId)}""");
 
         List<Response.GetClubDetailSql> queryResult = await clubRepository
@@ -71,6 +71,7 @@ public sealed class GetClubsWithFilterAndSortValueQueryHandler(
             {
                 Id = g.Key ?? Guid.Empty,
                 Name = g.First().Club_Name,
+                Description = g.First().Club_Description,
                 Hotline = g.First().Club_Hotline,
                 OpeningTime = g.First().Club_OpeningTime,
                 ClosingTime = g.First().Club_ClosingTime,

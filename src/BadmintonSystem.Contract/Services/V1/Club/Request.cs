@@ -6,6 +6,8 @@ public static class Request
     {
         public string? Name { get; set; }
 
+        public string? Description { get; set; }
+
         public string? Hotline { get; set; }
 
         public TimeSpan? OpeningTime { get; set; }
@@ -20,6 +22,8 @@ public static class Request
         public Guid Id { get; set; }
 
         public string? Name { get; set; }
+
+        public string? Description { get; set; }
 
         public string? Hotline { get; set; }
 

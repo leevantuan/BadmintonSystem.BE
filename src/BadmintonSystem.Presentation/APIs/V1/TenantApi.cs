@@ -31,6 +31,19 @@ public class TenantApi : ApiEndpoint, ICarterModule
 
         group1.MapGet("{tenantId}", GetByIdTenantV1)
             .AllowAnonymous();
+
+        group1.MapGet("get-by-tenant-name/{tenantName}", GetContainTenantNameV1)
+            .AllowAnonymous();
+    }
+
+    private static async Task<IResult> GetContainTenantNameV1
+    (
+        ISender sender,
+        string tenantName)
+    {
+        Result result = await sender.Send(new Contract.Services.V1.Tenant.Query.GetTenantContainTenantNameQuery(tenantName));
+
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> CreateTenantV1

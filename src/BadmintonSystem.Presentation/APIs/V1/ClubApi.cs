@@ -58,7 +58,7 @@ public class ClubApi : ApiEndpoint, ICarterModule
         ISender sender,
         string tenantName)
     {
-        Result<string> result =
+        Result<Response.GetCodeClubDetailResponse> result =
             await sender.Send(new Query.GetCodeClubQuery(tenantName));
 
         return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);

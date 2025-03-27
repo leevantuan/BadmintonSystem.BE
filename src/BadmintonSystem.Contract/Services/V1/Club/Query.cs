@@ -20,5 +20,5 @@ public static class Query
     : IQuery<List<Response.ClubDetailResponseChatBot>>;
 
     public record GetCodeClubQuery(string Name)
-        : IQuery<string>;
+        : IQuery<Response.GetCodeClubDetailResponse>;
 }

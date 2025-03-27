@@ -52,7 +52,7 @@ public class YardPriceApi : ApiEndpoint, ICarterModule
         group1.MapDelete(string.Empty, DeleteYardPricesV1)
             .RequireJwtAuthorize(FunctionEnum.YARDPRICE.ToString(), (int)ActionEnum.DELETE);
 
-        group1.MapPost("filter-by-date/free-yard", GetYardPricesFilterFreeByDateV1)
+        group1.MapGet("filter-by-date/free-yard", GetYardPricesFilterFreeByDateV1)
             .AllowAnonymous();
 
     }

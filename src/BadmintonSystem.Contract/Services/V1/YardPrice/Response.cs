@@ -93,11 +93,20 @@ public static class Response
     }
 
     // API ChatBot Response
+    //public class YardPricesFreeByDateDetailResponse
+    //{
+    //    public string? YardName { get; set; }
+
+    //    public List<YardPricesDetail>? YardPrices { get; set; }
+    //}
+
     public class YardPricesFreeByDateDetailResponse
     {
-        public string? YardName { get; set; }
+        public List<string>? YardNames { get; set; }
 
-        public List<YardPricesDetail>? YardPrices { get; set; }
+        public TimeSpan StartTime { get; set; }
+
+        public TimeSpan EndTime { get; set; }
     }
 
     public class YardPricesDetail
@@ -110,6 +119,8 @@ public static class Response
     // API ChatBot Response SQL
     public class YardPricesFreeByDateDetailResponseSql
     {
+        public Guid? TimeSlot_Id { get; set; }
+
         public string? Yard_Name { get; set; }
 
         public TimeSpan? TimeSlot_StartTime { get; set; }

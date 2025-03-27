@@ -8,6 +8,7 @@ public static class Response
     public record ClubResponse(
         Guid Id,
         string Name,
+        string Description,
         string Hotline,
         TimeSpan OpeningTime,
         TimeSpan ClosingTime,
@@ -16,6 +17,8 @@ public static class Response
     public class ClubDetail : EntityBase<Guid>
     {
         public string? Name { get; set; }
+
+        public string? Description { get; set; }
 
         public string? Hotline { get; set; }
 
@@ -32,6 +35,8 @@ public static class Response
         public Guid? Club_Id { get; set; }
 
         public string? Club_Name { get; set; }
+
+        public string? Club_Description { get; set; }
 
         public string? Club_Hotline { get; set; }
 
@@ -85,6 +90,8 @@ public static class Response
     {
         public string? Name { get; set; }
 
+        public string? Description { get; set; }
+
         public string? Hotline { get; set; }
 
         public TimeSpan? OpeningTime { get; set; }
@@ -98,9 +105,19 @@ public static class Response
         public decimal? AverageRating { get; set; }
     }
 
+    // API CODE
+    public class GetCodeClubDetailResponse
+    {
+        public Guid? Id { get; set; }
+
+        public string? Code { get; set; }
+    }
+
     public class ClubDetailResponseChatBotSql
     {
         public string? Club_Name { get; set; }
+
+        public string? Club_Description { get; set; }
 
         public string? Club_Hotline { get; set; }
 

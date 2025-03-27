@@ -21,6 +21,10 @@ internal sealed class ServiceConfiguration : IEntityTypeConfiguration<Service>
 
         builder.Property(x => x.PurchasePrice).HasDefaultValue(null);
 
+        builder.Property(x => x.Description).HasDefaultValue(null);
+
+        builder.Property(x => x.ImageLink).HasDefaultValue(null);
+
         builder.Property(x => x.QuantityInStock).HasDefaultValue(null);
 
         builder.Property(x => x.CategoryId).HasDefaultValue(null);

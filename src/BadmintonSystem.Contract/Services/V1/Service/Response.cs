@@ -8,6 +8,10 @@ public static class Response
     {
         public string Name { get; set; }
 
+        public string? ImageLink { get; set; }
+
+        public string? Description { get; set; }
+
         public decimal PurchasePrice { get; set; }
 
         public decimal SellingPrice { get; set; }
@@ -26,6 +30,10 @@ public static class Response
     public class ServiceDetailResponse : EntityAuditBase<Guid>
     {
         public string Name { get; set; }
+
+        public string? ImageLink { get; set; }
+
+        public string? Description { get; set; }
 
         public decimal PurchasePrice { get; set; }
 

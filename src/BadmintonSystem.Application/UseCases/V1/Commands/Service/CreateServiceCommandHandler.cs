@@ -34,6 +34,8 @@ public sealed class CreateServiceCommandHandler(
             serviceEntities.OriginalQuantityId = null;
             serviceEntities.QuantityPrinciple = null;
             serviceEntities.Name = request.Data.ServiceDetails.First().Name;
+            serviceEntities.ImageLink = request.Data.ServiceDetails.First().ImageLink;
+            serviceEntities.Description = request.Data.ServiceDetails.First().Description;
             serviceEntities.PurchasePrice = request.Data.ServiceDetails.First().PurchasePrice;
             serviceEntities.SellingPrice = request.Data.ServiceDetails.First().SellingPrice;
             serviceEntities.Unit = request.Data.ServiceDetails.First().Unit;

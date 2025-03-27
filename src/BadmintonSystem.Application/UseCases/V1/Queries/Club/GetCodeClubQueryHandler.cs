@@ -8,13 +8,19 @@ namespace BadmintonSystem.Application.UseCases.V1.Queries.Club;
 
 public sealed class GetCodeClubQueryHandler(
     ApplicationDbContext context)
-    : IQueryHandler<Query.GetCodeClubQuery, string>
+    : IQueryHandler<Query.GetCodeClubQuery, Response.GetCodeClubDetailResponse>
 {
-    public async Task<Result<string>> Handle(Query.GetCodeClubQuery request, CancellationToken cancellationToken)
+    public async Task<Result<Response.GetCodeClubDetailResponse>> Handle(Query.GetCodeClubQuery request, CancellationToken cancellationToken)
     {
         var club = await context.Club.Where(x => x.Name.ToLower().Trim().Contains(request.Name.ToLower())).FirstOrDefaultAsync(cancellationToken)
             ?? throw new ApplicationException("Club not found");
 
-        return Result.Success(club.Code ?? string.Empty);
+        var result = new Response.GetCodeClubDetailResponse
+        {
+            Id = club.Id,
+            Code = club.Code
+        };
+
+        return Result.Success(result);
     }
 }

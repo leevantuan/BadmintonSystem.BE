@@ -6,6 +6,8 @@ public class Club : EntityAuditBase<Guid>
 {
     public string Name { get; set; }
 
+    public string? Description { get; set; }
+
     public string? Hotline { get; set; }
 
     public TimeSpan OpeningTime { get; set; }
