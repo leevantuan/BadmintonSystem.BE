@@ -54,7 +54,7 @@ public sealed class GetChatRoomsWithFilterAndSortQueryHandler(
                     UserName = x.First().chatRoom.UserName,
                     Email = x.First().chatRoom.Email,
                     Avatar = x.First().chatRoom.Avatar,
-                    ChatMessage = x.Select(s => new Contract.Services.V1.ChatMessage.Response.ChatMessageResponse
+                    ChatMessage = x.First().chatMessage != null ? x.Select(s => new Contract.Services.V1.ChatMessage.Response.ChatMessageResponse
                     {
                         Id = s.chatMessage.Id,
                         ImageUrl = s.chatMessage.ImageUrl,
@@ -64,8 +64,7 @@ public sealed class GetChatRoomsWithFilterAndSortQueryHandler(
                         ReadDate = s.chatMessage.ReadDate,
                         ChatRoomId = s.chatMessage.ChatRoomId,
                         CreatedDate = s.chatMessage.CreatedDate
-                    }).OrderByDescending(s => s.CreatedDate) // Sắp xếp theo CreatedDate (mới nhất lên đầu)
-                        .FirstOrDefault()
+                    }).OrderByDescending(s => s.CreatedDate).FirstOrDefault() : null
                 }).ToList();
 
             var chatRoomPagedResult =
