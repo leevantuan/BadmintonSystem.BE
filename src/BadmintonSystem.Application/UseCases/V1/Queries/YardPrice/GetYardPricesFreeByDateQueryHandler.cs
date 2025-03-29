@@ -1,5 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Text;
+using BadmintonSystem.Application.UseCases.V1.Services;
 using BadmintonSystem.Contract.Abstractions.Message;
 using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.V1.YardPrice;
@@ -9,14 +10,21 @@ using Microsoft.EntityFrameworkCore;
 namespace BadmintonSystem.Application.UseCases.V1.Queries.YardPrice;
 
 public sealed class GetYardPricesFreeByDateQueryHandler(
-     IRepositoryBase<Domain.Entities.YardPrice, Guid> yardPriceRepository)
+    IYardPriceService yardPriceService,
+    IRepositoryBase<Domain.Entities.YardPrice, Guid> yardPriceRepository)
     : IQueryHandler<Query.GetYardPricesFreeByDateQuery, List<Response.YardPricesFreeByDateDetailResponse>>
 {
     public async Task<Result<List<Response.YardPricesFreeByDateDetailResponse>>> Handle(Query.GetYardPricesFreeByDateQuery request, CancellationToken cancellationToken)
     {
         DateTime filterDate = request.Data.Date;
-        //TimeSpan currentTime = DateTime.Now.TimeOfDay;
-        //string currentTimeString = currentTime.ToString(@"hh\:mm\:ss");
+
+        IQueryable<Domain.Entities.YardPrice>? effectiveDateIsExists =
+           yardPriceRepository.FindAll(x => x.EffectiveDate.Date == filterDate);
+
+        if (!effectiveDateIsExists.Any())
+        {
+            await yardPriceService.CreateYardPrice(filterDate, Guid.Empty, cancellationToken);
+        }
 
         var baseQueryBuilder = new StringBuilder();
         baseQueryBuilder.Append($@"
@@ -33,8 +41,9 @@ public sealed class GetYardPricesFreeByDateQueryHandler(
                       AND timeSlot.""{nameof(Domain.Entities.TimeSlot.IsDeleted)}"" = false
                       AND yardPrice.""{nameof(Domain.Entities.YardPrice.EffectiveDate)}""::DATE = '{filterDate}'
                       AND yardPrice.""{nameof(Domain.Entities.YardPrice.IsBooking)}"" = 0
-                      AND timeSlot.""{nameof(Domain.Entities.TimeSlot.EndTime)}"" BETWEEN '{request.Data.StartTime}' AND '{request.Data.EndTime}'
-                      AND timeSlot.""{nameof(Domain.Entities.TimeSlot.EndTime)}"" >= '{request.Data.TimeNow}'
+                      AND timeSlot.""{nameof(Domain.Entities.TimeSlot.StartTime)}"" >= '{request.Data.StartTime}'
+                      AND timeSlot.""{nameof(Domain.Entities.TimeSlot.EndTime)}"" <= '{request.Data.EndTime}'
+                      AND timeSlot.""{nameof(Domain.Entities.TimeSlot.StartTime)}"" >= '{request.Data.TimeNow}'
                     ORDER BY timeSlot.""{nameof(Domain.Entities.TimeSlot.StartTime)}""");
 
         List<Response.YardPricesFreeByDateDetailResponseSql> queryResult = await yardPriceRepository

@@ -22,6 +22,7 @@ public sealed class GetTopClubsQueryHandler(
         queryBuilder.Append($@"SELECT 
                             club.""{nameof(Domain.Entities.Club.Name)}"" AS ""{nameof(Response.ClubDetailResponseChatBotSql.Club_Name)}"",
                             club.""{nameof(Domain.Entities.Club.Hotline)}"" AS ""{nameof(Response.ClubDetailResponseChatBotSql.Club_Hotline)}"",
+                            club.""{nameof(Domain.Entities.Club.Description)}"" AS ""{nameof(Response.ClubDetailResponseChatBotSql.Club_Description)}"",
                             club.""{nameof(Domain.Entities.Club.OpeningTime)}"" AS ""{nameof(Response.ClubDetailResponseChatBotSql.Club_OpeningTime)}"",
                             club.""{nameof(Domain.Entities.Club.ClosingTime)}"" AS ""{nameof(Response.ClubDetailResponseChatBotSql.Club_ClosingTime)}"",
                             club.""{nameof(Domain.Entities.Club.Code)}"" AS ""{nameof(Response.ClubDetailResponseChatBotSql.Club_Code)}"",

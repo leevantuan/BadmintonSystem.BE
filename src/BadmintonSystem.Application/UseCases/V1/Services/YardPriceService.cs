@@ -1,6 +1,5 @@
 ﻿using System.Text;
 using BadmintonSystem.Application.Abstractions;
-using BadmintonSystem.Contract.Services.V1.YardPrice;
 using BadmintonSystem.Domain.Entities;
 using BadmintonSystem.Domain.Enumerations;
 using BadmintonSystem.Persistence;

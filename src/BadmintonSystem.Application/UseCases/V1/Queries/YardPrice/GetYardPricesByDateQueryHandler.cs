@@ -33,8 +33,6 @@ public sealed class GetYardPricesByDateQueryHandler(
             ? $"{request.Tenant}-get-yard-prices-by-date"
             : $"{currentTenantService.Code.ToString()}-get-yard-prices-by-date";
 
-        //endpoint = $"{currentTenantService.Code.ToString()}-get-yard-prices-by-date";
-
         string cacheKey = StringExtension.GenerateCacheKeyFromRequest(endpoint, request.Date);
 
         string cacheData = await redisService.GetAsync(cacheKey);

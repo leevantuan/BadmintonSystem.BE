@@ -51,13 +51,13 @@ public sealed class GetClubsWithFilterAndSortValueQueryHandler(
         var queryBuilder = new StringBuilder();
         queryBuilder.Append($@"SELECT {clubColumns}, {clubInformationColumns}, {clubImageColumns}, {clubAddressColumns}
                                 FROM ""{nameof(Domain.Entities.Club)}"" AS club
-                                LEFT JOIN ""{nameof(ClubInformation)}"" AS clubInformation
+                                JOIN ""{nameof(ClubInformation)}"" AS clubInformation
                                 ON clubInformation.""{nameof(ClubInformation.ClubId)}"" = club.""{nameof(Domain.Entities.Club.Id)}""
-                                LEFT JOIN ""{nameof(ClubImage)}"" AS clubImage
+                                JOIN ""{nameof(ClubImage)}"" AS clubImage
                                 ON clubImage.""{nameof(ClubImage.ClubId)}"" = club.""{nameof(Domain.Entities.Club.Id)}""
-                                LEFT JOIN ""{nameof(ClubAddress)}"" AS clubAddress
+                                JOIN ""{nameof(ClubAddress)}"" AS clubAddress
                                 ON clubAddress.""{nameof(ClubAddress.ClubId)}"" = club.""{nameof(Domain.Entities.Club.Id)}""
-                                LEFT JOIN ""{nameof(Domain.Entities.Address)}"" AS address
+                                JOIN ""{nameof(Domain.Entities.Address)}"" AS address
                                 ON address.""{nameof(Domain.Entities.Address.Id)}"" = clubAddress.""{nameof(ClubAddress.AddressId)}""");
 
         List<Response.GetClubDetailSql> queryResult = await clubRepository
