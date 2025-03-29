@@ -11,7 +11,6 @@ public class EmailService(IMediator mediator) : IEmailService
     {
         try
         {
-            // SEND_MAIL Notification Client
             if (request.Type == NotificationType.client)
             {
                 await mediator.Publish(
@@ -19,7 +18,6 @@ public class EmailService(IMediator mediator) : IEmailService
                     cancellationToken);
             }
 
-            // SEND_MAIL Notification Staff
             if (request.Type == NotificationType.staff)
             {
                 await mediator.Publish(

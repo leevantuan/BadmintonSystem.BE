@@ -1,6 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Text;
-using AutoMapper;
 using BadmintonSystem.Application.Abstractions;
 using BadmintonSystem.Application.UseCases.V1.Services;
 using BadmintonSystem.Contract.Abstractions.Message;
@@ -9,19 +8,14 @@ using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Extensions;
 using BadmintonSystem.Contract.Services.V1.YardPrice;
 using BadmintonSystem.Domain.Abstractions.Repositories;
-using BadmintonSystem.Persistence;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
 namespace BadmintonSystem.Application.UseCases.V1.Queries.YardPrice;
 
 public sealed class GetYardPricesByDateQueryHandler(
-    ApplicationDbContext context,
     ICurrentTenantService currentTenantService,
-    IMapper mapper,
     IRedisService redisService,
-    IHttpContextAccessor httpContextAccessor,
     IRepositoryBase<Domain.Entities.YardPrice, Guid> yardPriceRepository,
     IYardPriceService yardPriceService)
     : IQueryHandler<Query.GetYardPricesByDateQuery, List<Response.YardPricesByDateDetailResponse>>
@@ -29,7 +23,7 @@ public sealed class GetYardPricesByDateQueryHandler(
     public async Task<Result<List<Response.YardPricesByDateDetailResponse>>> Handle
         (Query.GetYardPricesByDateQuery request, CancellationToken cancellationToken)
     {
-        string endpoint = !string.IsNullOrEmpty(request.Tenant)
+        string endpoint = string.IsNullOrEmpty(currentTenantService.Code.ToString())
             ? $"{request.Tenant}-get-yard-prices-by-date"
             : $"{currentTenantService.Code.ToString()}-get-yard-prices-by-date";
 

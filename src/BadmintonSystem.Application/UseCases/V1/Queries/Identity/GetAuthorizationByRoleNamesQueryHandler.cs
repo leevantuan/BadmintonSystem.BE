@@ -1,5 +1,4 @@
 ﻿using System.Security.Claims;
-using AutoMapper;
 using BadmintonSystem.Application.Extensions;
 using BadmintonSystem.Contract.Abstractions.Message;
 using BadmintonSystem.Contract.Abstractions.Shared;
@@ -7,16 +6,12 @@ using BadmintonSystem.Contract.Extensions;
 using BadmintonSystem.Contract.Services.V1.Identity;
 using BadmintonSystem.Domain.Entities.Identity;
 using BadmintonSystem.Domain.Exceptions;
-using BadmintonSystem.Persistence;
 using Microsoft.AspNetCore.Identity;
 
 namespace BadmintonSystem.Application.UseCases.V1.Queries.Identity;
 
 public sealed class GetAuthorizationByRoleNamesQueryHandler(
-    UserManager<AppUser> userManager,
-    RoleManager<AppRole> roleManager,
-    IMapper mapper,
-    ApplicationDbContext context)
+    RoleManager<AppRole> roleManager)
     : IQueryHandler<Query.GetAuthorizationByRoleNamesQuery, List<Response.RoleAuthorization>>
 {
     public async Task<Result<List<Response.RoleAuthorization>>> Handle

@@ -26,27 +26,6 @@ public sealed class CreateBookingRabbitMQCommandHandler(
 {
     public async Task<Result> Handle(Command.CreateBookingRabbitMQCommand request, CancellationToken cancellationToken)
     {
-        //_ = await context.AppUsers
-        //        .FirstOrDefaultAsync(x => x.Id == request.UserId, cancellationToken)
-        //    ?? throw new IdentityException.AppUserNotFoundException(request.UserId);
-
-        // Command Events
-        //var sendEmail = new BusCommand.SendCreateBookingCommand
-        //{
-        //    Id = Guid.NewGuid(),
-        //    Description = "Booking Description",
-        //    Name = "Booking Notification",
-        //    TimeSpan = DateTime.Now,
-        //    TransactionId = Guid.NewGuid(),
-        //    UserId = request.UserId,
-        //    CreateBooking = request.Data,
-        //    Type = BookingEnum.BOOKED.ToString()
-        //};
-
-        //ISendEndpoint endPoint = await bus.GetSendEndpoint(new Uri("queue:send-create-booking-queue"));
-
-        //await endPoint.Send(sendEmail);
-
         List<Contract.Services.V1.Booking.Response.GetIdsByDate> idsByDate =
                 await GetIdsByDateAsync(request.Data.YardPriceIds, cancellationToken);
 
@@ -96,17 +75,6 @@ public sealed class CreateBookingRabbitMQCommandHandler(
     private async Task SendMailAsync
         (List<Guid> bookingIds, string fullName, string email, string type, CancellationToken cancellationToken)
     {
-        //var sendEmailClient = new BusCommand.SendEmailBusCommand
-        //{
-        //    Id = Guid.NewGuid(),
-        //    Description = "BOOKING WEB NOTIFICATION",
-        //    Name = fullName,
-        //    Email = type == NotificationType.staff ? "managersystem.net@gmail.com" : email,
-        //    TimeSpan = DateTime.Now,
-        //    TransactionId = Guid.NewGuid(),
-        //    BookingIds = bookingIds,
-        //    Type = type
-        //};
 
         email = type == NotificationType.staff ? "managersystem.net@gmail.com" : email;
 

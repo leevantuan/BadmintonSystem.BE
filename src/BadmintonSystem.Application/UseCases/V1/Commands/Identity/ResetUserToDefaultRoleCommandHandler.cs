@@ -4,7 +4,6 @@ using BadmintonSystem.Contract.Extensions;
 using BadmintonSystem.Contract.Services.V1.Identity;
 using BadmintonSystem.Domain.Entities.Identity;
 using BadmintonSystem.Domain.Exceptions;
-using BadmintonSystem.Persistence;
 using Microsoft.AspNetCore.Identity;
 using static BadmintonSystem.Contract.Services.V1.Identity.Command;
 
@@ -13,13 +12,11 @@ public sealed class ResetUserToDefaultRoleCommandHandler : ICommandHandler<Comma
 {
     private readonly UserManager<AppUser> _userManager;
     private readonly RoleManager<AppRole> _roleManager;
-    private readonly ApplicationDbContext _context;
 
-    public ResetUserToDefaultRoleCommandHandler(UserManager<AppUser> userManager, RoleManager<AppRole> roleManager, ApplicationDbContext context)
+    public ResetUserToDefaultRoleCommandHandler(UserManager<AppUser> userManager, RoleManager<AppRole> roleManager)
     {
         _userManager = userManager;
         _roleManager = roleManager;
-        _context = context;
     }
 
     public async Task<Result> Handle(ResetUserToDefaultRoleCommand request, CancellationToken cancellationToken)

@@ -4,7 +4,6 @@ using BadmintonSystem.Contract.Extensions;
 using BadmintonSystem.Contract.Services.V1.Identity;
 using BadmintonSystem.Domain.Entities.Identity;
 using BadmintonSystem.Domain.Exceptions;
-using BadmintonSystem.Persistence;
 using Microsoft.AspNetCore.Identity;
 
 namespace BadmintonSystem.Application.UseCases.V1.Commands.Identity;
@@ -13,13 +12,11 @@ public sealed class CreateAppUserCommandHandler : ICommandHandler<Command.Create
 {
     private readonly UserManager<AppUser> _userManager;
     private readonly RoleManager<AppRole> _roleManager;
-    private readonly ApplicationDbContext _context;
 
-    public CreateAppUserCommandHandler(UserManager<AppUser> userManager, RoleManager<AppRole> roleManager, ApplicationDbContext context)
+    public CreateAppUserCommandHandler(UserManager<AppUser> userManager, RoleManager<AppRole> roleManager)
     {
         _userManager = userManager;
         _roleManager = roleManager;
-        _context = context;
     }
 
     public async Task<Result> Handle(Command.CreateAppUserCommand request, CancellationToken cancellationToken)

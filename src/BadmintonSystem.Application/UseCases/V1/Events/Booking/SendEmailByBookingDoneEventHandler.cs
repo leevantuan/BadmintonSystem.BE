@@ -3,19 +3,15 @@ using BadmintonSystem.Contract.Abstractions.Message;
 using BadmintonSystem.Contract.Abstractions.Services;
 using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.V1.Booking;
-using BadmintonSystem.Persistence;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 using Request = BadmintonSystem.Contract.Services.V1.Gmail.Request;
 
 namespace BadmintonSystem.Application.UseCases.V1.Events.Booking;
 
 public sealed class SendEmailByBookingDoneEventHandler(
-    ApplicationDbContext context,
     ISender sender,
     IGmailService mailService,
-    ICurrentTenantService currentTenantService,
-    IHttpContextAccessor httpContextAccessor)
+    ICurrentTenantService currentTenantService)
     : IDomainEventHandler<DomainEvent.BookingDone>
 {
     public async Task Handle(DomainEvent.BookingDone notification, CancellationToken cancellationToken)

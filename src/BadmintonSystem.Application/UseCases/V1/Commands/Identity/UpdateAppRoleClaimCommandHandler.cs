@@ -6,15 +6,12 @@ using BadmintonSystem.Contract.Extensions;
 using BadmintonSystem.Contract.Services.V1.Identity;
 using BadmintonSystem.Domain.Entities.Identity;
 using BadmintonSystem.Domain.Exceptions;
-using BadmintonSystem.Persistence;
 using Microsoft.AspNetCore.Identity;
 
 namespace BadmintonSystem.Application.UseCases.V1.Commands.Identity;
 
 public sealed class UpdateAppRoleClaimCommandHandler(
-    UserManager<AppUser> userManager,
-    RoleManager<AppRole> roleManager,
-    ApplicationDbContext context)
+    RoleManager<AppRole> roleManager)
     : ICommandHandler<Command.UpdateAppRoleClaimCommand>
 {
     public async Task<Result> Handle(Command.UpdateAppRoleClaimCommand request, CancellationToken cancellationToken)

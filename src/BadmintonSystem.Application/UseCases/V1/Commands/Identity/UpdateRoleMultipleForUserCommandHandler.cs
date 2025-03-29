@@ -49,18 +49,6 @@ public sealed class UpdateRoleMultipleForUserCommandHandler(
             AppRole? role = await roleManager.FindByNameAsync(roleName);
 
             removeQueryBuilder.Append($@"'%{role.Id}%', ");
-
-            // if (!await userManager.IsInRoleAsync(user, roleName))
-            // {
-            //     continue;
-            // }
-            //
-            // IdentityResult removeRoleResult = await userManager.RemoveFromRoleAsync(user, roleName);
-            // if (!removeRoleResult.Succeeded)
-            // {
-            //     string errors = string.Join(", ", removeRoleResult.Errors.Select(e => e.Description));
-            //     throw new IdentityException.AppRoleException(errors);
-            // }
         }
 
         removeQueryBuilder.Length -= 2;

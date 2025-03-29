@@ -5,15 +5,12 @@ using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.V1.Identity;
 using BadmintonSystem.Domain.Entities.Identity;
 using BadmintonSystem.Domain.Exceptions;
-using BadmintonSystem.Persistence;
 using Microsoft.AspNetCore.Identity;
 
 namespace BadmintonSystem.Application.UseCases.V1.Commands.Identity;
 
 public sealed class UpdateAppUserClaimCommandHandler(
-    UserManager<AppUser> userManager,
-    RoleManager<AppRole> roleManager,
-    ApplicationDbContext context)
+    UserManager<AppUser> userManager)
     : ICommandHandler<Command.UpdateAppUserClaimCommand>
 {
     public async Task<Result> Handle(Command.UpdateAppUserClaimCommand request, CancellationToken cancellationToken)

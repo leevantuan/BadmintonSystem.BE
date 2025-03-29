@@ -4,15 +4,12 @@ using BadmintonSystem.Contract.Extensions;
 using BadmintonSystem.Contract.Services.V1.Identity;
 using BadmintonSystem.Domain.Entities.Identity;
 using BadmintonSystem.Domain.Exceptions;
-using BadmintonSystem.Persistence;
 using Microsoft.AspNetCore.Identity;
 
 namespace BadmintonSystem.Application.UseCases.V1.Commands.Identity;
 
 public sealed class ResetPasswordCommandHandler(
-    UserManager<AppUser> userManager,
-    RoleManager<AppRole> roleManager,
-    ApplicationDbContext context)
+    UserManager<AppUser> userManager)
     : ICommandHandler<Command.ResetPasswordByIdCommand>
 {
     public async Task<Result> Handle(Command.ResetPasswordByIdCommand request, CancellationToken cancellationToken)
@@ -44,12 +41,6 @@ public sealed class ResetPasswordCommandHandler(
 
             throw new IdentityException.AppUserException(errors);
         }
-
-        // string token = await userManager.GeneratePasswordResetTokenAsync(userById);
-        //
-        // string resetToken = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(token));
-        //
-        // IdentityResult result = await userManager.ResetPasswordAsync(userById, resetToken, request.Data.Password);
 
         return Result.Success();
     }

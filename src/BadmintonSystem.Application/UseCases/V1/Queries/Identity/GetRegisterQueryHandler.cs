@@ -55,15 +55,6 @@ public sealed class GetRegisterQueryHandler(
             throw new IdentityException.AppRoleException(errors);
         }
 
-        // // add default user claim
-        // AppRole role = await roleManager.FindByNameAsync(AppRoleEnum.MANAGER.ToString())
-        //                ?? throw new IdentityException.AppRoleNotFoundException(AppRoleEnum.MANAGER.ToString());
-        //
-        // // get list role claim
-        // IList<Claim> claims = await roleManager.GetClaimsAsync(role);
-        //
-        // await userManager.AddClaimsAsync(newUser, claims);
-
         return Result.Success();
     }
 }

@@ -7,7 +7,6 @@ using BadmintonSystem.Contract.Extensions;
 using BadmintonSystem.Contract.Services.V1.Identity;
 using BadmintonSystem.Domain.Entities.Identity;
 using BadmintonSystem.Domain.Exceptions;
-using BadmintonSystem.Persistence;
 using Microsoft.AspNetCore.Identity;
 
 namespace BadmintonSystem.Application.UseCases.V1.Queries.Identity;
@@ -15,8 +14,7 @@ namespace BadmintonSystem.Application.UseCases.V1.Queries.Identity;
 public sealed class GetUserAuthorizationByEmailQueryHandler(
     UserManager<AppUser> userManager,
     RoleManager<AppRole> roleManager,
-    IMapper mapper,
-    ApplicationDbContext context)
+    IMapper mapper)
     : IQueryHandler<Query.GetUserAuthorizationByEmailQuery, Response.UserDetailResponse>
 {
     public async Task<Result<Response.UserDetailResponse>> Handle
