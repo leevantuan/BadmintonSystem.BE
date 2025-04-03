@@ -11,7 +11,6 @@ using BadmintonSystem.Persistence;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Newtonsoft.Json;
-using Command = BadmintonSystem.Contract.Services.V1.ChatRoom.Command;
 using Request = BadmintonSystem.Contract.Services.V1.User.Request;
 
 namespace BadmintonSystem.Application.UseCases.V1.Queries.User;
@@ -102,7 +101,7 @@ public sealed class VerificationEmailWhenRegisterQueryHandler(
 
         context.UserAddress.Add(newAppUserAddress);
 
-        await sender.Send(new Command.CreateChatRoomCommand(newUser.Id), cancellationToken);
+        //await sender.Send(new Command.CreateChatRoomCommand(newUser.Id), cancellationToken);
 
         await context.SaveChangesAsync(cancellationToken);
 

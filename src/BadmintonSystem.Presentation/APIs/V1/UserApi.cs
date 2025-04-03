@@ -63,6 +63,24 @@ public class UserApi : ApiEndpoint, ICarterModule
 
         group1.MapGet("cancel-verify-email", CancelVerificationEmailV1)
             .AllowAnonymous();
+
+        group1.MapGet("all-users", GetUsersV1)
+            .AllowAnonymous();
+    }
+
+    private static async Task<IResult> GetUsersV1
+    (
+        ISender sender,
+        [AsParameters] Contract.Abstractions.Shared.Request.PagedFilterAndSortRequest request)
+    {
+        var pagedQueryRequest =
+            new Contract.Abstractions.Shared.Request.PagedFilterAndSortQueryRequest(request);
+
+        var result =
+            await sender.Send(
+                new Contract.Services.V1.User.Query.GetUsersQuery(pagedQueryRequest));
+
+        return Results.Ok(result);
     }
 
     private static async Task<IResult> VerificationEmailV1(ISender sender, [FromQuery] string email)

@@ -22,6 +22,12 @@ public static class Response
         public string AvatarUrl { get; set; }
     }
 
+    // Get Detail User
+    public class GetUserInfoResponse : AppUserResponse
+    {
+        public List<string> Roles { get; set; }
+    }
+
     // Address by user
     public class AddressByUserDetailResponse : Address.Response.AddressResponse
     {

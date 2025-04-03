@@ -32,6 +32,7 @@ public class ServiceV1Profile : Profile
 
         // App User
         CreateMap<AppUser, V1.User.Response.AppUserResponse>().ReverseMap();
+        CreateMap<AppUser, V1.User.Response.GetUserInfoResponse>().ReverseMap();
 
         // Address
         CreateMap<Address, V1.Address.Response.AddressResponse>().ReverseMap();

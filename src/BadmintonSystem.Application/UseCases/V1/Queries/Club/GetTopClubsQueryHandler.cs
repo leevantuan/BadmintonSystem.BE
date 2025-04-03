@@ -27,7 +27,7 @@ public sealed class GetTopClubsQueryHandler(
                             club.""{nameof(Domain.Entities.Club.ClosingTime)}"" AS ""{nameof(Response.ClubDetailResponseChatBotSql.Club_ClosingTime)}"",
                             club.""{nameof(Domain.Entities.Club.Code)}"" AS ""{nameof(Response.ClubDetailResponseChatBotSql.Club_Code)}"",
                             club.""{nameof(Domain.Entities.Club.Id)}"" AS ""{nameof(Response.ClubDetailResponseChatBotSql.Club_Id)}"",
-                            COALESCE(AVG(review.""RatingValue""), 0) AS ""{nameof(Response.ClubDetailResponseChatBotSql.Average_Rating)}""
+                            COALESCE(ROUND(AVG(review.""RatingValue""), 2), 0) AS ""{nameof(Response.ClubDetailResponseChatBotSql.Average_Rating)}""
                         FROM ""{nameof(Domain.Entities.Club)}"" AS club
                         LEFT JOIN ""{nameof(Domain.Entities.Review)}"" AS review ON review.""{nameof(Domain.Entities.Review.ClubId)}"" = club.""Id""
                         WHERE review.""RatingValue"" IS NOT NULL

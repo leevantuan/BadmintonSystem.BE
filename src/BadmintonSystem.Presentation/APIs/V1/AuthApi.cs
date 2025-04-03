@@ -47,10 +47,22 @@ public class AuthApi : ApiEndpoint, ICarterModule
 
         group1.MapPost("admin/email/get-authorization", GetUserAuthorizationByEmailV1)
             .AllowAnonymous();
+
+        group1.MapGet("roles", GetRolesV1)
+            .AllowAnonymous();
         //.RequireJwtAuthorize(FunctionEnum.ADMINISTRATOR.ToString(), (int)ActionEnum.READ);
 
         group1.MapPost("admin/role-names/get-authorization", GetUserAuthorizationByRoleNamesV1)
             .RequireJwtAuthorize(FunctionEnum.ADMINISTRATOR.ToString(), (int)ActionEnum.READ);
+    }
+
+    private static async Task<IResult> GetRolesV1
+    (
+        ISender sender)
+    {
+        Result result = await sender.Send(new Query.GetRolesQuery());
+
+        return result.IsFailure ? HandleFailure(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> CreateRoleV1

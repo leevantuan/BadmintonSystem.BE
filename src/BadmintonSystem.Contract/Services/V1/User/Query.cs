@@ -1,5 +1,6 @@
 ﻿using BadmintonSystem.Contract.Abstractions.Message;
 using BadmintonSystem.Contract.Abstractions.Shared;
+using static BadmintonSystem.Contract.Services.V1.User.Response;
 
 namespace BadmintonSystem.Contract.Services.V1.User;
 
@@ -10,6 +11,9 @@ public static class Query
     public record VerificationEmailWhenRegisterQuery(string Email) : IQuery;
 
     public record CancelVerificationEmailWhenRegisterQuery(string Email) : IQuery;
+
+    public record GetUsersQuery(Abstractions.Shared.Request.PagedFilterAndSortQueryRequest Data)
+        : IQuery<PagedResult<GetUserInfoResponse>>;
 
     // GET ALLS
     public record GetAddressesByEmailWithFilterAndSortQuery(

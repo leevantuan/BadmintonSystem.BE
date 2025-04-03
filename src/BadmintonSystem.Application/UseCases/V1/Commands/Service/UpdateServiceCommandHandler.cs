@@ -16,12 +16,15 @@ public sealed class UpdateServiceCommandHandler(
         Domain.Entities.Service service = await serviceRepository.FindByIdAsync(request.Data.Id, cancellationToken)
                                           ?? throw new ServiceException.ServiceNotFoundException(request.Data.Id);
 
-        Domain.Entities.Service? isNameExists =
-            await serviceRepository.FindSingleAsync(x => x.Name == request.Data.Name, cancellationToken);
-
-        if (isNameExists != null)
+        if (request.Data.Name != null && request.Data.Name != service.Name)
         {
-            return Result.Failure(new Error("400", "Name Exists!"));
+            Domain.Entities.Service? isNameExists =
+                await serviceRepository.FindSingleAsync(x => x.Name == request.Data.Name, cancellationToken);
+
+            if (isNameExists != null)
+            {
+                return Result.Failure(new Error("400", "Name Exists!"));
+            }
         }
 
         service.Name = request.Data.Name ?? service.Name;
