@@ -3,7 +3,6 @@ using BadmintonSystem.Application.UseCases.V1.Services;
 using BadmintonSystem.Contract.Abstractions.Message;
 using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.V1.Booking;
-using BadmintonSystem.Domain.Entities.Identity;
 using BadmintonSystem.Domain.Enumerations;
 using BadmintonSystem.Domain.Exceptions;
 using BadmintonSystem.Persistence;
@@ -14,16 +13,18 @@ namespace BadmintonSystem.Application.UseCases.V1.Commands.Booking;
 
 public sealed class CreateBookingCommandHandler(
     ApplicationDbContext context,
+    TenantDbContext tenantContext,
     IBookingHub bookingHub,
     IMediator mediator,
+    ISender sender,
     IBookingLineService bookingLineService)
     : ICommandHandler<Command.CreateBookingCommand>
 {
     public async Task<Result> Handle(Command.CreateBookingCommand request, CancellationToken cancellationToken)
     {
-        AppUser user = await context.AppUsers
-                           .FirstOrDefaultAsync(x => x.Id == request.UserId, cancellationToken)
-                       ?? throw new IdentityException.AppUserNotFoundException(request.UserId);
+        //AppUser user = await context.AppUsers
+        //                   .FirstOrDefaultAsync(x => x.Id == request.UserId, cancellationToken)
+        //               ?? throw new IdentityException.AppUserNotFoundException(request.UserId);
 
         List<Response.GetIdsByDate> idsByDate = await GetIdsByDateAsync(request.Data.YardPriceIds, cancellationToken);
 
@@ -41,8 +42,8 @@ public sealed class CreateBookingCommandHandler(
                 OriginalPrice = 0,
                 PercentPrePay = request.Data.PercentPrePay,
                 SaleId = request.Data.SaleId,
-                FullName = request.Data.FullName ?? user.FullName,
-                PhoneNumber = request.Data.PhoneNumber ?? user.PhoneNumber
+                FullName = request.Data.FullName ?? string.Empty,
+                PhoneNumber = request.Data.PhoneNumber ?? string.Empty
             };
 
             var billEntity = new Domain.Entities.Bill
@@ -57,6 +58,8 @@ public sealed class CreateBookingCommandHandler(
             await CreateBookingAsync(idByDate, bookingEntity, billEntity, cancellationToken);
 
             bookingIds.Add(bookingEntity.Id);
+
+            await context.SaveChangesAsync(cancellationToken);
         }
 
         return Result.Success();

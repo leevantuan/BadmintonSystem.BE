@@ -11,4 +11,6 @@ public sealed class TenantDbContext : DbContext
     }
 
     public DbSet<Tenant> Tenants { get; set; }
+
+    public DbSet<BookingHistory> BookingHistories { get; set; }
 }

@@ -15,6 +15,10 @@ public class ServiceV1Profile : Profile
 {
     public ServiceV1Profile()
     {
+        // Booking history
+        CreateMap<BookingHistory, V1.BookingHistory.Request.CreateBookingHistoryRequest>().ReverseMap();
+        CreateMap<BookingHistory, V1.BookingHistory.Response.BookingHistoryDetailResponse>().ReverseMap();
+
         // Tenant
         CreateMap<Tenant, V1.Tenant.Response.TenantResponse>().ReverseMap();
         CreateMap<Tenant, V1.Tenant.Request.CreateTenantRequest>().ReverseMap();
