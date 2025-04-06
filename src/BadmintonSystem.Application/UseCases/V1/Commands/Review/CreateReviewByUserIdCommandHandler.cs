@@ -3,7 +3,6 @@ using BadmintonSystem.Contract.Abstractions.Message;
 using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.V1.Review;
 using BadmintonSystem.Domain.Entities;
-using BadmintonSystem.Domain.Exceptions;
 using BadmintonSystem.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,8 +15,8 @@ public sealed class CreateReviewByUserIdCommandHandler(
 {
     public async Task<Result> Handle(Command.CreateReviewByUserIdCommand request, CancellationToken cancellationToken)
     {
-        _ = await context.AppUsers.FirstOrDefaultAsync(x => x.Id == request.Data.UserId, cancellationToken)
-            ?? throw new IdentityException.AppUserNotFoundException(request.Data.UserId);
+        //_ = await context.AppUsers.FirstOrDefaultAsync(x => x.Id == request.Data.UserId, cancellationToken)
+        //    ?? throw new IdentityException.AppUserNotFoundException(request.Data.UserId);
 
         Domain.Entities.Club? club = await context.Club.FirstOrDefaultAsync(x => x.Id == request.Data.ClubId, cancellationToken);
 

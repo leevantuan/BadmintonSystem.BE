@@ -43,26 +43,26 @@ internal sealed class AppUserConfiguration : IEntityTypeConfiguration<AppUser>
             .HasForeignKey(ur => ur.UserId)
             .IsRequired();
 
-        builder.HasMany(x => x.Notifications)
-            .WithOne()
-            .HasForeignKey(x => x.UserId)
-            .OnDelete(DeleteBehavior.Cascade);
+        //builder.HasMany(x => x.Notifications)
+        //    .WithOne()
+        //    .HasForeignKey(x => x.UserId)
+        //    .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasMany(x => x.PaymentMethods)
-            .WithOne()
-            .HasForeignKey(x => x.UserId)
-            .OnDelete(DeleteBehavior.Cascade);
+        //builder.HasMany(x => x.PaymentMethods)
+        //    .WithOne()
+        //    .HasForeignKey(x => x.UserId)
+        //    .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasMany(x => x.Reviews)
-            .WithOne()
-            .HasForeignKey(x => x.UserId)
-            .OnDelete(DeleteBehavior.Cascade);
+        //builder.HasMany(x => x.Reviews)
+        //    .WithOne()
+        //    .HasForeignKey(x => x.UserId)
+        //    .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasMany(x => x.UserAddresses)
-            .WithOne()
-            .HasForeignKey(x => x.UserId)
-            .OnDelete(DeleteBehavior.Cascade)
-            .IsRequired();
+        //builder.HasMany(x => x.UserAddresses)
+        //    .WithOne()
+        //    .HasForeignKey(x => x.UserId)
+        //    .OnDelete(DeleteBehavior.Cascade)
+        //    .IsRequired();
 
         //builder.HasMany(x => x.Bookings)
         //    .WithOne()

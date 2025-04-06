@@ -22,6 +22,12 @@ internal sealed class ExceptionHandlingMiddleware
             var request = context.Request;
             var query = request.Query;
             string Tenant = query["tenant"];
+            //string Email = query["email"];
+
+            //if (!string.IsNullOrEmpty(Email))
+            //{
+            //    await currentUserInfoService.SetUserInfo(Email);
+            //}
 
             if (!string.IsNullOrEmpty(Tenant))
             {

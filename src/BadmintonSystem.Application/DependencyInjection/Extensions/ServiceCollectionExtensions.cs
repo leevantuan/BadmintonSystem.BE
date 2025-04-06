@@ -18,6 +18,7 @@ public static class ServiceCollectionExtensions
             .AddTransient(typeof(IYardPriceService), typeof(YardPriceService))
             .AddTransient(typeof(IBookingLineService), typeof(BookingLineService))
             .AddTransient(typeof(IBillService), typeof(BillService))
+            .AddTransient(typeof(IBookingService), typeof(BookingService))
             .AddTransient(typeof(IBillLineService), typeof(BillLineService))
             .AddTransient(typeof(IServiceLineService), typeof(ServiceLineService))
             .AddTransient(typeof(IOriginalQuantityService), typeof(OriginalQuantityService))

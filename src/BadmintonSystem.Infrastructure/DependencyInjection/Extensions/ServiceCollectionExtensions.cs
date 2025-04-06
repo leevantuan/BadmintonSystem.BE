@@ -20,6 +20,7 @@ public static class ServiceCollectionExtensions
             .AddTransient<IGmailService, GmailService>()
             .AddScoped<IMomoService, MomoService>()
             .AddScoped<ICurrentTenantService, CurrentTenantService>()
+            .AddScoped<ICurrentUserInfoService, CurrentUserInfoService>()
             .AddTransient<IRedisService, RedisService>()
             .AddTransient<IDbSeeder, DbSeeder>();
 

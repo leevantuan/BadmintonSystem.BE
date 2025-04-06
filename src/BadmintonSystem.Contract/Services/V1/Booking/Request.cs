@@ -44,11 +44,52 @@ public static class Request
         public int? PaymentStatus { get; set; }
     }
 
+    // Booking By Chat
+    public class CreateBookingByChatRequest
+    {
+        public string Email { get; set; }
+
+        public string Tenant { get; set; }
+
+        public TimeSpan StartTime { get; set; }
+
+        public TimeSpan EndTime { get; set; }
+
+        public DateTime BookingDate { get; set; }
+    }
+
+    // Booking By Chat
+    public class CreateUrlBookingByChatRequest
+    {
+        public string Email { get; set; }
+
+        public string Tenant { get; set; }
+
+        public string StartTime { get; set; }
+
+        public string EndTime { get; set; }
+
+        public string BookingDate { get; set; }
+    }
+
+    public class CheckUnBookedByChatRequest
+    {
+        public string Tenant { get; set; }
+
+        public TimeSpan StartTime { get; set; }
+
+        public TimeSpan EndTime { get; set; }
+
+        public DateTime BookingDate { get; set; }
+    }
+
     public class CreateBookingRequest
     {
         public string? FullName { get; set; }
 
         public string? Email { get; set; }
+
+        public Guid? UserId { get; set; }
 
         public string? Tenant { get; set; }
 

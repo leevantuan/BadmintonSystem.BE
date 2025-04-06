@@ -1,4 +1,5 @@
 ﻿using BadmintonSystem.Contract.Abstractions.IntegrationEvents;
+using BadmintonSystem.Contract.Abstractions.Services;
 using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Enumerations;
 using BadmintonSystem.Contract.Services.V1.Booking;
@@ -57,6 +58,15 @@ public class BookingApi : ApiEndpoint, ICarterModule
 
         group1.MapDelete("{bookingId}", DeleteBookingsV1)
             .AllowAnonymous();
+
+        group1.MapGet("check-unbooked", CheckUnBookedV1)
+            .AllowAnonymous();
+
+        group1.MapGet("create-booking-by-chat", CreateBookingByChatV1)
+            .AllowAnonymous();
+
+        group1.MapGet("handle-create-booking", HandleCreateBookingV1)
+            .AllowAnonymous();
         //.RequireJwtAuthorize(FunctionEnum.BOOKING.ToString(), (int)ActionEnum.DELETE);
 
         // group1.MapPost("publish-email-rabbitmq", EmailPublishRabbitMqV1)
@@ -64,6 +74,104 @@ public class BookingApi : ApiEndpoint, ICarterModule
         //
         // group1.MapPost("command-email-rabbitmq", EmailCommandRabbitMqV1)
         //     .AllowAnonymous();
+    }
+
+    private static async Task<IResult> HandleCreateBookingV1
+    (
+        HttpRequest request,
+        ISender sender,
+        ICurrentUserInfoService currentUserInfoService
+    )
+    {
+        var query = request.Query;
+
+        string UserName = query["userName"];
+        string UserId = query["userId"];
+        string PhoneNumber = query["phoneNumber"];
+        string Email = query["email"];
+        string Date = query["date"];
+        string StartTime = query["startTime"];
+        string EndTime = query["endTime"];
+        string Tenant = query["tenant"];
+
+        if (!string.IsNullOrEmpty(UserName) || !string.IsNullOrEmpty(UserId) ||
+           !string.IsNullOrEmpty(PhoneNumber))
+        {
+            currentUserInfoService.UserEmail = Email;
+            currentUserInfoService.UserName = UserName;
+            currentUserInfoService.UserId = Guid.Parse(UserId);
+            currentUserInfoService.PhoneNumber = PhoneNumber;
+        }
+
+        var requestData = new Request.CreateBookingByChatRequest
+        {
+            Email = Email,
+            BookingDate = DateTime.Parse(Date),
+            StartTime = TimeSpan.Parse(StartTime),
+            EndTime = TimeSpan.Parse(EndTime),
+            Tenant = Tenant
+        };
+
+        var result =
+            await sender.Send(new Command.CreateBookingByChatCommand(requestData));
+
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
+    }
+
+    private static async Task<IResult> CreateBookingByChatV1
+    (
+        HttpRequest request,
+        ISender sender
+    )
+    {
+        var query = request.Query;
+
+        string Email = query["email"];
+        string Date = query["date"];
+        string StartTime = query["startTime"];
+        string EndTime = query["endTime"];
+        string Tenant = query["tenantCode"];
+
+        var requestData = new Request.CreateUrlBookingByChatRequest
+        {
+            Email = Email,
+            BookingDate = Date,
+            StartTime = StartTime,
+            EndTime = EndTime,
+            Tenant = Tenant
+        };
+
+        var result =
+            await sender.Send(new Command.CreateUrlBookingByChatCommand(requestData));
+
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Redirect(result.Value);
+    }
+
+    private static async Task<IResult> CheckUnBookedV1
+    (
+        HttpRequest request,
+        ISender sender
+    )
+    {
+        var query = request.Query;
+
+        string Date = query["date"];
+        string StartTime = query["startTime"];
+        string EndTime = query["endTime"];
+        string Tenant = query["tenant"];
+
+        var requestData = new Request.CheckUnBookedByChatRequest
+        {
+            BookingDate = DateTime.Parse(Date),
+            StartTime = TimeSpan.Parse(StartTime),
+            EndTime = TimeSpan.Parse(EndTime),
+            Tenant = Tenant
+        };
+
+        var result =
+            await sender.Send(new Command.CheckUnBookedByChatCommand(requestData));
+
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> EmailCommandRabbitMqV1

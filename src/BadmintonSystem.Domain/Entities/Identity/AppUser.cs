@@ -34,17 +34,17 @@ public class AppUser : IdentityUser<Guid>, IAuditable
 
     public virtual ICollection<AppUserRole> UserRoles { get; set; }
 
-    public virtual ICollection<Notification>? Notifications { get; set; }
+    //public virtual ICollection<Notification>? Notifications { get; set; }
 
-    public virtual ICollection<PaymentMethod>? PaymentMethods { get; set; }
+    //public virtual ICollection<PaymentMethod>? PaymentMethods { get; set; }
 
-    public virtual ICollection<UserAddress>? UserAddresses { get; set; }
+    //public virtual ICollection<UserAddress>? UserAddresses { get; set; }
 
-    public virtual ICollection<Review>? Reviews { get; set; }
+    //public virtual ICollection<Review>? Reviews { get; set; }
 
-    public virtual ICollection<Booking>? Bookings { get; set; }
+    //public virtual ICollection<Booking>? Bookings { get; set; }
 
-    public virtual ChatRoom? ChatRoom { get; set; }
+    //public virtual ChatRoom? ChatRoom { get; set; }
 
     public GenderEnum? Gender { get; set; }
 

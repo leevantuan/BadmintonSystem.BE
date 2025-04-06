@@ -9,28 +9,43 @@ using BadmintonSystem.Contract.Services.V1.Booking;
 using BadmintonSystem.Domain.Enumerations;
 using BadmintonSystem.Domain.Exceptions;
 using BadmintonSystem.Persistence;
-using MassTransit;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using static BadmintonSystem.Contract.Services.V1.TimeSlot.Response;
 
 namespace BadmintonSystem.Application.UseCases.V1.Commands.Booking;
 
-public sealed class CreateBookingRabbitMQCommandHandler(
+public sealed class CreateBookingByChatCommandHandler(
     ApplicationDbContext context,
     TenantDbContext tenantContext,
-    IBus bus,
+    IBookingService bookingService,
     IMediator mediator,
     IRedisService redisService,
     ICurrentTenantService currentTenantService,
+    ICurrentUserInfoService currentUserInfoService,
+    IYardPriceService yardPriceService,
+    IMomoService momoService,
     IBookingLineService bookingLineService)
-    : ICommandHandler<Command.CreateBookingRabbitMQCommand>
+    : ICommandHandler<Command.CreateBookingByChatCommand>
 {
-    public async Task<Result> Handle(Command.CreateBookingRabbitMQCommand request, CancellationToken cancellationToken)
+    public async Task<Result> Handle(Command.CreateBookingByChatCommand request, CancellationToken cancellationToken)
     {
+        var yardPricesUnBooked = await IsUnBooked(request.Data.BookingDate, request.Data.StartTime, request.Data.EndTime, request.Data.Tenant, cancellationToken);
+
+        if (yardPricesUnBooked == null || !yardPricesUnBooked.Any())
+        {
+            return Result.Failure(new Error("YardPrice", "YardPrice is not available"));
+        }
+
+        var YardPriceIds = yardPricesUnBooked
+            .Select(y => y.YardPriceId)
+            .ToList();
+
         List<Contract.Services.V1.Booking.Response.GetIdsByDate> idsByDate =
-                await GetIdsByDateAsync(request.Data.YardPriceIds, cancellationToken);
+                await GetIdsByDateAsync(YardPriceIds, cancellationToken);
 
         var bookingIds = new List<Guid>();
+        decimal totalPrice = 0;
         foreach (Contract.Services.V1.Booking.Response.GetIdsByDate idByDate in idsByDate)
         {
             var bookingEntity = new Domain.Entities.Booking
@@ -38,14 +53,14 @@ public sealed class CreateBookingRabbitMQCommandHandler(
                 Id = Guid.NewGuid(),
                 BookingStatus = BookingStatusEnum.Pending,
                 PaymentStatus = PaymentStatusEnum.Unpaid,
-                UserId = request.Data.UserId ?? Guid.NewGuid(),
+                UserId = currentUserInfoService.UserId ?? Guid.NewGuid(),
                 BookingDate = idByDate.Date,
                 BookingTotal = 0,
                 OriginalPrice = 0,
-                PercentPrePay = request.Data.PercentPrePay,
-                SaleId = request.Data.SaleId,
-                FullName = request.Data.FullName ?? "User",
-                PhoneNumber = request.Data.PhoneNumber ?? "PhoneNumber"
+                PercentPrePay = 100,
+                SaleId = null,
+                FullName = currentUserInfoService.UserName ?? "User",
+                PhoneNumber = "0000000000"
             };
 
             var billEntity = new Domain.Entities.Bill
@@ -57,24 +72,96 @@ public sealed class CreateBookingRabbitMQCommandHandler(
                 Status = BillStatusEnum.BOOKED
             };
 
-            await CreateBookingAsync(idByDate, bookingEntity, billEntity, cancellationToken);
+            totalPrice = await CreateBookingAsync(idByDate, bookingEntity, billEntity, cancellationToken);
 
             bookingIds.Add(bookingEntity.Id);
         }
 
         await SignalRAndUpdateCacheAsync(idsByDate, request.Data.Tenant, cancellationToken);
-        await SendMailAsync(bookingIds, request.Data.FullName, request.Data.Email, NotificationType.client, cancellationToken);
-        await SendMailAsync(bookingIds, request.Data.FullName, request.Data.Email, NotificationType.staff, cancellationToken);
+        await SendMailAsync(bookingIds, currentUserInfoService.UserName, request.Data.Email, NotificationType.client, cancellationToken);
+        await SendMailAsync(bookingIds, currentUserInfoService.UserName, request.Data.Email, NotificationType.staff, cancellationToken);
 
-        string endpoint = $"BMTSYS_{currentTenantService.Code.ToString()}-get-yard-prices-by-date";
+        string endpoint = $"BMTSYS_{request.Data.Tenant}-get-yard-prices-by-date";
 
         await redisService.DeletesAsync(endpoint);
 
-        return Result.Success();
+        // Create QRCode
+        var momoRequest = new Contract.Services.V1.Momo.Request.MomoPaymentRequest()
+        {
+            OrderId = bookingIds.FirstOrDefault().ToString(),
+            Amount = totalPrice.ToString(),
+            OrderInfo = currentTenantService.Name.ToString(),
+        };
+
+        try
+        {
+            string qrCodeUrl = await momoService.CreatePaymentQRCodeAsync(momoRequest, cancellationToken);
+
+            var response = new Contract.Services.V1.Momo.Response.MomoPaymentResponse
+            {
+                ResultCode = 0,
+                Message = "QR Code generated successfully.",
+                QrCodeUrl = "QRCode",
+                PayUrl = qrCodeUrl
+            };
+            return Result.Success(response);
+        }
+        catch (Exception ex)
+        {
+            throw new ApplicationException("Failed to create QR Code", ex);
+        }
+    }
+
+    private async Task<List<TimeSlotWithYardPriceResponse>> IsUnBooked(
+        DateTime bookingDate,
+        TimeSpan startTime,
+        TimeSpan endTime,
+        string tenant,
+        CancellationToken cancellationToken)
+    {
+        var timeSlots = new List<TimeSlotWithYardPriceResponse>();
+
+        List<Contract.Services.V1.YardPrice.Response.YardPricesByDateDetailResponse> yardPrices =
+                   await yardPriceService.GetYardPrices(
+                            bookingDate,
+                            tenant,
+                            currentUserInfoService.UserId ?? Guid.Empty,
+                            cancellationToken);
+
+        if (yardPrices == null || !yardPrices.Any())
+        {
+            return timeSlots;
+        }
+
+        //var timeSlots = new Dictionary<Guid, Guid>();
+
+        foreach (var yardPrice in yardPrices)
+        {
+            var filterDetails = yardPrice.YardPricesDetails
+                .Where(x => x.IsBooking == (int)BookingEnum.UNBOOKED
+                    && x.StartTime >= startTime && x.EndTime <= endTime)
+                .ToList();
+
+            foreach (var detail in filterDetails)
+            {
+                if (!timeSlots.Any(t => t.Id == detail.TimeSlotId))
+                {
+                    timeSlots.Add(new TimeSlotWithYardPriceResponse
+                    {
+                        Id = detail.TimeSlotId,
+                        YardPriceId = detail.Id,
+                        StartTime = detail.StartTime,
+                        EndTime = detail.EndTime,
+                    });
+                }
+            }
+        }
+
+        return timeSlots;
     }
 
     private async Task SendMailAsync
-        (List<Guid> bookingIds, string fullName, string email, string type, CancellationToken cancellationToken)
+    (List<Guid> bookingIds, string fullName, string email, string type, CancellationToken cancellationToken)
     {
 
         email = type == NotificationType.staff ? "managersystem.net@gmail.com" : email;
@@ -112,8 +199,9 @@ public sealed class CreateBookingRabbitMQCommandHandler(
             Type = BookingEnum.BOOKED.ToString()
         };
 
-        ISendEndpoint endPoint = await bus.GetSendEndpoint(new Uri("queue:send-update-cache-queue"));
-        await endPoint.Send(sendSignalRAndUpdateCache, cancellationToken);
+        await bookingService.SignalRAndUpdateCacheAsync(sendSignalRAndUpdateCache, cancellationToken);
+        //ISendEndpoint endPoint = await bus.GetSendEndpoint(new Uri("queue:send-update-cache-queue"));
+        //await endPoint.Send(sendSignalRAndUpdateCache, cancellationToken);
     }
 
     private async Task<List<Contract.Services.V1.Booking.Response.GetIdsByDate>> GetIdsByDateAsync
@@ -131,7 +219,7 @@ public sealed class CreateBookingRabbitMQCommandHandler(
         return yardPrice;
     }
 
-    private async Task CreateBookingAsync
+    private async Task<decimal> CreateBookingAsync
     (Contract.Services.V1.Booking.Response.GetIdsByDate yardPriceIds, Domain.Entities.Booking bookingEntity, Domain.Entities.Bill billEntity,
         CancellationToken cancellationToken)
     {
@@ -195,6 +283,8 @@ public sealed class CreateBookingRabbitMQCommandHandler(
 
         tenantContext.BookingHistories.Add(bookingHistoryEntities);
         await tenantContext.SaveChangesAsync(cancellationToken);
+
+        return totalPrice;
     }
 
 }

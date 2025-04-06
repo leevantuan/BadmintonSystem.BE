@@ -4,9 +4,7 @@ using BadmintonSystem.Contract.Abstractions.Shared;
 using BadmintonSystem.Contract.Services.V1.FixedSchedule;
 using BadmintonSystem.Domain.Abstractions.Repositories;
 using BadmintonSystem.Domain.Entities;
-using BadmintonSystem.Domain.Exceptions;
 using BadmintonSystem.Persistence;
-using Microsoft.EntityFrameworkCore;
 using DayOfWeek = BadmintonSystem.Domain.Entities.DayOfWeek;
 using Request = BadmintonSystem.Contract.Services.V1.FixedSchedule.Request;
 
@@ -21,8 +19,8 @@ public sealed class CreateFixedScheduleCommandHandler(
     public async Task<Result<Response.FixedScheduleResponse>> Handle
         (Command.CreateFixedScheduleCommand request, CancellationToken cancellationToken)
     {
-        _ = await context.AppUsers.FirstOrDefaultAsync(x => x.Id == request.UserId, cancellationToken)
-            ?? throw new IdentityException.AppUserNotFoundException(request.UserId);
+        //_ = await context.AppUsers.FirstOrDefaultAsync(x => x.Id == request.UserId, cancellationToken)
+        //    ?? throw new IdentityException.AppUserNotFoundException(request.UserId);
 
         Domain.Entities.FixedSchedule fixedSchedule = mapper.Map<Domain.Entities.FixedSchedule>(request.Data);
 

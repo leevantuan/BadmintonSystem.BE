@@ -7,6 +7,15 @@ public static class Command
     public record CreateBookingRabbitMQCommand(Guid UserId, Request.CreateBookingRequest Data)
         : ICommand;
 
+    public record CreateBookingByChatCommand(Request.CreateBookingByChatRequest Data)
+        : ICommand;
+
+    public record CreateUrlBookingByChatCommand(Request.CreateUrlBookingByChatRequest Data)
+        : ICommand<string>;
+
+    public record CheckUnBookedByChatCommand(Request.CheckUnBookedByChatRequest Data)
+        : ICommand;
+
     public record CreateBookingCommand(Guid UserId, Request.CreateBookingRequest Data)
         : ICommand;
 

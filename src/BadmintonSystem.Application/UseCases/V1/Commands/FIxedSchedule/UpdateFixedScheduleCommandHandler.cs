@@ -17,8 +17,8 @@ public sealed class UpdateFixedScheduleCommandHandler(
     public async Task<Result<Response.FixedScheduleResponse>> Handle
         (Command.UpdateFixedScheduleCommand request, CancellationToken cancellationToken)
     {
-        _ = context.AppUsers.FirstOrDefault(x => x.Id == request.Data.UserId)
-            ?? throw new IdentityException.AppUserNotFoundException(request.Data.UserId ?? Guid.Empty);
+        //_ = context.AppUsers.FirstOrDefault(x => x.Id == request.Data.UserId)
+        //    ?? throw new IdentityException.AppUserNotFoundException(request.Data.UserId ?? Guid.Empty);
 
         Domain.Entities.FixedSchedule fixedSchedule =
             await fixedScheduleRepository.FindByIdAsync(request.Data.Id, cancellationToken)
