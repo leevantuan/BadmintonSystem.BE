@@ -9,4 +9,9 @@ public static class Query
         Guid UserId,
         Abstractions.Shared.Request.PagedQueryRequest Data)
         : IQuery<PagedResult<Response.BookingHistoryDetailResponse>>;
+
+    public record GetBookingHistoriesByDateQuery(
+        Guid UserId,
+        DateTime Date)
+        : IQuery<List<Response.BookingHistoryDetailResponse>>;
 }

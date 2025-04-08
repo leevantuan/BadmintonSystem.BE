@@ -30,6 +30,30 @@ public class BookingHistoryApi : ApiEndpoint, ICarterModule
 
         group1.MapGet("{id}", GetBookingHistorysV1)
             .AllowAnonymous();
+
+        group1.MapGet("get-by-date", GetBookingHistoriesByDateV1)
+            .AllowAnonymous();
+    }
+
+    private static async Task<IResult> GetBookingHistoriesByDateV1
+    (
+        ISender sender,
+        HttpRequest request)
+    {
+        var query = request.Query;
+
+        string Date = query["date"];
+        string UserId = query["userId"];
+
+        if (string.IsNullOrEmpty(Date) || string.IsNullOrEmpty(UserId))
+        {
+            return Results.BadRequest("Date and UserId are required.");
+        }
+
+        var result =
+            await sender.Send(new Query.GetBookingHistoriesByDateQuery(Guid.Parse(UserId), DateTime.Parse(Date)));
+
+        return result.IsFailure ? HandleFailureConvertOk(result) : Results.Ok(result);
     }
 
     private static async Task<IResult> GetBookingHistorysV1
